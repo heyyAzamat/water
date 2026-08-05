@@ -47,6 +47,7 @@ interface TopbarUser {
   role: UserRole;
   points: number;
   isDemo: boolean;
+  isGuest: boolean;
 }
 
 export function AppTopbar({
@@ -247,7 +248,9 @@ export function AppTopbar({
                     {user.name}
                   </span>
                   <span className="block text-[10.5px] leading-tight text-ink-500">
-                    {fmt(t.topbar.points, { count: user.points })}
+                    {user.isGuest
+                      ? t.topbar.guestHint
+                      : fmt(t.topbar.points, { count: user.points })}
                   </span>
                 </span>
               </button>
@@ -266,15 +269,18 @@ export function AppTopbar({
                 </div>
               </div>
 
-              {user.isDemo && (
+              {user.isGuest && (
                 <div className="mx-1.5 mb-1.5 rounded-lg border border-lume-400/22 bg-lume-400/8 px-2.5 py-2">
                   <p className="flex items-center gap-1.5 text-[11px] font-medium text-lume-200">
                     <Sparkles className="size-3" aria-hidden />
-                    {t.topbar.demoTitle}
+                    {t.topbar.guestTitle}
                   </p>
                   <p className="mt-1 text-[11px] leading-snug text-ink-400">
-                    {t.topbar.demoBody}
+                    {t.topbar.guestBody}
                   </p>
+                  <Button asChild size="sm" className="mt-2 w-full">
+                    <Link href="/signup">{t.topbar.createAccount}</Link>
+                  </Button>
                 </div>
               )}
 
@@ -309,22 +315,26 @@ export function AppTopbar({
                 </DropdownMenuItem>
               )}
 
-              <DropdownMenuSeparator />
-              <form action={signOut}>
-                <DropdownMenuItem
-                  destructive
-                  onSelect={(event) => {
-                    // Let the form submit instead of Radix closing first.
-                    event.preventDefault();
-                    (event.currentTarget as HTMLElement)
-                      .closest("form")
-                      ?.requestSubmit();
-                  }}
-                >
-                  <LogOut />
-                  {t.topbar.signOut}
-                </DropdownMenuItem>
-              </form>
+              {!user.isGuest && (
+                <>
+                  <DropdownMenuSeparator />
+                  <form action={signOut}>
+                    <DropdownMenuItem
+                      destructive
+                      onSelect={(event) => {
+                        // Let the form submit instead of Radix closing first.
+                        event.preventDefault();
+                        (event.currentTarget as HTMLElement)
+                          .closest("form")
+                          ?.requestSubmit();
+                      }}
+                    >
+                      <LogOut />
+                      {t.topbar.signOut}
+                    </DropdownMenuItem>
+                  </form>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 
 import { listNotifications } from "@/lib/data/repository";
@@ -19,10 +18,9 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Anonymous visitors get a guest identity rather than a redirect: the
+  // product works without an account.
   const user = await getCurrentUser();
-  // The middleware already gates these routes; this is the defence in depth
-  // that matters if the matcher ever changes.
-  if (!user) redirect("/login");
 
   const notifications = await listNotifications(user.id, 20);
   const unread = notifications.filter((n) => !n.readAt).length;
@@ -46,6 +44,7 @@ export default async function AppLayout({
             role: user.role,
             points: user.points,
             isDemo: user.isDemo,
+            isGuest: user.isGuest,
           }}
           notifications={notifications}
         />

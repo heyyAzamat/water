@@ -18,6 +18,7 @@ export const en = {
   },
 
   common: {
+    openApp: "Open the app",
     skipToContent: "Skip to main content",
     signIn: "Sign in",
     signUp: "Create account",
@@ -52,6 +53,7 @@ export const en = {
   },
 
   hero: {
+    noAccount: "Works without an account — no sign-up to analyse a photograph.",
     kicker: "AquaVision",
     titleTop: "Living",
     titleMain: "Water.",
@@ -292,6 +294,8 @@ export const en = {
   },
 
   footer: {
+    photoCredits:
+      "Sample imagery: freely-licensed photographs from Wikimedia Commons. Hero photo by Mudasir Zainuddin, CC BY-SA 4.0.",
     tagline:
       "Intelligent monitoring of water bodies using computer vision. Crowdsourced, hardware-free, open by default.",
     product: "Product",
@@ -381,6 +385,12 @@ export const en = {
   },
 
   topbar: {
+    guest: "Guest",
+    guestHint: "no account",
+    guestTitle: "You are browsing as a guest",
+    guestBody:
+      "Analysis and the map work without an account. Create one to keep your reports and earn contribution points.",
+    createAccount: "Create an account",
     searchPlaceholder: "Search reports…",
     searchLabel: "Search reports",
     notifications: "Notifications",
@@ -849,6 +859,7 @@ export const en = {
 
   pages: {
     dashboard: {
+      greetingGuest: "Welcome to AquaVision",
       metaTitle: "Dashboard",
       metaDescription:
         "Your assessments, statistics, score history and achievements.",

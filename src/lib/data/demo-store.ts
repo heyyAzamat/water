@@ -15,7 +15,7 @@ import {
   computeComposite,
   qualityForScore,
 } from "@/lib/ai/scoring";
-import { sampleAvatar, sampleWaterImage } from "./sample-image";
+import { sampleAvatar, samplePhoto } from "./sample-image";
 
 /**
  * The bundled demo dataset.
@@ -253,7 +253,7 @@ function build(): DemoDataset {
         viewCount: Math.round(rnd(`views${n}`) * 480 + composite.score * 3),
         createdAt: capturedAt.toISOString(),
         updatedAt: capturedAt.toISOString(),
-        imageUrl: sampleWaterImage(reportId, composite.score, tags),
+        imageUrl: samplePhoto(reportId, composite.score, tags),
         thumbnailUrl: null,
         capturedAt: capturedAt.toISOString(),
         lat: location.lat + jitterLat,

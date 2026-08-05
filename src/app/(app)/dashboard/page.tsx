@@ -100,9 +100,11 @@ export default async function DashboardPage() {
             {formatDate(new Date(), false, dateLocale)}
           </p>
           <h1 className="mt-1.5 text-[1.75rem] font-semibold tracking-[-0.035em] text-ink-50">
-            {fmt(t.pages.dashboard.greeting, {
-              name: user.name.split(" ")[0],
-            })}
+            {user.isGuest
+              ? t.pages.dashboard.greetingGuest
+              : fmt(t.pages.dashboard.greeting, {
+                  name: user.name.split(" ")[0],
+                })}
           </h1>
           <p className="mt-1.5 text-[14px] text-ink-400">
             {stats.reports === 0

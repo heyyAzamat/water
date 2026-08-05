@@ -9,6 +9,7 @@ export const ru: Dictionary = {
   },
 
   common: {
+    openApp: "Открыть приложение",
     skipToContent: "Перейти к содержимому",
     signIn: "Войти",
     signUp: "Создать аккаунт",
@@ -43,6 +44,7 @@ export const ru: Dictionary = {
   },
 
   hero: {
+    noAccount: "Работает без регистрации — чтобы проанализировать фото, аккаунт не нужен.",
     kicker: "AquaVision",
     titleTop: "Живая",
     titleMain: "вода.",
@@ -283,6 +285,8 @@ export const ru: Dictionary = {
   },
 
   footer: {
+    photoCredits:
+      "Иллюстрации: свободно лицензированные фотографии с Wikimedia Commons. Фото в шапке — Mudasir Zainuddin, CC BY-SA 4.0.",
     tagline:
       "Интеллектуальный мониторинг водоёмов с помощью компьютерного зрения. Силами сообщества, без оборудования, открыто по умолчанию.",
     product: "Продукт",
@@ -373,6 +377,12 @@ export const ru: Dictionary = {
   },
 
   topbar: {
+    guest: "Гость",
+    guestHint: "без регистрации",
+    guestTitle: "Вы работаете как гость",
+    guestBody:
+      "Анализ и карта работают без аккаунта. Создайте его, чтобы сохранять свои отчёты и получать баллы вклада.",
+    createAccount: "Создать аккаунт",
     searchPlaceholder: "Поиск по отчётам…",
     searchLabel: "Поиск по отчётам",
     notifications: "Уведомления",
@@ -843,6 +853,7 @@ export const ru: Dictionary = {
 
   pages: {
     dashboard: {
+      greetingGuest: "Добро пожаловать в AquaVision",
       metaTitle: "Панель",
       metaDescription:
         "Ваши оценки, статистика, история баллов и достижения.",

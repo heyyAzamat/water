@@ -9,6 +9,7 @@ export const kk: Dictionary = {
   },
 
   common: {
+    openApp: "Қолданбаны ашу",
     skipToContent: "Негізгі мазмұнға өту",
     signIn: "Кіру",
     signUp: "Тіркелу",
@@ -43,6 +44,7 @@ export const kk: Dictionary = {
   },
 
   hero: {
+    noAccount: "Тіркелусіз жұмыс істейді — фотосуретті талдау үшін тіркелгі қажет емес.",
     kicker: "AquaVision",
     titleTop: "Тірі",
     titleMain: "су.",
@@ -283,6 +285,8 @@ export const kk: Dictionary = {
   },
 
   footer: {
+    photoCredits:
+      "Суреттер: Wikimedia Commons сайтындағы еркін лицензиялы фотосуреттер. Бастапқы фото — Mudasir Zainuddin, CC BY-SA 4.0.",
     tagline:
       "Компьютерлік көрумен су нысандарын зияткерлік бақылау. Қоғамдастық күшімен, жабдықсыз, әдепкіде ашық.",
     product: "Өнім",
@@ -373,6 +377,12 @@ export const kk: Dictionary = {
   },
 
   topbar: {
+    guest: "Қонақ",
+    guestHint: "тіркелусіз",
+    guestTitle: "Сіз қонақ ретінде қарап отырсыз",
+    guestBody:
+      "Талдау мен карта тіркелгісіз жұмыс істейді. Есептеріңізді сақтап, үлес ұпайын жинау үшін тіркелгі жасаңыз.",
+    createAccount: "Тіркелгі жасау",
     searchPlaceholder: "Есептерден іздеу…",
     searchLabel: "Есептерден іздеу",
     notifications: "Хабарламалар",
@@ -843,6 +853,7 @@ export const kk: Dictionary = {
 
   pages: {
     dashboard: {
+      greetingGuest: "AquaVision-ға қош келдіңіз",
       metaTitle: "Панель",
       metaDescription:
         "Сіздің бағаларыңыз, статистика, ұпай тарихы және жетістіктер.",

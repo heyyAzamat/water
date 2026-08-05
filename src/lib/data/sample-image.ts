@@ -2,18 +2,63 @@ import type { PollutionTag } from "@/types";
 import { seededRandom } from "@/lib/utils";
 
 /**
- * Procedural sample imagery for the bundled demo dataset.
+ * Imagery for the bundled demo dataset.
  *
- * The demo dataset needs a picture for every report. Reaching out to a stock
- * photo host would make a fresh clone depend on the network and on URLs we
- * don't control, so instead each sample report renders a deterministic SVG
- * water surface — turbulence-displaced gradients tinted by the pollution
- * signature the analysis actually describes. Algae reports look green, oil
- * reports look slick and dark, clean reports look clear.
+ * Reports are photographs, so the seed data uses photographs: a small library
+ * of freely-licensed water pictures ships in `public/photos` and each sample
+ * report is matched to one whose condition actually resembles its score — a
+ * critical report shows polluted water, a clean one shows clear water. Credits
+ * and licences live in `public/photos/CREDITS.md` and the site footer.
  *
- * Real user uploads are real photographs; this only ever backs seed data, and
- * the UI labels those reports as sample data.
+ * The procedural SVG generator below is kept as the fallback for real uploads
+ * that arrive without a stored image (demo mode has nowhere to put the file).
  */
+
+/** Grouped by what the water looks like, not by where it was taken. */
+const PHOTOS = {
+  clean: ["clean-1", "clean-2", "clean-3", "river-1"],
+  murky: ["river-2", "clean-3", "river-1"],
+  algae: ["algae-1", "algae-2", "algae-3", "algae-4"],
+  dirty: ["dirty-1", "dirty-2", "dirty-3", "dirty-4", "dirty-5"],
+} as const;
+
+const ALGAL_TAGS: PollutionTag[] = ["algae_bloom", "eutrophication"];
+const FILTHY_TAGS: PollutionTag[] = [
+  "oil_film",
+  "industrial_discharge",
+  "sewage",
+  "plastic",
+  "floating_garbage",
+  "dead_fish",
+  "construction_debris",
+];
+
+/**
+ * Deterministic photo for a report: same seed always yields the same picture,
+ * so the demo dataset is stable across renders and machines.
+ */
+export function samplePhoto(
+  seed: string,
+  score: number,
+  tags: PollutionTag[] = [],
+): string {
+  const algal = tags.some((t) => ALGAL_TAGS.includes(t));
+  const filthy = tags.some((t) => FILTHY_TAGS.includes(t));
+
+  const bucket =
+    score >= 66 && filthy
+      ? PHOTOS.dirty
+      : algal && score >= 35
+        ? PHOTOS.algae
+        : score >= 66
+          ? PHOTOS.dirty
+          : score >= 34
+            ? PHOTOS.murky
+            : PHOTOS.clean;
+
+  const pick = bucket[Math.floor(seededRandom(seed) * bucket.length) % bucket.length];
+  return `/photos/${pick}.jpg`;
+}
 
 interface Palette {
   deep: string;

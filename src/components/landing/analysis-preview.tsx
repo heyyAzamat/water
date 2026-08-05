@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, Cpu, Gauge, MapPin, Sparkles } from "lucide-react";
 import type { PollutionTag } from "@/types";
 import { gradeForScore } from "@/lib/ai/scoring";
-import { sampleWaterImage } from "@/lib/data/sample-image";
+import { samplePhoto } from "@/lib/data/sample-image";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n/provider";
 import { fmt } from "@/lib/i18n/format";
@@ -81,7 +81,7 @@ export function AnalysisPreview() {
   }, []);
 
   const image = React.useMemo(
-    () => sampleWaterImage(`hero-${scene.place}`, scene.score, scene.tags),
+    () => samplePhoto(`hero-${scene.place}`, scene.score, scene.tags),
     [scene.place, scene.score, scene.tags],
   );
 

@@ -150,7 +150,7 @@ export function Features() {
 
   return (
     <section id="features" className="relative isolate py-24 sm:py-32">
-      <AbyssBackdrop depth={0.6} />
+      <AbyssBackdrop depth={0.6} photo="/photos/depth.jpg" photoDim={0.78} />
 
       <div className="relative mx-auto max-w-6xl px-5">
         <EditionMark left={t.features.eyebrow} right="02" className="mb-12" />
@@ -738,7 +738,12 @@ export function FinalCta() {
 
   return (
     <section className="relative isolate overflow-hidden py-28 sm:py-40">
-      <AbyssBackdrop depth={0.9} particles />
+      <AbyssBackdrop
+        depth={0.9}
+        particles
+        photo="/photos/hero.jpg"
+        photoDim={0.7}
+      />
 
       <div className="relative mx-auto max-w-4xl px-5 text-center">
         <Reveal>
@@ -898,9 +903,14 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/8 pt-7 sm:flex-row sm:items-center">
-          <p className="text-[12.5px] text-ink-600">
-            {fmt(t.footer.rights, { year })}
-          </p>
+          <div className="max-w-xl">
+            <p className="text-[12.5px] text-ink-600">
+              {fmt(t.footer.rights, { year })}
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-ink-700">
+              {t.footer.photoCredits}
+            </p>
+          </div>
           <p className="flex items-center gap-2 text-[12px] text-ink-600">
             <span
               className="size-1.5 animate-pulse rounded-full bg-grade-excellent"

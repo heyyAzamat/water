@@ -2,23 +2,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { env, hasSupabase } from "@/lib/env";
 
-/** Routes that require a signed-in user. */
-const PROTECTED = [
-  "/dashboard",
-  "/upload",
-  "/reports",
-  "/profile",
-  "/notifications",
-  "/leaderboard",
-  "/admin",
-];
-
 /**
- * Refreshes the Supabase session on every request and gates protected routes.
+ * Refreshes the Supabase session on every request.
  *
- * In demo mode there is no auth provider, so the middleware becomes a no-op
- * and a synthetic demo user is used instead — the platform stays fully
- * explorable without credentials.
+ * There is deliberately no login wall: analysing a photograph, the map and the
+ * report archive all work anonymously, so an unauthenticated visitor is a
+ * guest rather than a redirect. Pages that genuinely need an account (the
+ * moderation panel) check the role themselves.
  */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -53,16 +43,6 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const needsAuth = PROTECTED.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
-
-  if (!user && needsAuth) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
-  }
 
   if (user && (pathname === "/login" || pathname === "/signup")) {
     const url = request.nextUrl.clone();

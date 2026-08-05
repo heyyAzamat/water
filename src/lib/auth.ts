@@ -5,43 +5,62 @@ import type { Author } from "@/types";
 import { hasSupabase } from "@/lib/env";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { mapProfile } from "@/lib/data/mappers";
-import { demoData } from "@/lib/data/demo-store";
+import { getT } from "@/lib/i18n/server";
 
 export interface SessionUser extends Author {
   email: string;
   region: string | null;
   bio: string | null;
   isDemo: boolean;
+  /** Nobody is signed in — the platform is being used anonymously. */
+  isGuest: boolean;
+}
+
+export const GUEST_ID = "guest";
+
+/**
+ * Identity for a visitor who has not signed in.
+ *
+ * The platform is usable without an account, so anonymous visitors get a real
+ * (empty) identity rather than a redirect to a login wall. It is deliberately
+ * *not* one of the seeded contributors: showing someone else's name and points
+ * as "you" reads as a mock-up, not a product.
+ *
+ * Without a database there is nothing to protect, so the guest is given staff
+ * rights and the whole product — moderation included — stays explorable.
+ */
+async function guestUser(): Promise<SessionUser> {
+  const t = await getT();
+  return {
+    id: GUEST_ID,
+    name: t.topbar.guest,
+    avatarUrl: null,
+    role: hasSupabase() ? "user" : "admin",
+    points: 0,
+    email: "",
+    region: null,
+    bio: null,
+    isDemo: !hasSupabase(),
+    isGuest: true,
+  };
 }
 
 /**
- * Resolve the signed-in user.
+ * Resolve the current user, falling back to a guest identity.
  *
  * `cache()` dedupes this across a single render pass — the sidebar, topbar and
  * page body all ask for the user, and this way that is one auth round-trip.
- *
- * In demo mode a synthetic admin is returned so the whole product, including
- * the moderation panel, is explorable without credentials.
  */
-export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
-  if (!hasSupabase()) {
-    const demo = demoData().currentUser;
-    return {
-      ...demo,
-      email: "demo@aquavision.ai",
-      region: "Almaty",
-      bio: "Exploring AquaVision in demo mode. Connect Supabase to enable real accounts.",
-      isDemo: true,
-    };
-  }
+export const getCurrentUser = cache(async (): Promise<SessionUser> => {
+  if (!hasSupabase()) return guestUser();
 
   const supabase = await createServerSupabase();
-  if (!supabase) return null;
+  if (!supabase) return guestUser();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return guestUser();
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -65,6 +84,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
       region: null,
       bio: null,
       isDemo: false,
+      isGuest: false,
     };
   }
 
@@ -74,16 +94,18 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     region: (profile.region as string) ?? null,
     bio: (profile.bio as string) ?? null,
     isDemo: false,
+    isGuest: false,
   };
 });
 
+/** Throws unless a real, signed-in account is behind the request. */
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
-  if (!user) throw new Error("UNAUTHENTICATED");
+  if (user.isGuest) throw new Error("UNAUTHENTICATED");
   return user;
 }
 
 export async function isStaff() {
   const user = await getCurrentUser();
-  return user?.role === "admin" || user?.role === "moderator";
+  return user.role === "admin" || user.role === "moderator";
 }

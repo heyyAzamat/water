@@ -25,7 +25,9 @@ import {
 import { env } from "@/lib/env";
 import { gradeForScore } from "@/lib/ai/scoring";
 import { TREND_META } from "@/lib/ai/trend";
-import { cn, formatCoords, formatDate, titleCase } from "@/lib/utils";
+import { cn, formatCoords, formatDate } from "@/lib/utils";
+import { getI18n, getT } from "@/lib/i18n/server";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -45,9 +47,9 @@ export async function generateMetadata({
   const { id } = await params;
   const report = await getReport(id);
 
-  if (!report) return { title: "Report not found" };
+  if (!report) return { title: (await getT()).ui.report.notFound };
 
-  const place = report.location?.name ?? "Unmapped water body";
+  const place = report.location?.name ?? (await getT()).ui.unmappedLocation;
 
   return {
     title: report.title,
@@ -66,7 +68,12 @@ export default async function ReportPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [report, user] = await Promise.all([getReport(id), getCurrentUser()]);
+  const [report, user, { locale, t }] = await Promise.all([
+    getReport(id),
+    getCurrentUser(),
+    getI18n(),
+  ]);
+  const dateLocale = intlLocale(locale);
 
   if (!report) notFound();
 
@@ -102,7 +109,7 @@ export default async function ReportPage({
           className="inline-flex items-center gap-1.5 text-[13px] text-ink-500 transition-colors hover:text-ink-200"
         >
           <ArrowLeft className="size-3.5" aria-hidden />
-          All reports
+          {t.ui.report.allReports}
         </Link>
       </div>
 
@@ -118,7 +125,9 @@ export default async function ReportPage({
                 variant={report.status === "flagged" ? "critical" : "neutral"}
                 size="md"
               >
-                {titleCase(report.status)} moderation
+                {fmt(t.ui.report.moderationSuffix, {
+                  status: t.domain.status[report.status],
+                })}
               </Badge>
             )}
             {trend && trend.direction !== "unknown" && (
@@ -133,19 +142,19 @@ export default async function ReportPage({
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-ink-500">
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="size-3.5" aria-hidden />
-              {report.location?.name ?? "Unmapped location"}
+              {report.location?.name ?? t.ui.unmappedLocation}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="size-3.5" aria-hidden />
-              {formatDate(captured, true)}
+              {formatDate(captured, true, dateLocale)}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Eye className="size-3.5" aria-hidden />
-              {report.viewCount} views
+              {fmt(t.ui.report.views, { count: report.viewCount })}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <MessageSquare className="size-3.5" aria-hidden />
-              {comments.length} comments
+              {fmt(t.ui.report.comments, { count: comments.length })}
             </span>
           </div>
         </div>
@@ -165,11 +174,14 @@ export default async function ReportPage({
         <div className="grid gap-4 lg:grid-cols-[1.35fr_1fr]">
           {/* Photograph */}
           <Card className="overflow-hidden print-surface print-break">
-            <div className="relative aspect-[4/3] bg-ink-950">
+            <div className="relative aspect-[4/3] bg-abyss-1000">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={report.imageUrl}
-                alt={`Water surface photographed at ${report.location?.name ?? "an unmapped location"} on ${formatDate(captured)}`}
+                alt={fmt(t.ui.report.photoAlt, {
+                  place: report.location?.name ?? t.ui.report.unmappedPlace,
+                  date: formatDate(captured, false, dateLocale),
+                })}
                 className="size-full object-cover"
               />
               <div
@@ -182,23 +194,27 @@ export default async function ReportPage({
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 p-5 sm:grid-cols-4">
               <Fact
                 icon={<MapPin />}
-                label="Coordinates"
+                label={t.ui.report.factCoordinates}
                 value={formatCoords(report.lat, report.lng)}
                 mono
               />
               <Fact
                 icon={<Waves />}
-                label="Water body"
-                value={report.location ? titleCase(report.location.type) : "Unknown"}
+                label={t.ui.report.factWaterBody}
+                value={
+                  report.location
+                    ? t.domain.waterBody[report.location.type]
+                    : t.ui.report.factUnknown
+                }
               />
               <Fact
                 icon={<Gauge />}
-                label="Confidence"
+                label={t.ui.report.factConfidence}
                 value={`${report.analysis.confidence}%`}
               />
               <Fact
                 icon={<Ruler />}
-                label="Clarity"
+                label={t.ui.report.factClarity}
                 value={`${report.analysis.clarityScore}/100`}
               />
             </dl>
@@ -210,20 +226,20 @@ export default async function ReportPage({
               <ScoreRing score={report.analysis.pollutionScore} size={182} />
 
               <p className="text-center text-[13.5px] leading-relaxed text-ink-400">
-                {grade.blurb}
+                {t.grades[grade.quality].blurb}
               </p>
 
               <Separator />
 
               <div className="grid w-full grid-cols-2 gap-4">
                 <MiniStat
-                  label="Model"
+                  label={t.ui.report.statModel}
                   value={report.analysis.model}
                   icon={<Cpu />}
                 />
                 <MiniStat
-                  label="Analysed"
-                  value={formatDate(report.analysis.createdAt)}
+                  label={t.ui.report.statAnalysed}
+                  value={formatDate(report.analysis.createdAt, false, dateLocale)}
                   icon={<Sparkles />}
                 />
               </div>
@@ -257,10 +273,8 @@ export default async function ReportPage({
           <div className="flex flex-col gap-4">
             <Card className="print-surface print-break">
               <CardHeader>
-                <CardTitle as="h2">AI findings</CardTitle>
-                <CardDescription>
-                  What the vision model concluded and why.
-                </CardDescription>
+                <CardTitle as="h2">{t.ui.report.findingsTitle}</CardTitle>
+                <CardDescription>{t.ui.report.findingsBody}</CardDescription>
               </CardHeader>
               <div className="px-5 pb-5 sm:px-6">
                 <p className="text-[14px] leading-relaxed text-ink-200">
@@ -270,7 +284,7 @@ export default async function ReportPage({
                 {report.analysis.detectedObjects.length > 0 && (
                   <>
                     <h3 className="mt-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-600">
-                      Detected objects
+                      {t.ui.report.detectedObjects}
                     </h3>
                     <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {report.analysis.detectedObjects.map((object) => (
@@ -285,12 +299,12 @@ export default async function ReportPage({
                 {report.analysis.pollutionTags.length > 0 && (
                   <>
                     <h3 className="mt-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-600">
-                      Pollution types
+                      {t.ui.report.pollutionTypes}
                     </h3>
                     <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {report.analysis.pollutionTags.map((tag) => (
                         <Badge key={tag} variant="flux" size="md">
-                          {titleCase(tag)}
+                          {t.domain.indicators[tag].label}
                         </Badge>
                       ))}
                     </div>
@@ -301,11 +315,8 @@ export default async function ReportPage({
 
             <Card className="print-surface print-break">
               <CardHeader>
-                <CardTitle as="h2">Indicator matrix</CardTitle>
-                <CardDescription>
-                  Every measured signal, its severity and the pixel-level
-                  evidence behind it. The composite score is derived from these.
-                </CardDescription>
+                <CardTitle as="h2">{t.ui.report.indicatorsTitle}</CardTitle>
+                <CardDescription>{t.ui.report.indicatorsBody}</CardDescription>
               </CardHeader>
               <div className="px-5 pb-5 sm:px-6">
                 <IndicatorBars indicators={report.analysis.indicators} />
@@ -315,14 +326,11 @@ export default async function ReportPage({
             {report.description && (
               <Card className="print-surface print-break">
                 <CardHeader>
-                  <CardTitle as="h2">Reporter&apos;s field note</CardTitle>
-                  <CardDescription>
-                    An unverified human observation, recorded alongside the AI
-                    assessment.
-                  </CardDescription>
+                  <CardTitle as="h2">{t.ui.report.fieldNoteTitle}</CardTitle>
+                  <CardDescription>{t.ui.report.fieldNoteBody}</CardDescription>
                 </CardHeader>
                 <div className="px-5 pb-5 sm:px-6">
-                  <blockquote className="border-l-2 border-aqua-400/40 pl-4 text-[14px] italic leading-relaxed text-ink-300">
+                  <blockquote className="border-l-2 border-lume-400/40 pl-4 text-[14px] italic leading-relaxed text-ink-300">
                     {report.description}
                   </blockquote>
                 </div>
@@ -332,16 +340,16 @@ export default async function ReportPage({
             {report.observations.length > 0 && (
               <Card className="print-surface print-break">
                 <CardHeader>
-                  <CardTitle as="h2">On-site observations</CardTitle>
+                  <CardTitle as="h2">{t.ui.report.observationsTitle}</CardTitle>
                   <CardDescription>
-                    Checked by the reporter at the scene.
+                    {t.ui.report.observationsBody}
                   </CardDescription>
                 </CardHeader>
                 <div className="px-5 pb-5 sm:px-6">
                   <div className="flex flex-wrap gap-2">
                     {report.observations.map((observation) => (
                       <Badge key={observation} variant="moderate" size="lg">
-                        {titleCase(observation)}
+                        {t.domain.observations[observation]}
                       </Badge>
                     ))}
                   </div>
@@ -353,16 +361,18 @@ export default async function ReportPage({
           <div className="flex flex-col gap-4">
             <Card className="print-surface print-break">
               <CardHeader>
-                <CardTitle as="h2">Recommendations</CardTitle>
+                <CardTitle as="h2">
+                  {t.ui.report.recommendationsTitle}
+                </CardTitle>
                 <CardDescription>
-                  Concrete next actions for a local authority or volunteer group.
+                  {t.ui.report.recommendationsBody}
                 </CardDescription>
               </CardHeader>
               <div className="px-5 pb-5 sm:px-6">
                 <ol className="flex flex-col gap-3">
                   {report.analysis.recommendations.map((recommendation, i) => (
                     <li key={recommendation} className="flex gap-3">
-                      <span className="grid size-5 shrink-0 place-items-center rounded-md bg-aqua-400/14 font-mono text-[10.5px] font-semibold text-aqua-200">
+                      <span className="grid size-5 shrink-0 place-items-center rounded-md bg-lume-400/16 font-mono text-[10.5px] font-semibold text-lume-200">
                         {i + 1}
                       </span>
                       <span className="text-[13.5px] leading-relaxed text-ink-300">
@@ -378,10 +388,9 @@ export default async function ReportPage({
               <Card className="print-surface print-break">
                 <CardHeader className="flex-row items-start justify-between gap-3">
                   <div>
-                    <CardTitle as="h2">Trend analysis</CardTitle>
+                    <CardTitle as="h2">{t.ui.report.trendTitle}</CardTitle>
                     <CardDescription>
-                      {trend.sampleSize} observation
-                      {trend.sampleSize === 1 ? "" : "s"} at this location.
+                      {fmt(t.ui.report.trendBody, { count: trend.sampleSize })}
                     </CardDescription>
                   </div>
                   <span
@@ -392,7 +401,7 @@ export default async function ReportPage({
                     )}
                   >
                     <TrendingUp className="size-3.5" aria-hidden />
-                    {TREND_META[trend.direction].label}
+                    {t.trend[trend.direction]}
                   </span>
                 </CardHeader>
 
@@ -408,15 +417,15 @@ export default async function ReportPage({
                   {trend.sampleSize >= 2 && (
                     <dl className="mt-4 grid grid-cols-3 gap-3 border-t border-white/8 pt-4">
                       <MiniStat
-                        label="First"
+                        label={t.ui.report.trendFirst}
                         value={`${trend.firstScore}/100`}
                       />
                       <MiniStat
-                        label="Latest"
+                        label={t.ui.report.trendLatest}
                         value={`${trend.latestScore}/100`}
                       />
                       <MiniStat
-                        label="Projected"
+                        label={t.ui.report.trendProjected}
                         value={
                           trend.projectedScore !== null
                             ? `${trend.projectedScore}/100`
@@ -439,10 +448,8 @@ export default async function ReportPage({
 
             <Card className="no-print">
               <CardHeader>
-                <CardTitle as="h2">Share this assessment</CardTitle>
-                <CardDescription>
-                  A public link that needs no account to open.
-                </CardDescription>
+                <CardTitle as="h2">{t.ui.report.shareTitle}</CardTitle>
+                <CardDescription>{t.ui.report.shareBody}</CardDescription>
               </CardHeader>
               <div className="px-5 pb-5 sm:px-6">
                 <ShareLinkBox shareToken={report.shareToken} />
@@ -457,14 +464,14 @@ export default async function ReportPage({
         <Card className="mt-4 no-print">
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle as="h2">Nearby assessments</CardTitle>
+              <CardTitle as="h2">{t.ui.report.nearbyTitle}</CardTitle>
               <CardDescription>
-                Within {env.NEARBY_RADIUS_KM} km of these coordinates.
+                {fmt(t.ui.report.nearbyBody, { km: env.NEARBY_RADIUS_KM })}
               </CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
               <Link href="/map">
-                Open map
+                {t.ui.report.openMap}
                 <ArrowRight />
               </Link>
             </Button>
@@ -487,10 +494,8 @@ export default async function ReportPage({
       {/* Discussion */}
       <Card className="mt-4 no-print">
         <CardHeader>
-          <CardTitle as="h2">Community discussion</CardTitle>
-          <CardDescription>
-            Local knowledge that a single photograph cannot capture.
-          </CardDescription>
+          <CardTitle as="h2">{t.ui.report.discussionTitle}</CardTitle>
+          <CardDescription>{t.ui.report.discussionBody}</CardDescription>
         </CardHeader>
         <div className="px-5 pb-6 sm:px-6">
           <CommentThread

@@ -23,7 +23,10 @@ import type {
   WaterLocation,
 } from "@/types";
 import { gradeForScore } from "@/lib/ai/scoring";
-import { cn, formatCoords, titleCase } from "@/lib/utils";
+import { cn, formatCoords } from "@/lib/utils";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { useT } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,19 +36,15 @@ import { QualityBadge } from "@/components/shared/primitives";
 import { IndicatorBars } from "@/components/charts/score-charts";
 import { Dropzone, type PreparedImage } from "./dropzone";
 
-const OBSERVATIONS: Array<{
-  value: CommunityObservation;
-  label: string;
-  hint: string;
-}> = [
-  { value: "bad_smell", label: "Bad smell", hint: "Sewage, chemical or rotting odour" },
-  { value: "dead_fish", label: "Dead fish", hint: "Visible fish kill or dead fauna" },
-  { value: "foam", label: "Foam", hint: "Persistent surface foam" },
-  { value: "illegal_dumping", label: "Illegal dumping", hint: "Waste tipped on the bank" },
-  { value: "nearby_factory", label: "Nearby factory", hint: "Industrial site or outfall" },
-  { value: "discolored_water", label: "Discoloured water", hint: "Unnatural tint or plume" },
-  { value: "oil_sheen", label: "Oil sheen", hint: "Iridescent film on the surface" },
-  { value: "excess_vegetation", label: "Excess vegetation", hint: "Dense weed or algal mats" },
+const OBSERVATIONS: CommunityObservation[] = [
+  "bad_smell",
+  "dead_fish",
+  "foam",
+  "illegal_dumping",
+  "nearby_factory",
+  "discolored_water",
+  "oil_sheen",
+  "excess_vegetation",
 ];
 
 const WATER_TYPES: WaterBodyType[] = [
@@ -62,6 +61,7 @@ const WATER_TYPES: WaterBodyType[] = [
 type Stage = "compose" | "analysing" | "review" | "publishing";
 
 export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
+  const t = useT();
   const router = useRouter();
 
   const [image, setImage] = React.useState<PreparedImage | null>(null);
@@ -100,7 +100,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
   /* ----------------------------- geolocation ----------------------------- */
   function useMyLocation() {
     if (!("geolocation" in navigator)) {
-      toast.error("Geolocation unavailable in this browser.");
+      toast.error(t.ui.upload.geoUnavailable);
       return;
     }
     setLocating(true);
@@ -111,14 +111,14 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
           lng: position.coords.longitude.toFixed(6),
         });
         setLocating(false);
-        toast.success("Coordinates captured from your device.");
+        toast.success(t.ui.upload.geoCaptured);
       },
       (error) => {
         setLocating(false);
-        toast.error("Could not read your position", {
+        toast.error(t.ui.upload.geoFailed, {
           description:
             error.code === error.PERMISSION_DENIED
-              ? "Permission denied — enter the coordinates manually."
+              ? t.ui.upload.geoDenied
               : error.message,
         });
       },
@@ -165,23 +165,23 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
       setEnvelope(result);
 
       if (!result.analysis.is_water_body) {
-        toast.warning("This may not be a water body", {
+        toast.warning(t.ui.upload.notWaterToastTitle, {
           description:
-            "The model did not recognise open water in this frame. Review before publishing.",
+            t.ui.upload.notWaterToastBody,
         });
       }
 
       // Suggest a title so publishing is one click for most people.
       if (!title.trim()) {
-        setTitle(suggestTitle(result, resolvedName));
+        setTitle(suggestTitle(t, result, resolvedName));
       }
 
       setStage("review");
     } catch (error) {
       console.error(error);
-      toast.error("Analysis failed", {
+      toast.error(t.ui.upload.analysisFailed, {
         description:
-          error instanceof Error ? error.message : "Try again in a moment.",
+          error instanceof Error ? error.message : t.ui.upload.tryAgain,
       });
       setStage("compose");
     } finally {
@@ -235,15 +235,15 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
       }
 
       const { id } = (await response.json()) as { id: string };
-      toast.success("Report published", {
-        description: "Your assessment is live on the map.",
+      toast.success(t.ui.upload.published, {
+        description: t.ui.upload.publishedBody,
       });
       router.push(`/reports/${id}`);
     } catch (error) {
       console.error(error);
-      toast.error("Publishing failed", {
+      toast.error(t.ui.upload.publishFailed, {
         description:
-          error instanceof Error ? error.message : "Try again in a moment.",
+          error instanceof Error ? error.message : t.ui.upload.tryAgain,
       });
       setStage("review");
     }
@@ -257,10 +257,9 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
       <div className="flex flex-col gap-4">
         <Card>
           <CardHeader>
-            <CardTitle as="h2">1 · The photograph</CardTitle>
+            <CardTitle as="h2">{t.ui.upload.step1Title}</CardTitle>
             <CardDescription>
-              Shoot the water surface, not the sky. A frame that is mostly
-              shoreline lowers the confidence.
+              {t.ui.upload.step1Body}
             </CardDescription>
           </CardHeader>
           <div className="px-5 pb-5 sm:px-6">
@@ -270,25 +269,24 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
 
         <Card>
           <CardHeader>
-            <CardTitle as="h2">2 · Where was it taken?</CardTitle>
+            <CardTitle as="h2">{t.ui.upload.step2Title}</CardTitle>
             <CardDescription>
-              Linking to a known location is what unlocks trend detection over
-              time.
+              {t.ui.upload.step2Body}
             </CardDescription>
           </CardHeader>
 
           <div className="flex flex-col gap-4 px-5 pb-5 sm:px-6">
             <Field
-              label="Known water body"
+              label={t.ui.upload.knownWaterBody}
               htmlFor="locationId"
-              hint="or add a new one below"
+              hint={t.ui.upload.knownWaterBodyHint}
             >
               <NativeSelect
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
                 disabled={busy}
               >
-                <option value="">Add a new location…</option>
+                <option value="">{t.ui.upload.addNewLocation}</option>
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
                     {location.name}
@@ -300,17 +298,17 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
 
             {!selectedLocation && (
               <div className="flex flex-col gap-4 rounded-xl border border-white/8 bg-white/[0.02] p-4">
-                <Field label="Location name" htmlFor="newLocationName" required>
+                <Field label={t.ui.upload.locationName} htmlFor="newLocationName" required>
                   <Input
                     value={newLocationName}
                     onChange={(e) => setNewLocationName(e.target.value)}
-                    placeholder="Ishim River — north embankment"
+                    placeholder={t.ui.upload.locationNamePlaceholder}
                     disabled={busy}
                   />
                 </Field>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Water body type" htmlFor="waterType">
+                  <Field label={t.ui.upload.waterBodyType} htmlFor="waterType">
                     <NativeSelect
                       value={waterType}
                       onChange={(e) => setWaterType(e.target.value as WaterBodyType)}
@@ -318,17 +316,21 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                     >
                       {WATER_TYPES.map((type) => (
                         <option key={type} value={type}>
-                          {titleCase(type)}
+                          {t.domain.waterBody[type]}
                         </option>
                       ))}
                     </NativeSelect>
                   </Field>
 
-                  <Field label="Region" htmlFor="region" hint="Optional">
+                  <Field
+                    label={t.ui.upload.region}
+                    htmlFor="region"
+                    hint={t.ui.upload.regionOptional}
+                  >
                     <Input
                       value={region}
                       onChange={(e) => setRegion(e.target.value)}
-                      placeholder="Akmola"
+                      placeholder={t.ui.upload.regionPlaceholder}
                       disabled={busy}
                     />
                   </Field>
@@ -336,7 +338,12 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
 
                 <div>
                   <div className="flex items-end gap-2">
-                    <Field label="Latitude" htmlFor="lat" required className="flex-1">
+                    <Field
+                      label={t.ui.upload.latitude}
+                      htmlFor="lat"
+                      required
+                      className="flex-1"
+                    >
                       <Input
                         value={coords.lat}
                         onChange={(e) =>
@@ -347,7 +354,12 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                         disabled={busy}
                       />
                     </Field>
-                    <Field label="Longitude" htmlFor="lng" required className="flex-1">
+                    <Field
+                      label={t.ui.upload.longitude}
+                      htmlFor="lng"
+                      required
+                      className="flex-1"
+                    >
                       <Input
                         value={coords.lng}
                         onChange={(e) =>
@@ -364,8 +376,8 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                       onClick={useMyLocation}
                       loading={locating}
                       disabled={busy}
-                      aria-label="Use my current location"
-                      title="Use my current location"
+                      aria-label={t.ui.upload.useMyLocation}
+                      title={t.ui.upload.useMyLocation}
                     >
                       {!locating && <Crosshair />}
                     </Button>
@@ -380,15 +392,15 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
             )}
 
             {selectedLocation && (
-              <div className="flex items-center gap-3 rounded-xl border border-aqua-400/20 bg-aqua-400/6 p-3.5">
-                <MapPin className="size-4 shrink-0 text-aqua-300" aria-hidden />
+              <div className="flex items-center gap-3 rounded-xl border border-lume-400/20 bg-lume-400/6 p-3.5">
+                <MapPin className="size-4 shrink-0 text-lume-300" aria-hidden />
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-medium text-ink-100">
                     {selectedLocation.name}
                   </p>
                   <p className="font-mono text-[11px] text-ink-500">
                     {formatCoords(selectedLocation.lat, selectedLocation.lng)} ·{" "}
-                    {titleCase(selectedLocation.type)}
+                    {t.domain.waterBody[selectedLocation.type]}
                   </p>
                 </div>
               </div>
@@ -398,44 +410,42 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
 
         <Card>
           <CardHeader>
-            <CardTitle as="h2">3 · What did you observe?</CardTitle>
+            <CardTitle as="h2">{t.ui.upload.step3Title}</CardTitle>
             <CardDescription>
-              Field notes corroborate the vision result. They are recorded
-              alongside it and can raise a detection, never invent one.
+              {t.ui.upload.step3Body}
             </CardDescription>
           </CardHeader>
 
           <div className="flex flex-col gap-4 px-5 pb-5 sm:px-6">
             <fieldset>
               <legend className="mb-2.5 text-[13px] font-medium text-ink-300">
-                On-site observations
+                {t.ui.upload.observationsLegend}
               </legend>
               <div className="flex flex-wrap gap-2">
                 {OBSERVATIONS.map((observation) => {
-                  const active = observations.includes(observation.value);
+                  const active = observations.includes(observation);
                   return (
                     <button
-                      key={observation.value}
+                      key={observation}
                       type="button"
                       role="checkbox"
                       aria-checked={active}
-                      title={observation.hint}
                       disabled={busy}
                       onClick={() =>
                         setObservations((prev) =>
                           active
-                            ? prev.filter((v) => v !== observation.value)
-                            : [...prev, observation.value],
+                            ? prev.filter((v) => v !== observation)
+                            : [...prev, observation],
                         )
                       }
                       className={cn(
                         "rounded-xl border px-3 py-1.5 text-[12.5px] font-medium transition-all duration-200",
                         active
-                          ? "border-aqua-400/40 bg-aqua-400/12 text-aqua-100"
+                          ? "border-lume-400/40 bg-lume-400/12 text-lume-100"
                           : "border-white/10 bg-white/[0.03] text-ink-400 hover:border-white/20 hover:text-ink-200",
                       )}
                     >
-                      {observation.label}
+                      {t.domain.observations[observation]}
                     </button>
                   );
                 })}
@@ -443,16 +453,16 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
             </fieldset>
 
             <Field
-              label="Field note"
+              label={t.ui.upload.fieldNote}
               htmlFor="description"
-              hint="Optional but valuable"
+              hint={t.ui.upload.fieldNoteHint}
             >
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 disabled={busy}
-                placeholder="Strong smell near the outfall. Foam persists 50 m downstream of the weir…"
+                placeholder={t.ui.upload.fieldNotePlaceholder}
               />
             </Field>
           </div>
@@ -499,32 +509,24 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
               exit={{ opacity: 0, y: -12 }}
             >
               <Card className="p-6">
-                <span className="grid size-11 place-items-center rounded-xl border border-aqua-400/20 bg-aqua-400/10 text-aqua-200">
+                <span className="grid size-11 place-items-center rounded-xl border border-lume-400/20 bg-lume-400/10 text-lume-200">
                   <Brain className="size-5" aria-hidden />
                 </span>
                 <h2 className="mt-4 text-[16px] font-semibold text-ink-50">
-                  Ready to analyse
+                  {t.ui.upload.readyTitle}
                 </h2>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-ink-400">
-                  The vision model scores thirteen pollution indicators, then a
-                  weighted matrix recomputes the overall severity so the number
-                  is reproducible and auditable.
+                  {t.ui.upload.readyBody}
                 </p>
 
                 <ul className="mt-5 flex flex-col gap-2.5">
-                  {[
-                    "Water clarity and turbidity",
-                    "Plastics and floating garbage",
-                    "Oil film, foam and discharge plumes",
-                    "Algal bloom and eutrophication",
-                    "Unnatural colouration",
-                  ].map((item) => (
+                  {t.ui.upload.readyList.map((item) => (
                     <li
                       key={item}
                       className="flex items-center gap-2.5 text-[13px] text-ink-400"
                     >
                       <CheckCircle2
-                        className="size-3.5 shrink-0 text-aqua-400"
+                        className="size-3.5 shrink-0 text-lume-400"
                         aria-hidden
                       />
                       {item}
@@ -539,7 +541,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                   onClick={analyse}
                 >
                   <Sparkles aria-hidden />
-                  {image ? "Run AI analysis" : "Add a photograph first"}
+                  {image ? t.ui.upload.runAnalysis : t.ui.upload.addPhotoFirst}
                 </Button>
 
                 {image && !hasCoords && !selectedLocation && (
@@ -548,8 +550,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                       className="mt-0.5 size-3.5 shrink-0 text-grade-moderate"
                       aria-hidden
                     />
-                    You can analyse now, but coordinates are required before
-                    publishing so the report can appear on the map.
+                    {t.ui.upload.coordsWarning}
                   </p>
                 )}
               </Card>
@@ -565,12 +566,8 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
  * Panels
  * ------------------------------------------------------------------ */
 
-const STAGES = [
-  { icon: Cpu, label: "Reading image", detail: "Decoding and normalising pixels" },
-  { icon: Brain, label: "Vision analysis", detail: "Scoring thirteen indicators" },
-  { icon: Sparkles, label: "Composing score", detail: "Weighted matrix and confidence" },
-  { icon: FileText, label: "Drafting report", detail: "Explanation and recommendations" },
-];
+/** Icons only — labels and details come from the dictionary, by index. */
+const STAGE_ICONS = [Cpu, Brain, Sparkles, FileText];
 
 function AnalysingPanel({
   step,
@@ -579,10 +576,12 @@ function AnalysingPanel({
   step: number;
   image: PreparedImage | null;
 }) {
+  const t = useT();
+
   return (
     <Card className="overflow-hidden">
       {image && (
-        <div className="relative aspect-[16/10] overflow-hidden bg-ink-950">
+        <div className="relative aspect-[16/10] overflow-hidden bg-abyss-1000">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image.previewUrl}
@@ -604,16 +603,17 @@ function AnalysingPanel({
 
       <div className="p-6">
         <h2 className="text-[16px] font-semibold text-ink-50">
-          Analysing photograph
+          {t.ui.upload.analysingTitle}
         </h2>
         <p className="mt-1.5 text-[13px] text-ink-400">
-          This normally takes five to fifteen seconds.
+          {t.ui.upload.analysingBody}
         </p>
 
         <ol className="mt-5 flex flex-col gap-3">
-          {STAGES.map((entry, i) => {
+          {t.ui.upload.stages.map((entry, i) => {
             const done = i < step;
             const active = i === step;
+            const Icon = STAGE_ICONS[i] ?? Cpu;
             return (
               <li key={entry.label} className="flex items-center gap-3">
                 <span
@@ -622,7 +622,7 @@ function AnalysingPanel({
                     done
                       ? "border-grade-excellent/30 bg-grade-excellent/12 text-grade-excellent"
                       : active
-                        ? "border-aqua-400/35 bg-aqua-400/12 text-aqua-200"
+                        ? "border-lume-400/35 bg-lume-400/12 text-lume-200"
                         : "border-white/8 bg-white/4 text-ink-600",
                   )}
                 >
@@ -631,7 +631,7 @@ function AnalysingPanel({
                   ) : active ? (
                     <Loader2 className="size-4 animate-spin" aria-hidden />
                   ) : (
-                    <entry.icon className="size-4" aria-hidden />
+                    <Icon className="size-4" aria-hidden />
                   )}
                 </span>
                 <span className="min-w-0">
@@ -673,6 +673,7 @@ function ResultPanel({
   publishing: boolean;
   onReanalyse: () => void;
 }) {
+  const t = useT();
   const { analysis } = envelope;
   const grade = gradeForScore(analysis.pollution_score);
 
@@ -687,29 +688,33 @@ function ResultPanel({
             size="lg"
           />
           <p className="text-center text-[13px] leading-relaxed text-ink-400">
-            {grade.blurb}
+            {t.grades[grade.quality].blurb}
           </p>
 
           <div className="flex w-full items-center justify-center gap-4 border-t border-white/8 pt-4 text-center">
-            <Metric label="Confidence" value={`${analysis.confidence}%`} />
+            <Metric
+              label={t.ui.upload.metricConfidence}
+              value={`${analysis.confidence}%`}
+            />
             <div className="h-8 w-px bg-white/8" aria-hidden />
-            <Metric label="Clarity" value={`${analysis.clarity_score}/100`} />
+            <Metric
+              label={t.ui.upload.metricClarity}
+              value={`${analysis.clarity_score}/100`}
+            />
             <div className="h-8 w-px bg-white/8" aria-hidden />
-            <Metric label="Latency" value={`${(envelope.latencyMs / 1000).toFixed(1)}s`} />
+            <Metric
+              label={t.ui.upload.metricLatency}
+              value={`${(envelope.latencyMs / 1000).toFixed(1)}s`}
+            />
           </div>
 
           <Badge variant={envelope.simulated ? "neutral" : "brand"} size="sm">
             <Cpu />
-            {envelope.simulated ? "Heuristic engine" : envelope.model}
+            {envelope.simulated ? t.ui.upload.heuristicEngine : envelope.model}
           </Badge>
           {envelope.simulated && (
             <p className="text-center text-[11.5px] leading-relaxed text-ink-600">
-              No vision API key is configured, so this score came from the
-              colourimetric engine. Add{" "}
-              <code className="font-mono text-[11px] text-ink-400">
-                GOOGLE_GENERATIVE_AI_API_KEY
-              </code>{" "}
-              for full model analysis.
+              {t.ui.upload.heuristicNote}
             </p>
           )}
         </div>
@@ -722,16 +727,14 @@ function ResultPanel({
             aria-hidden
           />
           <p className="text-[12.5px] leading-relaxed text-ink-200">
-            The model did not identify open water in this frame. Publishing is
-            still allowed, but consider a photograph where the water surface
-            fills most of the image.
+            {t.ui.upload.notWaterWarning}
           </p>
         </div>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle as="h2">AI explanation</CardTitle>
+          <CardTitle as="h2">{t.ui.upload.explanationTitle}</CardTitle>
         </CardHeader>
         <div className="px-5 pb-5 sm:px-6">
           <p className="text-[13.5px] leading-relaxed text-ink-300">
@@ -741,7 +744,7 @@ function ResultPanel({
           {analysis.detected_objects.length > 0 && (
             <>
               <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-600">
-                Detected
+                {t.ui.upload.detected}
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {analysis.detected_objects.map((object) => (
@@ -757,10 +760,8 @@ function ResultPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle as="h2">Indicator matrix</CardTitle>
-          <CardDescription>
-            Every measured signal with its severity and evidence.
-          </CardDescription>
+          <CardTitle as="h2">{t.ui.upload.indicatorsTitle}</CardTitle>
+          <CardDescription>{t.ui.upload.indicatorsBody}</CardDescription>
         </CardHeader>
         <div className="px-5 pb-5 sm:px-6">
           <IndicatorBars indicators={analysis.indicators} />
@@ -769,7 +770,7 @@ function ResultPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle as="h2">Recommendations</CardTitle>
+          <CardTitle as="h2">{t.ui.upload.recommendationsTitle}</CardTitle>
         </CardHeader>
         <div className="px-5 pb-5 sm:px-6">
           <ul className="flex flex-col gap-2.5">
@@ -779,7 +780,7 @@ function ResultPanel({
                 className="flex gap-2.5 text-[13px] leading-relaxed text-ink-300"
               >
                 <ArrowRight
-                  className="mt-1 size-3.5 shrink-0 text-aqua-400"
+                  className="mt-1 size-3.5 shrink-0 text-lume-400"
                   aria-hidden
                 />
                 {recommendation}
@@ -791,17 +792,15 @@ function ResultPanel({
 
       <Card>
         <CardHeader>
-          <CardTitle as="h2">Publish this assessment</CardTitle>
-          <CardDescription>
-            It becomes part of the public map and the location&apos;s time series.
-          </CardDescription>
+          <CardTitle as="h2">{t.ui.upload.publishTitle}</CardTitle>
+          <CardDescription>{t.ui.upload.publishBody}</CardDescription>
         </CardHeader>
         <div className="flex flex-col gap-4 px-5 pb-5 sm:px-6">
-          <Field label="Report title" htmlFor="title" required>
+          <Field label={t.ui.upload.reportTitle} htmlFor="title" required>
             <Input
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
-              placeholder="Heavy plastic accumulation along the shoreline"
+              placeholder={t.ui.upload.reportTitlePlaceholder}
               maxLength={160}
             />
           </Field>
@@ -815,7 +814,7 @@ function ResultPanel({
               disabled={!canPublish}
             >
               <FileText aria-hidden />
-              Publish report
+              {t.ui.upload.publish}
             </Button>
             <Button
               variant="outline"
@@ -823,14 +822,13 @@ function ResultPanel({
               onClick={onReanalyse}
               disabled={publishing}
             >
-              Start over
+              {t.ui.upload.startOver}
             </Button>
           </div>
 
           {!canPublish && !publishing && (
             <p className="text-[12px] leading-relaxed text-ink-500">
-              A title of at least three characters and a location with
-              coordinates are required before publishing.
+              {t.ui.upload.publishBlocked}
             </p>
           )}
         </div>
@@ -852,17 +850,26 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function suggestTitle(envelope: AnalysisEnvelope, place: string) {
+function suggestTitle(
+  t: Dictionary,
+  envelope: AnalysisEnvelope,
+  place: string,
+) {
   const { analysis } = envelope;
-  const where = place || "water body";
+  const where = place || t.ui.upload.titleFallbackPlace;
 
   if (analysis.pollution_score >= 81) {
-    return `Critical pollution at ${where}`;
+    return fmt(t.ui.upload.titleCritical, { place: where });
   }
   const worst = [...analysis.indicators]
     .filter((i) => i.key !== "clarity" && i.detected)
     .sort((a, b) => b.severity - a.severity)[0];
 
-  if (worst) return `${worst.label} detected at ${where}`;
-  return `Baseline assessment — ${where}`;
+  if (worst) {
+    return fmt(t.ui.upload.titleDetected, {
+      indicator: t.domain.indicators[worst.key].label,
+      place: where,
+    });
+  }
+  return fmt(t.ui.upload.titleBaseline, { place: where });
 }

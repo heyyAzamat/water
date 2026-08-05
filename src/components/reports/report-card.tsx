@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import { Eye, MapPin, MessageSquare, ShieldAlert } from "lucide-react";
 import type { Report } from "@/types";
 import { gradeForScore } from "@/lib/ai/scoring";
-import { cn, timeAgo, titleCase } from "@/lib/utils";
+import { cn, timeAgo } from "@/lib/utils";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/misc";
 import { QualityBadge, ScoreChip } from "@/components/shared/primitives";
@@ -20,6 +22,8 @@ export function ReportCard({
   index?: number;
   compact?: boolean;
 }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const grade = gradeForScore(report.analysis.pollutionScore);
 
   return (
@@ -47,13 +51,15 @@ export function ReportCard({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={report.imageUrl}
-            alt={`Water surface at ${report.location?.name ?? report.title}`}
+            alt={fmt(t.ui.imageAlt, {
+              name: report.location?.name ?? report.title,
+            })}
             loading="lazy"
             decoding="async"
             className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
           />
           <div
-            className="absolute inset-0 bg-gradient-to-t from-ink-950/92 via-ink-950/18 to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-abyss-1000/92 via-abyss-1000/18 to-transparent"
             aria-hidden
           />
 
@@ -70,7 +76,7 @@ export function ReportCard({
                 className="backdrop-blur-xl"
               >
                 <ShieldAlert />
-                {titleCase(report.status)}
+                {t.domain.status[report.status]}
               </Badge>
             )}
           </div>
@@ -98,7 +104,7 @@ export function ReportCard({
           <p className="mt-2 flex items-center gap-1.5 text-[12px] text-ink-500">
             <MapPin className="size-3.5 shrink-0" aria-hidden />
             <span className="truncate">
-              {report.location?.name ?? "Unmapped location"}
+              {report.location?.name ?? t.ui.unmappedLocation}
               {report.location?.region ? ` · ${report.location.region}` : ""}
             </span>
           </p>
@@ -107,7 +113,7 @@ export function ReportCard({
             <div className="mt-3 flex flex-wrap gap-1.5">
               {report.analysis.pollutionTags.slice(0, 3).map((tag) => (
                 <Badge key={tag} variant="outline" size="sm">
-                  {titleCase(tag)}
+                  {t.domain.indicators[tag].label}
                 </Badge>
               ))}
               {report.analysis.pollutionTags.length > 3 && (
@@ -141,7 +147,7 @@ export function ReportCard({
                   {report.commentCount}
                 </span>
               )}
-              <span>{timeAgo(report.capturedAt ?? report.createdAt)}</span>
+              <span>{timeAgo(report.capturedAt ?? report.createdAt, dateLocale)}</span>
             </div>
           </div>
         </div>
@@ -152,6 +158,8 @@ export function ReportCard({
 
 /** Dense one-line variant for dashboard "recent uploads" lists. */
 export function ReportRow({ report }: { report: Report }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const grade = gradeForScore(report.analysis.pollutionScore);
 
   return (
@@ -179,8 +187,8 @@ export function ReportRow({ report }: { report: Report }) {
           {report.title}
         </span>
         <span className="mt-0.5 block truncate text-[11.5px] text-ink-500">
-          {report.location?.name ?? "Unmapped"} ·{" "}
-          {timeAgo(report.capturedAt ?? report.createdAt)}
+          {report.location?.name ?? t.ui.unmapped} ·{" "}
+          {timeAgo(report.capturedAt ?? report.createdAt, dateLocale)}
         </span>
       </span>
 

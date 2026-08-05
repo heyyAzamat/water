@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ *
- * AquaVision AI — Design System
- * Dark-first, glass surfaces, aqua/teal → indigo gradient identity.
- * Color carries meaning: the severity ramp is the only place hue
- * shifts, so a red marker always means "look here".
+ * AquaVision AI — Design System · "Abyss"
+ *
+ * The page is the deep ocean seen from below: near-black water, shafts of
+ * surface light cutting down through it, glass panels catching the glow.
+ * Everything neutral is black-blue; the only luminous hue is the cyan of
+ * light in water. Colour still carries meaning — the severity ramp is the
+ * one place the hue leaves the blue axis, so a red marker always means
+ * "look here".
  * ------------------------------------------------------------------ */
 
 @theme {
@@ -13,38 +17,55 @@
     "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
 
-  /* Neutral ramp — cool, slightly blue-shifted ink */
-  --color-ink-950: oklch(0.145 0.014 258);
-  --color-ink-900: oklch(0.178 0.016 258);
-  --color-ink-850: oklch(0.205 0.017 258);
-  --color-ink-800: oklch(0.238 0.018 258);
-  --color-ink-700: oklch(0.31 0.019 258);
-  --color-ink-600: oklch(0.42 0.02 258);
-  --color-ink-500: oklch(0.545 0.021 258);
-  --color-ink-400: oklch(0.66 0.02 258);
-  --color-ink-300: oklch(0.775 0.016 258);
-  --color-ink-200: oklch(0.87 0.011 258);
-  --color-ink-100: oklch(0.935 0.007 258);
-  --color-ink-50: oklch(0.97 0.004 258);
+  /* Water column — the page substrate, from surface haze down to the trench */
+  --color-abyss-1000: oklch(0.02 0.004 250);
+  --color-abyss-950: oklch(0.055 0.014 248);
+  --color-abyss-900: oklch(0.095 0.028 247);
+  --color-abyss-800: oklch(0.145 0.045 246);
+  --color-abyss-700: oklch(0.205 0.062 244);
+  --color-abyss-600: oklch(0.28 0.078 242);
+  --color-abyss-500: oklch(0.37 0.09 240);
 
-  /* Brand — aqua */
-  --color-aqua-50: oklch(0.97 0.02 195);
-  --color-aqua-100: oklch(0.94 0.04 195);
-  --color-aqua-200: oklch(0.88 0.075 194);
-  --color-aqua-300: oklch(0.82 0.11 193);
-  --color-aqua-400: oklch(0.755 0.135 192);
-  --color-aqua-500: oklch(0.7 0.14 192);
-  --color-aqua-600: oklch(0.61 0.13 195);
-  --color-aqua-700: oklch(0.5 0.11 197);
-  --color-aqua-800: oklch(0.39 0.085 199);
-  --color-aqua-900: oklch(0.3 0.06 201);
+  /* Light in water — the single luminous hue */
+  --color-lume-100: oklch(0.97 0.03 205);
+  --color-lume-200: oklch(0.92 0.07 203);
+  --color-lume-300: oklch(0.86 0.11 202);
+  --color-lume-400: oklch(0.79 0.14 205);
+  --color-lume-500: oklch(0.71 0.15 213);
+  --color-lume-600: oklch(0.6 0.15 224);
 
-  /* Accent — indigo/violet for gradient counterpoint */
-  --color-flux-300: oklch(0.8 0.12 272);
-  --color-flux-400: oklch(0.71 0.16 272);
-  --color-flux-500: oklch(0.63 0.19 272);
-  --color-flux-600: oklch(0.55 0.2 273);
-  --color-flux-700: oklch(0.46 0.18 274);
+  /* Neutral ramp — cool ink, bottoming out at true black-blue */
+  --color-ink-950: oklch(0.055 0.014 248);
+  --color-ink-900: oklch(0.098 0.02 250);
+  --color-ink-850: oklch(0.13 0.022 250);
+  --color-ink-800: oklch(0.175 0.024 252);
+  --color-ink-700: oklch(0.27 0.024 254);
+  --color-ink-600: oklch(0.4 0.023 256);
+  --color-ink-500: oklch(0.54 0.023 256);
+  --color-ink-400: oklch(0.67 0.021 254);
+  --color-ink-300: oklch(0.79 0.017 250);
+  --color-ink-200: oklch(0.88 0.012 245);
+  --color-ink-100: oklch(0.945 0.008 240);
+  --color-ink-50: oklch(0.985 0.004 230);
+
+  /* Brand — aqua, pulled toward the luminous end for the dark substrate */
+  --color-aqua-50: oklch(0.98 0.02 200);
+  --color-aqua-100: oklch(0.95 0.045 200);
+  --color-aqua-200: oklch(0.9 0.08 201);
+  --color-aqua-300: oklch(0.845 0.115 203);
+  --color-aqua-400: oklch(0.78 0.14 206);
+  --color-aqua-500: oklch(0.71 0.15 212);
+  --color-aqua-600: oklch(0.61 0.15 222);
+  --color-aqua-700: oklch(0.49 0.13 232);
+  --color-aqua-800: oklch(0.37 0.1 238);
+  --color-aqua-900: oklch(0.27 0.075 242);
+
+  /* Accent — deep-sea indigo, the colour just past where light stops */
+  --color-flux-300: oklch(0.79 0.115 268);
+  --color-flux-400: oklch(0.69 0.155 268);
+  --color-flux-500: oklch(0.59 0.185 269);
+  --color-flux-600: oklch(0.49 0.185 270);
+  --color-flux-700: oklch(0.39 0.16 271);
 
   /* Severity ramp — the pollution-score buckets, used nowhere else */
   --color-grade-excellent: oklch(0.75 0.16 158);
@@ -78,6 +99,12 @@
   --animate-marquee: marquee 42s linear infinite;
   --animate-sheen: sheen 3.5s ease-in-out infinite;
   --animate-scan: scan 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+
+  /* Abyss atmosphere */
+  --animate-ray: ray 24s ease-in-out infinite alternate;
+  --animate-caustic: caustic 32s ease-in-out infinite alternate;
+  --animate-rise: rise 26s linear infinite;
+  --animate-breathe: breathe 9s ease-in-out infinite;
 
   /* Radix state transitions — replaces the tailwindcss-animate plugin */
   --animate-overlay-in: fade-in 0.2s ease-out;
@@ -280,6 +307,64 @@
   }
 }
 
+@keyframes ray {
+  0% {
+    transform: translateX(-3%) skewX(-8deg) scaleY(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateX(2%) skewX(-4deg) scaleY(1.06);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(4%) skewX(-11deg) scaleY(0.97);
+    opacity: 0.6;
+  }
+}
+
+@keyframes caustic {
+  0% {
+    transform: translate3d(-2%, 0, 0) scale(1.05);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(2%, 1.5%, 0) scale(1.14);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(1%, -1%, 0) scale(1.08);
+    opacity: 0.55;
+  }
+}
+
+/* Plankton and bubbles drifting up the water column. */
+@keyframes rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-60vh) translateX(calc(26px * var(--drift, 1)));
+    opacity: 0;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * Base
  * ------------------------------------------------------------------ */
@@ -287,9 +372,9 @@
 :root {
   color-scheme: dark;
 
-  --surface-0: oklch(0.145 0.014 258);
-  --hairline: oklch(1 0 0 / 0.08);
-  --hairline-strong: oklch(1 0 0 / 0.14);
+  --surface-0: oklch(0.02 0.004 250);
+  --hairline: oklch(1 0 0 / 0.09);
+  --hairline-strong: oklch(1 0 0 / 0.18);
 }
 
 * {
@@ -303,7 +388,17 @@ html {
 
 body {
   background-color: var(--surface-0);
-  color: var(--color-ink-100);
+  /* The water column itself: a faint blue glow bleeding down from the
+     surface, fading to trench black well before the fold. */
+  background-image: radial-gradient(
+    120% 70% at 50% -10%,
+    oklch(0.28 0.078 242 / 0.55) 0%,
+    oklch(0.145 0.045 246 / 0.35) 34%,
+    transparent 68%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--color-ink-200);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -311,7 +406,7 @@ body {
 }
 
 ::selection {
-  background: oklch(0.7 0.14 192 / 0.32);
+  background: oklch(0.78 0.14 206 / 0.34);
   color: white;
 }
 
@@ -364,6 +459,94 @@ body {
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   border: 1px solid var(--hairline);
+}
+
+/* ---------------------- Abyss surfaces & light ---------------------- */
+
+/**
+ * The signature surface: a submerged pane of glass. Bright hairline on the
+ * top edge where surface light catches it, blue bloom underneath.
+ */
+@utility abyss-panel {
+  position: relative;
+  background: linear-gradient(
+    to bottom,
+    oklch(0.37 0.09 240 / 0.16) 0%,
+    oklch(0.095 0.028 247 / 0.55) 45%,
+    oklch(0.055 0.014 248 / 0.72) 100%
+  );
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  border: 1px solid oklch(0.79 0.14 205 / 0.16);
+  box-shadow:
+    inset 0 1px 0 0 oklch(1 0 0 / 0.1),
+    0 24px 70px -40px oklch(0.71 0.15 213 / 0.55);
+}
+
+@utility abyss-panel-quiet {
+  background: linear-gradient(
+    to bottom,
+    oklch(0.28 0.078 242 / 0.1),
+    oklch(0.055 0.014 248 / 0.6)
+  );
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  border: 1px solid oklch(1 0 0 / 0.08);
+}
+
+/** Shafts of surface light. Purely decorative, sits behind content. */
+@utility god-rays {
+  background: repeating-linear-gradient(
+    100deg,
+    transparent 0px,
+    oklch(0.86 0.11 202 / 0.055) 2px,
+    oklch(0.79 0.14 205 / 0.11) 5px,
+    transparent 16px,
+    transparent 52px
+  );
+  filter: blur(14px);
+}
+
+/** Rippling light cast on the water — layered soft ellipses. */
+@utility caustics {
+  background-image:
+    radial-gradient(
+      42% 22% at 30% 18%,
+      oklch(0.79 0.14 205 / 0.16) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      36% 26% at 72% 34%,
+      oklch(0.71 0.15 213 / 0.14) 0%,
+      transparent 64%
+    ),
+    radial-gradient(
+      54% 30% at 48% 76%,
+      oklch(0.59 0.185 269 / 0.12) 0%,
+      transparent 68%
+    );
+}
+
+/** Headline treatment: white type with light bleeding off its edges. */
+@utility text-lume {
+  color: oklch(0.99 0.005 220);
+  text-shadow:
+    0 0 24px oklch(0.79 0.14 205 / 0.45),
+    0 0 68px oklch(0.71 0.15 213 / 0.35),
+    0 0 140px oklch(0.59 0.185 269 / 0.3);
+}
+
+@utility text-lume-soft {
+  text-shadow: 0 0 32px oklch(0.79 0.14 205 / 0.35);
+}
+
+/** Uppercase micro-label used for the editorial marks in the corners. */
+@utility eyebrow-mark {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-500);
 }
 
 @utility glass-strong {

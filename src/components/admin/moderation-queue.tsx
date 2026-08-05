@@ -13,9 +13,11 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { intlLocale } from "@/lib/i18n/format";
 import type { ModerationStatus, Report } from "@/types";
 import { gradeForScore } from "@/lib/ai/scoring";
-import { cn, timeAgo, titleCase } from "@/lib/utils";
+import { cn, timeAgo } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,8 @@ import { EmptyState, ScoreChip } from "@/components/shared/primitives";
 type Filter = "queue" | "pending" | "flagged" | "approved";
 
 export function ModerationQueue({ reports }: { reports: Report[] }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const router = useRouter();
   const [filter, setFilter] = React.useState<Filter>("queue");
   const [busyId, setBusyId] = React.useState<string | null>(null);
@@ -72,7 +76,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Moderation failed");
+      toast.error(t.ui.moderation.failed);
     } finally {
       setBusyId(null);
     }
@@ -87,11 +91,11 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
       if (!response.ok) throw new Error(`Failed (${response.status})`);
 
       setRemoved((prev) => new Set(prev).add(report.id));
-      toast.success("Report deleted", { description: report.title });
+      toast.success(t.ui.moderation.deleted, { description: report.title });
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Could not delete the report");
+      toast.error(t.ui.moderation.deleteFailed);
     } finally {
       setBusyId(null);
     }
@@ -100,11 +104,8 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle as="h2">Moderation queue</CardTitle>
-        <CardDescription>
-          Approve to publish to the map, flag for a second opinion, reject to
-          hide, or delete permanently.
-        </CardDescription>
+        <CardTitle as="h2">{t.ui.moderation.queueTitle}</CardTitle>
+        <CardDescription>{t.ui.moderation.queueBody}</CardDescription>
       </CardHeader>
 
       <div className="px-5 sm:px-6">
@@ -112,16 +113,22 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
           <TabsList className="w-full justify-start overflow-x-auto scrollbar-none">
             <TabsTrigger value="queue">
               <Inbox />
-              Needs review
+              {t.ui.moderation.tabNeedsReview}
               {counts.queue > 0 && (
                 <Badge variant="brand" size="sm">
                   {counts.queue}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="pending">Pending ({counts.pending})</TabsTrigger>
-            <TabsTrigger value="flagged">Flagged ({counts.flagged})</TabsTrigger>
-            <TabsTrigger value="approved">Live ({counts.approved})</TabsTrigger>
+            <TabsTrigger value="pending">
+              {t.ui.moderation.tabPending} ({counts.pending})
+            </TabsTrigger>
+            <TabsTrigger value="flagged">
+              {t.ui.moderation.tabFlagged} ({counts.flagged})
+            </TabsTrigger>
+            <TabsTrigger value="approved">
+              {t.ui.moderation.tabLive} ({counts.approved})
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -130,11 +137,15 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
         {visible.length === 0 ? (
           <EmptyState
             icon={<Check />}
-            title={filter === "queue" ? "Queue is clear" : "Nothing here"}
+            title={
+              filter === "queue"
+                ? t.ui.moderation.queueClear
+                : t.ui.moderation.nothingHere
+            }
             description={
               filter === "queue"
-                ? "No assessments are waiting on a moderation decision."
-                : "No reports currently have this status."
+                ? t.ui.moderation.queueClearBody
+                : t.ui.moderation.nothingHereBody
             }
           />
         ) : (
@@ -173,9 +184,9 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                       </div>
 
                       <p className="mt-1 truncate text-[11.5px] text-ink-500">
-                        {report.location?.name ?? "Unmapped"} ·{" "}
+                        {report.location?.name ?? t.ui.unmapped} ·{" "}
                         {report.author.name} ·{" "}
-                        {timeAgo(report.capturedAt ?? report.createdAt)}
+                        {timeAgo(report.capturedAt ?? report.createdAt, dateLocale)}
                       </p>
 
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -191,14 +202,14 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                           }
                           size="sm"
                         >
-                          {titleCase(report.status)}
+                          {t.domain.status[report.status]}
                         </Badge>
                         <Badge variant="outline" size="sm">
                           {report.analysis.confidence}% confidence
                         </Badge>
                         {report.analysis.pollutionTags.slice(0, 2).map((tag) => (
                           <Badge key={tag} variant="neutral" size="sm">
-                            {titleCase(tag)}
+                            {t.domain.indicators[tag].label}
                           </Badge>
                         ))}
                       </div>

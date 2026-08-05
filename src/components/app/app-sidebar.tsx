@@ -8,6 +8,7 @@ import * as Icons from "lucide-react";
 import type { UserRole } from "@/types";
 import { navigationFor, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/provider";
 import { Logo } from "@/components/shared/primitives";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,6 +28,7 @@ export function AppSidebar({
   unreadCount: number;
   onNavigate?: () => void;
 }) {
+  const t = useT();
   const pathname = usePathname();
   const sections = navigationFor(role);
 
@@ -41,10 +43,12 @@ export function AppSidebar({
 
       <nav className="flex flex-1 flex-col gap-6" aria-label="Application">
         {sections.map((section) => (
-          <div key={section.heading ?? "main"}>
-            {section.heading && (
-              <p className="mb-2 px-3 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-600">
-                {section.heading}
+          <div key={section.headingKey ?? "main"}>
+            {section.headingKey && (
+              <p className="mb-2 px-3 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-ink-600">
+                {section.headingKey === "operations"
+                  ? t.appNav.sectionOperations
+                  : t.appNav.sectionAccount}
               </p>
             )}
             <ul className="flex flex-col gap-0.5">
@@ -66,7 +70,7 @@ export function AppSidebar({
                       {active && (
                         <motion.span
                           layoutId="sidebar-active"
-                          className="absolute inset-0 rounded-xl border border-aqua-400/22 bg-gradient-to-r from-aqua-400/14 to-flux-500/8"
+                          className="absolute inset-0 rounded-xl border border-lume-400/25 bg-gradient-to-r from-lume-400/16 to-flux-500/8"
                           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                           aria-hidden
                         />
@@ -76,11 +80,13 @@ export function AppSidebar({
                         className={cn(
                           "relative size-[17px] shrink-0 transition-colors",
                           active
-                            ? "text-aqua-300"
+                            ? "text-lume-300"
                             : "text-ink-500 group-hover:text-ink-300",
                         )}
                       />
-                      <span className="relative flex-1 truncate">{item.label}</span>
+                      <span className="relative flex-1 truncate">
+                        {t.appNav[item.key]}
+                      </span>
                       {item.badge === "notifications" && unreadCount > 0 && (
                         <Badge variant="brand" size="sm" className="relative">
                           {unreadCount > 9 ? "9+" : unreadCount}
@@ -98,18 +104,18 @@ export function AppSidebar({
       <Link
         href="/upload"
         onClick={onNavigate}
-        className="group relative overflow-hidden rounded-2xl border border-aqua-400/22 bg-gradient-to-br from-aqua-500/14 to-flux-600/12 p-4 transition-colors hover:border-aqua-400/40"
+        className="group relative overflow-hidden rounded-2xl border border-lume-400/25 bg-gradient-to-br from-lume-500/16 to-flux-600/12 p-4 transition-colors hover:border-lume-400/45"
       >
         <div
-          className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-aqua-400/22 blur-2xl transition-opacity group-hover:opacity-100 opacity-70"
+          className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-lume-400/25 blur-2xl transition-opacity group-hover:opacity-100 opacity-70"
           aria-hidden
         />
-        <Icons.ScanLine className="relative size-5 text-aqua-200" aria-hidden />
+        <Icons.ScanLine className="relative size-5 text-lume-200" aria-hidden />
         <p className="relative mt-2.5 text-[13.5px] font-semibold text-ink-50">
-          Analyse a photograph
+          {t.appNav.ctaTitle}
         </p>
         <p className="relative mt-1 text-[11.5px] leading-snug text-ink-400">
-          Drag in an image and get a scored assessment in seconds.
+          {t.appNav.ctaBody}
         </p>
       </Link>
     </div>

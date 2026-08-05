@@ -18,6 +18,9 @@ import {
 import type { Notification, UserRole } from "@/types";
 import { APP_NAV, ADMIN_NAV } from "@/lib/navigation";
 import { cn, initials, timeAgo } from "@/lib/utils";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { fmt, intlLocale } from "@/lib/i18n/format";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/field";
@@ -53,6 +56,8 @@ export function AppTopbar({
   user: TopbarUser;
   notifications: Notification[];
 }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -64,10 +69,10 @@ export function AppTopbar({
     const match = [...APP_NAV, ...ADMIN_NAV].find(
       (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
     );
-    if (match) return match.label;
-    if (pathname.startsWith("/profile")) return "Profile & settings";
+    if (match) return t.appNav[match.key];
+    if (pathname.startsWith("/profile")) return t.appNav.profile;
     return "AquaVision";
-  }, [pathname]);
+  }, [pathname, t]);
 
   React.useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
@@ -98,7 +103,7 @@ export function AppTopbar({
   return (
     <>
       <header
-        className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/8 bg-ink-950/72 px-4 backdrop-blur-2xl sm:px-6"
+        className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/8 bg-abyss-1000/75 px-4 backdrop-blur-2xl sm:px-6"
         data-app-nav
       >
         <Button
@@ -106,7 +111,7 @@ export function AppTopbar({
           size="icon-sm"
           className="lg:hidden"
           onClick={() => setDrawerOpen(true)}
-          aria-label="Open navigation"
+          aria-label={t.common.openNavigation}
         >
           <Menu />
         </Button>
@@ -129,8 +134,8 @@ export function AppTopbar({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search reports…"
-            aria-label="Search reports"
+            placeholder={t.topbar.searchPlaceholder}
+            aria-label={t.topbar.searchLabel}
             className="h-9 pl-9 pr-12 text-[13px]"
           />
           <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-white/12 bg-white/6 px-1.5 py-0.5 font-mono text-[10px] text-ink-500">
@@ -139,6 +144,8 @@ export function AppTopbar({
         </form>
 
         <div className={cn("flex items-center gap-1.5", "md:ml-0 ml-auto")}>
+          <LanguageSwitcher className="mr-1" />
+
           {/* Notifications */}
           <Popover>
             <PopoverTrigger asChild>
@@ -146,11 +153,17 @@ export function AppTopbar({
                 variant="ghost"
                 size="icon-sm"
                 className="relative"
-                aria-label={`Notifications${unread.length ? `, ${unread.length} unread` : ""}`}
+                aria-label={`${t.topbar.notifications}${
+                  unread.length
+                    ? `, ${fmt(t.topbar.notificationsUnread, {
+                        count: unread.length,
+                      })}`
+                    : ""
+                }`}
               >
                 <Bell />
                 {unread.length > 0 && (
-                  <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-aqua-400 text-[9px] font-bold text-ink-950">
+                  <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-lume-400 text-[9px] font-bold text-abyss-1000">
                     {unread.length > 9 ? "9" : unread.length}
                   </span>
                 )}
@@ -159,11 +172,11 @@ export function AppTopbar({
             <PopoverContent className="w-88 max-w-[calc(100vw-2rem)]">
               <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
                 <p className="text-[13.5px] font-semibold text-ink-50">
-                  Notifications
+                  {t.topbar.notifications}
                 </p>
                 {unread.length > 0 && (
                   <Badge variant="brand" size="sm">
-                    {unread.length} new
+                    {fmt(t.topbar.notificationsUnread, { count: unread.length })}
                   </Badge>
                 )}
               </div>
@@ -171,8 +184,7 @@ export function AppTopbar({
               <ul className="max-h-88 overflow-y-auto p-1.5">
                 {notifications.length === 0 ? (
                   <li className="px-3 py-8 text-center text-[13px] text-ink-500">
-                    Nothing yet. Alerts appear here when pollution rises near
-                    you.
+                    {t.topbar.notificationsEmpty}
                   </li>
                 ) : (
                   notifications.slice(0, 8).map((notification) => (
@@ -185,13 +197,13 @@ export function AppTopbar({
                         }
                         className={cn(
                           "flex gap-3 rounded-xl p-3 transition-colors hover:bg-white/6",
-                          !notification.readAt && "bg-aqua-400/6",
+                          !notification.readAt && "bg-lume-400/6",
                         )}
                       >
                         <span
                           className={cn(
                             "mt-1 size-1.5 shrink-0 rounded-full",
-                            notification.readAt ? "bg-ink-600" : "bg-aqua-400",
+                            notification.readAt ? "bg-ink-600" : "bg-lume-400",
                           )}
                           aria-hidden
                         />
@@ -203,7 +215,7 @@ export function AppTopbar({
                             {notification.body}
                           </span>
                           <span className="mt-1 block text-[11px] text-ink-600">
-                            {timeAgo(notification.createdAt)}
+                            {timeAgo(notification.createdAt, dateLocale)}
                           </span>
                         </span>
                       </Link>
@@ -214,7 +226,9 @@ export function AppTopbar({
 
               <div className="border-t border-white/8 p-2">
                 <Button asChild variant="ghost" size="sm" className="w-full">
-                  <Link href="/notifications">View all notifications</Link>
+                  <Link href="/notifications">
+                    {t.topbar.viewAllNotifications}
+                  </Link>
                 </Button>
               </div>
             </PopoverContent>
@@ -225,7 +239,7 @@ export function AppTopbar({
             <DropdownMenuTrigger asChild>
               <button
                 className="ml-1 flex items-center gap-2 rounded-xl p-1 pr-2 transition-colors hover:bg-white/6"
-                aria-label="Account menu"
+                aria-label={t.topbar.accountMenu}
               >
                 <Avatar name={user.name} src={user.avatarUrl} size={30} />
                 <span className="hidden text-left sm:block">
@@ -233,7 +247,7 @@ export function AppTopbar({
                     {user.name}
                   </span>
                   <span className="block text-[10.5px] leading-tight text-ink-500">
-                    {user.points} pts
+                    {fmt(t.topbar.points, { count: user.points })}
                   </span>
                 </span>
               </button>
@@ -253,14 +267,13 @@ export function AppTopbar({
               </div>
 
               {user.isDemo && (
-                <div className="mx-1.5 mb-1.5 rounded-lg border border-aqua-400/22 bg-aqua-400/8 px-2.5 py-2">
-                  <p className="flex items-center gap-1.5 text-[11px] font-medium text-aqua-200">
+                <div className="mx-1.5 mb-1.5 rounded-lg border border-lume-400/22 bg-lume-400/8 px-2.5 py-2">
+                  <p className="flex items-center gap-1.5 text-[11px] font-medium text-lume-200">
                     <Sparkles className="size-3" aria-hidden />
-                    Demo mode
+                    {t.topbar.demoTitle}
                   </p>
                   <p className="mt-1 text-[11px] leading-snug text-ink-400">
-                    Running on the bundled dataset. Add Supabase keys for real
-                    accounts.
+                    {t.topbar.demoBody}
                   </p>
                 </div>
               )}
@@ -268,22 +281,22 @@ export function AppTopbar({
               <DropdownMenuSeparator />
               <DropdownMenuLabel>
                 {user.role === "admin"
-                  ? "Administrator"
+                  ? t.topbar.roleAdmin
                   : user.role === "moderator"
-                    ? "Moderator"
-                    : "Contributor"}
+                    ? t.topbar.roleModerator
+                    : t.topbar.roleUser}
               </DropdownMenuLabel>
 
               <DropdownMenuItem asChild>
                 <Link href="/profile">
                   <UserRound />
-                  Profile
+                  {t.topbar.profile}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/profile#preferences">
                   <Settings />
-                  Notification settings
+                  {t.topbar.notificationSettings}
                 </Link>
               </DropdownMenuItem>
 
@@ -291,7 +304,7 @@ export function AppTopbar({
                 <DropdownMenuItem asChild>
                   <Link href="/admin">
                     <ShieldCheck />
-                    Moderation panel
+                    {t.topbar.moderationPanel}
                   </Link>
                 </DropdownMenuItem>
               )}
@@ -309,7 +322,7 @@ export function AppTopbar({
                   }}
                 >
                   <LogOut />
-                  Sign out
+                  {t.topbar.signOut}
                 </DropdownMenuItem>
               </form>
             </DropdownMenuContent>
@@ -321,18 +334,18 @@ export function AppTopbar({
       {drawerOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
-            className="absolute inset-0 bg-ink-950/80 backdrop-blur-md"
+            className="absolute inset-0 bg-abyss-1000/85 backdrop-blur-md"
             onClick={() => setDrawerOpen(false)}
-            aria-label="Close navigation"
+            aria-label={t.common.closeNavigation}
             tabIndex={-1}
           />
-          <div className="relative h-full w-72 max-w-[85vw] animate-slide-in-left border-r border-white/10 bg-ink-950/95 backdrop-blur-2xl">
+          <div className="relative h-full w-72 max-w-[85vw] animate-slide-in-left border-r border-white/10 bg-abyss-1000/96 backdrop-blur-2xl">
             <Button
               variant="ghost"
               size="icon-sm"
               className="absolute right-3 top-4 z-10"
               onClick={() => setDrawerOpen(false)}
-              aria-label="Close navigation"
+              aria-label={t.common.closeNavigation}
             >
               <X />
             </Button>
@@ -352,12 +365,13 @@ export { type TopbarUser };
 
 /** Small inline confirmation used by the notifications page. */
 export function ReadTick({ read }: { read: boolean }) {
+  const t = useT();
   return read ? (
-    <Check className="size-3.5 text-ink-600" aria-label="Read" />
+    <Check className="size-3.5 text-ink-600" aria-label={t.topbar.read} />
   ) : (
     <span
-      className="size-1.5 rounded-full bg-aqua-400"
-      aria-label="Unread"
+      className="size-1.5 rounded-full bg-lume-400"
+      aria-label={t.topbar.unread}
       role="img"
     />
   );

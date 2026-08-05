@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Crosshair, Save } from "lucide-react";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/provider";
 import { formatCoords } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,6 +22,7 @@ export function ProfileSettings({
     isDemo: boolean;
   };
 }) {
+  const t = useT();
   const router = useRouter();
   const [saving, setSaving] = React.useState(false);
   const [locating, setLocating] = React.useState(false);
@@ -42,7 +44,7 @@ export function ProfileSettings({
 
   function useMyLocation() {
     if (!("geolocation" in navigator)) {
-      toast.error("Geolocation is unavailable in this browser.");
+      toast.error(t.ui.settings.geoUnavailable);
       return;
     }
     setLocating(true);
@@ -51,11 +53,11 @@ export function ProfileSettings({
         set("homeLat", position.coords.latitude.toFixed(6));
         set("homeLng", position.coords.longitude.toFixed(6));
         setLocating(false);
-        toast.success("Monitoring area centred on your position.");
+        toast.success(t.ui.settings.geoCentred);
       },
       () => {
         setLocating(false);
-        toast.error("Could not read your position — enter it manually.");
+        toast.error(t.ui.settings.geoFailed);
       },
       { enableHighAccuracy: true, timeout: 10_000 },
     );
@@ -86,10 +88,10 @@ export function ProfileSettings({
         throw new Error(payload.error ?? `Failed (${response.status})`);
       }
 
-      toast.success("Profile saved");
+      toast.success(t.ui.settings.saved);
       router.refresh();
     } catch (error) {
-      toast.error("Could not save your profile", {
+      toast.error(t.ui.settings.saveFailed, {
         description: error instanceof Error ? error.message : undefined,
       });
     } finally {
@@ -110,7 +112,7 @@ export function ProfileSettings({
 
       <form onSubmit={save} className="flex flex-col gap-5 px-5 pb-6 sm:px-6">
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Display name" htmlFor="fullName" required>
+          <Field label={t.ui.settings.displayName} htmlFor="fullName" required>
             <Input
               value={form.fullName}
               onChange={(e) => set("fullName", e.target.value)}
@@ -119,22 +121,30 @@ export function ProfileSettings({
             />
           </Field>
 
-          <Field label="Region" htmlFor="region" hint="Shown on your profile">
+          <Field
+            label={t.ui.settings.region}
+            htmlFor="region"
+            hint={t.ui.settings.regionHint}
+          >
             <Input
               value={form.region}
               onChange={(e) => set("region", e.target.value)}
-              placeholder="Almaty"
+              placeholder={t.ui.settings.regionPlaceholder}
               maxLength={120}
             />
           </Field>
         </div>
 
-        <Field label="Bio" htmlFor="bio" hint="Optional, 280 characters">
+        <Field
+          label={t.ui.settings.bio}
+          htmlFor="bio"
+          hint={t.ui.settings.bioHint}
+        >
           <Textarea
             value={form.bio}
             onChange={(e) => set("bio", e.target.value.slice(0, 280))}
             rows={3}
-            placeholder="Volunteer river monitor covering the Ishim embankment."
+            placeholder={t.ui.settings.bioPlaceholder}
           />
         </Field>
 
@@ -152,15 +162,15 @@ export function ProfileSettings({
           <div className="mt-4 flex flex-col gap-3">
             <ToggleRow
               id="notifyNearby"
-              label="New report nearby"
-              description="Someone publishes an assessment inside your monitoring radius."
+              label={t.ui.settings.nearbyLabel}
+              description={t.ui.settings.nearbyDescription}
               checked={form.notifyNearby}
               onChange={(v) => set("notifyNearby", v)}
             />
             <ToggleRow
               id="notifyTrend"
-              label="Pollution increase & critical trends"
-              description="A location you have reported on gets measurably worse."
+              label={t.ui.settings.trendLabel}
+              description={t.ui.settings.trendDescription}
               checked={form.notifyTrend}
               onChange={(v) => set("notifyTrend", v)}
             />
@@ -191,7 +201,11 @@ export function ProfileSettings({
 
         <div>
           <div className="flex items-end gap-2">
-            <Field label="Home latitude" htmlFor="homeLat" className="flex-1">
+            <Field
+              label={t.ui.settings.homeLat}
+              htmlFor="homeLat"
+              className="flex-1"
+            >
               <Input
                 value={form.homeLat}
                 onChange={(e) => set("homeLat", e.target.value)}
@@ -199,7 +213,11 @@ export function ProfileSettings({
                 inputMode="decimal"
               />
             </Field>
-            <Field label="Home longitude" htmlFor="homeLng" className="flex-1">
+            <Field
+              label={t.ui.settings.homeLng}
+              htmlFor="homeLng"
+              className="flex-1"
+            >
               <Input
                 value={form.homeLng}
                 onChange={(e) => set("homeLng", e.target.value)}
@@ -213,8 +231,8 @@ export function ProfileSettings({
               size="icon"
               onClick={useMyLocation}
               loading={locating}
-              aria-label="Use my current location"
-              title="Use my current location"
+              aria-label={t.ui.settings.useMyLocation}
+              title={t.ui.settings.useMyLocation}
             >
               {!locating && <Crosshair />}
             </Button>

@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 import type { Report, WaterBodyType, WaterQuality } from "@/types";
 import { GRADES, gradeForScore } from "@/lib/ai/scoring";
-import { cn, formatCoords, formatDate, timeAgo, titleCase } from "@/lib/utils";
+import { cn, formatCoords, formatDate, timeAgo } from "@/lib/utils";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, NativeSelect } from "@/components/ui/field";
@@ -74,6 +76,8 @@ const INITIAL_FILTERS: Filters = {
 };
 
 export function MapExplorer({ reports }: { reports: Report[] }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const [filters, setFilters] = React.useState<Filters>(INITIAL_FILTERS);
   const [mode, setMode] = React.useState<MapMode>("markers");
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -141,7 +145,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
           "absolute inset-0 transition-transform duration-300 lg:relative lg:translate-x-0",
           panelOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
-        aria-label="Map filters and results"
+        aria-label={t.ui.mapExplorer.panelLabel}
       >
         <div className="border-b border-white/8 p-4">
           <div className="flex items-center justify-between gap-3">
@@ -153,7 +157,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
               size="icon-sm"
               className="lg:hidden"
               onClick={() => setPanelOpen(false)}
-              aria-label="Close filters"
+              aria-label={t.ui.mapExplorer.closeFilters}
             >
               <X />
             </Button>
@@ -168,9 +172,9 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
               type="search"
               value={filters.query}
               onChange={(e) => set("query", e.target.value)}
-              placeholder="Search rivers, lakes, regions…"
+              placeholder={t.ui.mapExplorer.searchPlaceholder}
               className="pl-9"
-              aria-label="Search water bodies"
+              aria-label={t.ui.mapExplorer.searchLabel}
             />
           </div>
 
@@ -178,13 +182,13 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
             <NativeSelect
               value={filters.quality}
               onChange={(e) => set("quality", e.target.value as Filters["quality"])}
-              aria-label="Filter by water quality"
+              aria-label={t.ui.mapExplorer.filterQuality}
               className="h-9 text-[13px]"
             >
-              <option value="all">All grades</option>
+              <option value="all">{t.ui.moderation.allGrades}</option>
               {GRADES.map((grade) => (
                 <option key={grade.quality} value={grade.quality}>
-                  {grade.quality} ({grade.min}–{grade.max})
+                  {t.grades[grade.quality].label} ({grade.min}–{grade.max})
                 </option>
               ))}
             </NativeSelect>
@@ -192,12 +196,14 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
             <NativeSelect
               value={filters.waterType}
               onChange={(e) => set("waterType", e.target.value as Filters["waterType"])}
-              aria-label="Filter by water body type"
+              aria-label={t.ui.mapExplorer.filterType}
               className="h-9 text-[13px]"
             >
               {WATER_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {type === "all" ? "All types" : titleCase(type)}
+                  {type === "all"
+                    ? t.ui.mapExplorer.allTypes
+                    : t.domain.waterBody[type]}
                 </option>
               ))}
             </NativeSelect>
@@ -205,10 +211,10 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
             <NativeSelect
               value={filters.region}
               onChange={(e) => set("region", e.target.value)}
-              aria-label="Filter by region"
+              aria-label={t.ui.mapExplorer.filterRegion}
               className="h-9 text-[13px]"
             >
-              <option value="all">All regions</option>
+              <option value="all">{t.ui.moderation.allRegions}</option>
               {regions.map((region) => (
                 <option key={region} value={region}>
                   {region}
@@ -226,13 +232,13 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                   cutoff: days > 0 ? Date.now() - days * 86_400_000 : null,
                 }));
               }}
-              aria-label="Filter by date"
+              aria-label={t.ui.mapExplorer.filterDate}
               className="h-9 text-[13px]"
             >
-              <option value="0">Any date</option>
-              <option value="30">Last 30 days</option>
-              <option value="90">Last 3 months</option>
-              <option value="365">Last year</option>
+              <option value="0">{t.ui.moderation.anyDate}</option>
+              <option value="30">{t.ui.moderation.last30}</option>
+              <option value="90">{t.ui.moderation.last90}</option>
+              <option value="365">{t.ui.moderation.lastYear}</option>
             </NativeSelect>
           </div>
 
@@ -284,8 +290,8 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
           {filtered.length === 0 ? (
             <EmptyState
               icon={<Filter />}
-              title="No reports match"
-              description="Widen the severity range or clear a filter to see more of the network."
+              title={t.ui.mapExplorer.emptyTitle}
+              description={t.ui.mapExplorer.emptyBody}
               className="mt-6"
             />
           ) : (
@@ -332,10 +338,10 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                       <span className="mt-1 block truncate text-[11.5px] text-ink-500">
                         {[report.location?.region, report.location?.country]
                           .filter(Boolean)
-                          .join(", ") || "Unmapped"}
+                          .join(", ") || t.ui.unmapped}
                       </span>
                       <span className="mt-1.5 flex items-center gap-2 text-[11px] text-ink-600">
-                        <span>{timeAgo(report.capturedAt ?? report.createdAt)}</span>
+                        <span>{timeAgo(report.capturedAt ?? report.createdAt, dateLocale)}</span>
                         {report.analysis.pollutionTags.length > 0 && (
                           <span className="truncate">
                             · {report.analysis.pollutionTags.length} indicators
@@ -386,13 +392,25 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
           <div
             className="flex overflow-hidden rounded-xl border border-white/10 bg-ink-950/75 p-1 backdrop-blur-2xl"
             role="radiogroup"
-            aria-label="Map layer"
+            aria-label={t.ui.mapExplorer.layerLabel}
           >
             {(
               [
-                { value: "markers", label: "Pins", icon: MapPin },
-                { value: "heatmap", label: "Heat", icon: Flame },
-                { value: "both", label: "Both", icon: Layers },
+                {
+                  value: "markers",
+                  label: t.ui.mapExplorer.layerPins,
+                  icon: MapPin,
+                },
+                {
+                  value: "heatmap",
+                  label: t.ui.mapExplorer.layerHeat,
+                  icon: Flame,
+                },
+                {
+                  value: "both",
+                  label: t.ui.mapExplorer.layerBoth,
+                  icon: Layers,
+                },
               ] as const
             ).map((option) => (
               <button
@@ -461,7 +479,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                   <button
                     onClick={() => setSelectedId(null)}
                     className="absolute right-2 top-2 grid size-7 place-items-center rounded-lg bg-ink-950/70 text-ink-300 backdrop-blur transition-colors hover:text-white"
-                    aria-label="Close report preview"
+                    aria-label={t.ui.mapExplorer.closePreview}
                   >
                     <X className="size-3.5" />
                   </button>
@@ -489,7 +507,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {selected.analysis.pollutionTags.slice(0, 4).map((tag) => (
                         <Badge key={tag} variant="outline" size="sm">
-                          {titleCase(tag)}
+                          {t.domain.indicators[tag].label}
                         </Badge>
                       ))}
                     </div>
@@ -497,7 +515,8 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
 
                   <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/8 pt-3">
                     <span className="text-[11.5px] text-ink-500">
-                      {formatDate(selected.capturedAt ?? selected.createdAt)} ·{" "}
+                      {formatDate(selected.capturedAt ?? selected.createdAt, false, dateLocale)}{" "}
+                      ·{" "}
                       {selected.author.name}
                     </span>
                     <Button asChild size="sm">

@@ -1,37 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getT } from "@/lib/i18n/server";
 import { AuthForm } from "../auth-form";
 
-export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Sign in to AquaVision AI to publish and track water assessments.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return { title: t.auth.signInTitle, description: t.auth.signInBody };
+}
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ next?: string; error?: string }>;
 }) {
-  const params = await searchParams;
+  const [params, t] = await Promise.all([searchParams, getT()]);
 
   return (
     <div>
-      <h1 className="text-[1.65rem] font-semibold tracking-[-0.03em] text-ink-50">
-        Welcome back
+      <h1 className="text-lume-soft text-[1.75rem] font-semibold tracking-[-0.035em] text-ink-50">
+        {t.auth.signInTitle}
       </h1>
       <p className="mt-2 text-[14px] leading-relaxed text-ink-400">
-        Sign in to publish assessments, follow locations and track trends.
+        {t.auth.signInBody}
       </p>
 
       <AuthForm mode="signin" next={params.next} initialError={params.error} />
 
       <p className="mt-6 text-center text-[13.5px] text-ink-400">
-        New to AquaVision?{" "}
+        {t.auth.signInSwitch}{" "}
         <Link
           href="/signup"
-          className="font-medium text-aqua-300 underline-offset-4 hover:underline"
+          className="font-medium text-lume-300 underline-offset-4 hover:underline"
         >
-          Create an account
+          {t.auth.signInSwitchLink}
         </Link>
       </p>
     </div>

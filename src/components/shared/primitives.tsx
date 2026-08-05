@@ -14,6 +14,8 @@ import type { TrendDirection, WaterQuality } from "@/types";
 import { cn, compactNumber } from "@/lib/utils";
 import { gradeForQuality, gradeForScore } from "@/lib/ai/scoring";
 import { TREND_META } from "@/lib/ai/trend";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { intlLocale } from "@/lib/i18n/format";
 import { Badge } from "@/components/ui/badge";
 
 /* -------------------------------- Logo -------------------------------- */
@@ -126,10 +128,13 @@ export function AnimatedCounter({
   });
   const [display, setDisplay] = React.useState("0");
 
+  const { locale } = useI18n();
+  const tag = intlLocale(locale);
+
   const formatted = useTransform(spring, (v) =>
     compact
       ? compactNumber(v)
-      : v.toLocaleString("en-US", {
+      : v.toLocaleString(tag, {
           minimumFractionDigits: decimals,
           maximumFractionDigits: decimals,
         }),
@@ -166,6 +171,7 @@ export function QualityBadge({
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
+  const t = useT();
   const grade = gradeForQuality(quality);
   const variant = quality.toLowerCase() as
     | "excellent"
@@ -181,7 +187,7 @@ export function QualityBadge({
         style={{ background: grade.hex }}
         aria-hidden
       />
-      {quality}
+      {t.grades[quality].label}
       {typeof score === "number" && (
         <span className="opacity-60">· {score}</span>
       )}
@@ -228,6 +234,7 @@ export function TrendPill({
   className?: string;
   size?: "sm" | "md";
 }) {
+  const t = useT();
   const meta = TREND_META[direction];
   const Icon =
     meta.arrow === "up" ? ArrowUpRight : meta.arrow === "down" ? ArrowDownRight : Minus;
@@ -243,7 +250,7 @@ export function TrendPill({
       )}
     >
       <Icon className={size === "sm" ? "size-3" : "size-3.5"} aria-hidden />
-      {meta.label}
+      {t.trend[direction]}
       {typeof delta === "number" && delta !== 0 && (
         <span className="tabular-nums opacity-75">
           {delta > 0 ? "+" : ""}
@@ -337,8 +344,8 @@ export function SectionHeading({
     >
       {eyebrow && (
         <Reveal>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11.5px] font-medium uppercase tracking-[0.14em] text-aqua-200 backdrop-blur-xl">
-            <span className="size-1.5 rounded-full bg-aqua-400" aria-hidden />
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-lume-200 backdrop-blur-xl">
+            <span className="size-1.5 rounded-full bg-lume-400" aria-hidden />
             {eyebrow}
           </span>
         </Reveal>
@@ -346,7 +353,7 @@ export function SectionHeading({
       <Reveal delay={0.06}>
         <h2
           className={cn(
-            "text-balance text-[clamp(1.75rem,4vw,2.75rem)] font-semibold leading-[1.1] tracking-[-0.035em] text-ink-50",
+            "text-lume-soft text-balance text-[clamp(1.9rem,4.4vw,3.1rem)] font-semibold leading-[1.06] tracking-[-0.042em] text-ink-50",
             align === "center" && "mx-auto max-w-3xl",
           )}
         >
@@ -426,24 +433,24 @@ export function AmbientBackdrop({
         className="absolute -left-[12%] top-[-18%] size-[46rem] rounded-full blur-[120px] animate-aurora"
         style={{
           background:
-            "radial-gradient(circle, oklch(0.7 0.14 192 / 0.28) 0%, transparent 68%)",
-          opacity: 0.85 * intensity,
+            "radial-gradient(circle, oklch(0.71 0.15 213 / 0.3) 0%, transparent 68%)",
+          opacity: 0.8 * intensity,
         }}
       />
       <div
         className="absolute -right-[14%] top-[8%] size-[40rem] rounded-full blur-[120px] animate-aurora"
         style={{
           background:
-            "radial-gradient(circle, oklch(0.63 0.19 272 / 0.26) 0%, transparent 68%)",
+            "radial-gradient(circle, oklch(0.59 0.185 269 / 0.26) 0%, transparent 68%)",
           animationDelay: "-7s",
-          opacity: 0.8 * intensity,
+          opacity: 0.75 * intensity,
         }}
       />
       <div
         className="absolute bottom-[-22%] left-[24%] size-[38rem] rounded-full blur-[130px] animate-aurora"
         style={{
           background:
-            "radial-gradient(circle, oklch(0.61 0.13 195 / 0.2) 0%, transparent 70%)",
+            "radial-gradient(circle, oklch(0.49 0.13 232 / 0.24) 0%, transparent 70%)",
           animationDelay: "-13s",
           opacity: 0.7 * intensity,
         }}

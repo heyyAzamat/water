@@ -16,34 +16,39 @@ import {
 import { toast } from "sonner";
 import type { Notification, NotificationKind } from "@/types";
 import { cn, timeAgo } from "@/lib/utils";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+/** Icon and tone only — the label comes from the dictionary by kind. */
 const KIND_META: Record<
   NotificationKind,
-  { icon: React.ComponentType<{ className?: string }>; tone: string; label: string }
+  { icon: React.ComponentType<{ className?: string }>; tone: string }
 > = {
-  nearby_report: { icon: Bell, tone: "text-aqua-300 bg-aqua-400/10 border-aqua-400/22", label: "Nearby" },
+  nearby_report: {
+    icon: Bell,
+    tone: "text-lume-300 bg-lume-400/10 border-lume-400/22",
+  },
   pollution_increase: {
     icon: TrendingUp,
     tone: "text-grade-poor bg-grade-poor/10 border-grade-poor/25",
-    label: "Rising",
   },
   critical_trend: {
     icon: Siren,
     tone: "text-grade-critical bg-grade-critical/10 border-grade-critical/25",
-    label: "Critical",
   },
-  comment: { icon: MessageSquare, tone: "text-ink-300 bg-white/6 border-white/10", label: "Comment" },
+  comment: {
+    icon: MessageSquare,
+    tone: "text-ink-300 bg-white/6 border-white/10",
+  },
   achievement: {
     icon: Award,
     tone: "text-grade-moderate bg-grade-moderate/10 border-grade-moderate/25",
-    label: "Achievement",
   },
   moderation: {
     icon: ShieldAlert,
     tone: "text-flux-300 bg-flux-400/10 border-flux-400/22",
-    label: "Moderation",
   },
 };
 
@@ -52,6 +57,8 @@ export function NotificationList({
 }: {
   notifications: Notification[];
 }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const router = useRouter();
   const [items, setItems] = React.useState(notifications);
   const [marking, setMarking] = React.useState(false);
@@ -76,7 +83,7 @@ export function NotificationList({
       router.refresh();
     } catch {
       setItems(previous);
-      toast.error("Could not mark notifications as read");
+      toast.error(t.ui.markAllError);
     } finally {
       setMarking(false);
     }
@@ -88,11 +95,13 @@ export function NotificationList({
         <p className="text-[13px] text-ink-400">
           {unread.length > 0 ? (
             <>
-              <span className="font-semibold text-ink-100">{unread.length}</span>{" "}
-              unread of {items.length}
+              <span className="font-semibold text-ink-100">
+                {unread.length}
+              </span>{" "}
+              {fmt(t.ui.unreadOf, { total: items.length })}
             </>
           ) : (
-            `${items.length} notification${items.length === 1 ? "" : "s"} · all read`
+            fmt(t.ui.allRead, { count: items.length })
           )}
         </p>
 
@@ -104,7 +113,7 @@ export function NotificationList({
           disabled={unread.length === 0}
         >
           <CheckCheck />
-          Mark all read
+          {t.ui.markAllRead}
         </Button>
       </div>
 
@@ -133,13 +142,13 @@ export function NotificationList({
                     {notification.title}
                   </span>
                   <Badge variant="outline" size="sm">
-                    {meta.label}
+                    {t.domain.notificationKinds[notification.kind]}
                   </Badge>
                   {!notification.readAt && (
                     <span
-                      className="size-1.5 rounded-full bg-aqua-400"
+                      className="size-1.5 rounded-full bg-lume-400"
                       role="img"
-                      aria-label="Unread"
+                      aria-label={t.ui.unread}
                     />
                   )}
                 </span>
@@ -147,7 +156,7 @@ export function NotificationList({
                   {notification.body}
                 </span>
                 <span className="mt-1.5 block text-[11px] text-ink-600">
-                  {timeAgo(notification.createdAt)}
+                  {timeAgo(notification.createdAt, dateLocale)}
                 </span>
               </span>
 
@@ -164,7 +173,7 @@ export function NotificationList({
             "group flex gap-3.5 rounded-2xl border p-4 transition-all duration-200",
             notification.readAt
               ? "border-white/8 bg-white/[0.022]"
-              : "border-aqua-400/22 bg-aqua-400/6",
+              : "border-lume-400/22 bg-lume-400/6",
             href && "hover:border-white/18 hover:bg-white/[0.05]",
           );
 

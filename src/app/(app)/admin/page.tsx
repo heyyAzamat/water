@@ -7,6 +7,8 @@ import {
   moderationQueue,
   platformStats,
 } from "@/lib/data/repository";
+import { getT } from "@/lib/i18n/server";
+import { fmt } from "@/lib/i18n/format";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/misc";
@@ -14,13 +16,16 @@ import { StatTile } from "@/components/shared/primitives";
 import { QualityDistributionChart } from "@/components/charts/score-charts";
 import { ModerationQueue } from "@/components/admin/moderation-queue";
 
-export const metadata: Metadata = {
-  title: "Moderation",
-  description: "Review the queue, moderate uploads and manage contributors.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: t.pages.admin.metaTitle,
+    description: t.pages.admin.metaDescription,
+  };
+}
 
 export default async function AdminPage() {
-  const user = await getCurrentUser();
+  const [user, t] = await Promise.all([getCurrentUser(), getT()]);
   if (!user) redirect("/login");
 
   // Route-level authorisation. The API routes check this independently, so a
@@ -43,48 +48,50 @@ export default async function AdminPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="size-5 text-aqua-300" aria-hidden />
+            <ShieldCheck className="size-5 text-lume-300" aria-hidden />
             <h1 className="text-[1.6rem] font-semibold tracking-[-0.035em] text-ink-50">
-              Moderation panel
+              {t.pages.admin.title}
             </h1>
           </div>
           <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-ink-400">
-            Assessments scoring 90 or above are held for human review before they
-            reach the public map — a false critical alert costs more credibility
-            than a slow one.
+            {t.pages.admin.description}
           </p>
         </div>
         <Badge variant="brand" size="lg" className="shrink-0">
-          {user.role}
+          {t.roles[user.role]}
         </Badge>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile
-          label="Awaiting review"
+          label={t.pages.admin.tilePending}
           value={pending.length}
-          hint="critical-severity holds"
+          hint={t.pages.admin.tilePendingHint}
           icon={<AlertTriangle />}
         />
         <StatTile
-          label="Flagged"
+          label={t.pages.admin.tileFlagged}
           value={flagged.length}
-          hint="marked by a moderator"
+          hint={t.pages.admin.tileFlaggedHint}
           icon={<ShieldCheck />}
           accent="flux"
           delay={0.06}
         />
         <StatTile
-          label="Published"
+          label={t.pages.admin.tilePublished}
           value={stats.reports}
-          hint={`${stats.criticalCount} critical on the map`}
+          hint={fmt(t.pages.admin.tilePublishedHint, {
+            count: stats.criticalCount,
+          })}
           icon={<FileText />}
           delay={0.12}
         />
         <StatTile
-          label="Contributors"
+          label={t.pages.admin.tileContributors}
           value={stats.contributors}
-          hint={`${stats.locations} water bodies`}
+          hint={fmt(t.pages.admin.tileContributorsHint, {
+            count: stats.locations,
+          })}
           icon={<Users />}
           accent="flux"
           delay={0.18}
@@ -97,9 +104,9 @@ export default async function AdminPage() {
         <div className="flex flex-col gap-4">
           <Card>
             <CardHeader>
-              <CardTitle as="h2">Network distribution</CardTitle>
+              <CardTitle as="h2">{t.pages.admin.distributionTitle}</CardTitle>
               <CardDescription>
-                Grade spread across all analysed images.
+                {t.pages.admin.distributionDescription}
               </CardDescription>
             </CardHeader>
             <div className="px-3 pb-5 sm:px-4">
@@ -112,9 +119,11 @@ export default async function AdminPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle as="h2">Contributors</CardTitle>
+              <CardTitle as="h2">{t.pages.admin.contributorsTitle}</CardTitle>
               <CardDescription>
-                {profiles.length} accounts, ranked by contribution points.
+                {fmt(t.pages.admin.contributorsDescription, {
+                  count: profiles.length,
+                })}
               </CardDescription>
             </CardHeader>
             <div className="max-h-100 overflow-y-auto px-5 pb-5 sm:px-6">
@@ -134,16 +143,18 @@ export default async function AdminPage() {
                         {profile.name}
                       </span>
                       <span className="block text-[11px] text-ink-500">
-                        {profile.points} points
+                        {fmt(t.pages.admin.contributorPoints, {
+                          count: profile.points,
+                        })}
                       </span>
                     </span>
                     {profile.role !== "user" ? (
                       <Badge variant="brand" size="sm">
-                        {profile.role}
+                        {t.roles[profile.role]}
                       </Badge>
                     ) : (
                       <Badge variant="outline" size="sm">
-                        user
+                        {t.roles.user}
                       </Badge>
                     )}
                   </li>
@@ -154,19 +165,27 @@ export default async function AdminPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle as="h2">Coverage</CardTitle>
+              <CardTitle as="h2">{t.pages.admin.coverageTitle}</CardTitle>
             </CardHeader>
             <dl className="grid grid-cols-2 gap-3 px-5 pb-5 sm:px-6">
-              <Metric icon={<Waves />} label="Water bodies" value={stats.locations} />
-              <Metric icon={<FileText />} label="Countries" value={stats.countries} />
+              <Metric
+                icon={<Waves />}
+                label={t.pages.admin.coverageWaterBodies}
+                value={stats.locations}
+              />
+              <Metric
+                icon={<FileText />}
+                label={t.pages.admin.coverageCountries}
+                value={stats.countries}
+              />
               <Metric
                 icon={<AlertTriangle />}
-                label="Mean severity"
+                label={t.pages.admin.coverageSeverity}
                 value={`${stats.averageScore}/100`}
               />
               <Metric
                 icon={<FileText />}
-                label="Images analysed"
+                label={t.pages.admin.coverageImages}
                 value={stats.analysedImages}
               />
             </dl>

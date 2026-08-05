@@ -6,6 +6,7 @@ import { AlertCircle, ArrowRight, Info, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Separator } from "@/components/ui/misc";
+import { useT } from "@/lib/i18n/provider";
 import {
   type AuthState,
   signInWithGoogle,
@@ -22,6 +23,7 @@ export function AuthForm({
   next?: string;
   initialError?: string;
 }) {
+  const t = useT();
   const action = mode === "signin" ? signInWithPassword : signUpWithPassword;
   const [state, formAction, pending] = useActionState<AuthState, FormData>(
     action,
@@ -30,8 +32,8 @@ export function AuthForm({
 
   if (state.notice) {
     return (
-      <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-aqua-400/22 bg-aqua-400/8 p-6 text-center">
-        <span className="grid size-11 place-items-center rounded-xl border border-aqua-400/25 bg-aqua-400/12 text-aqua-200">
+      <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-lume-400/22 bg-lume-400/8 p-6 text-center">
+        <span className="grid size-11 place-items-center rounded-xl border border-lume-400/25 bg-lume-400/12 text-lume-200">
           <MailCheck className="size-5" aria-hidden />
         </span>
         <p className="text-[14px] leading-relaxed text-ink-200">{state.notice}</p>
@@ -45,14 +47,14 @@ export function AuthForm({
       <form action={signInWithGoogle}>
         <Button type="submit" variant="secondary" size="lg" className="w-full">
           <GoogleMark />
-          Continue with Google
+          {t.auth.google}
         </Button>
       </form>
 
       <div className="my-6 flex items-center gap-3">
         <Separator className="flex-1" />
-        <span className="text-[11.5px] uppercase tracking-[0.1em] text-ink-600">
-          or use email
+        <span className="text-[11px] uppercase tracking-[0.14em] text-ink-600">
+          {t.auth.orEmail}
         </span>
         <Separator className="flex-1" />
       </div>
@@ -61,32 +63,32 @@ export function AuthForm({
         {next && <input type="hidden" name="next" value={next} />}
 
         {mode === "signup" && (
-          <Field label="Full name" htmlFor="fullName" required>
+          <Field label={t.auth.fullName} htmlFor="fullName" required>
             <Input
               name="fullName"
               autoComplete="name"
-              placeholder="Aigerim Nurlanova"
+              placeholder={t.contact.namePlaceholder}
               required
               minLength={2}
             />
           </Field>
         )}
 
-        <Field label="Email" htmlFor="email" required>
+        <Field label={t.auth.email} htmlFor="email" required>
           <Input
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="you@organisation.org"
+            placeholder={t.contact.emailPlaceholder}
             required
           />
         </Field>
 
         <Field
-          label="Password"
+          label={t.auth.password}
           htmlFor="password"
           required
-          hint={mode === "signup" ? "8 characters minimum" : undefined}
+          hint={mode === "signup" ? t.auth.passwordHint : undefined}
         >
           <Input
             name="password"
@@ -104,7 +106,7 @@ export function AuthForm({
             className="flex gap-2.5 rounded-xl border border-grade-critical/25 bg-grade-critical/8 p-3"
           >
             {state.error.includes("demo mode") ? (
-              <Info className="mt-0.5 size-4 shrink-0 text-aqua-300" aria-hidden />
+              <Info className="mt-0.5 size-4 shrink-0 text-lume-300" aria-hidden />
             ) : (
               <AlertCircle
                 className="mt-0.5 size-4 shrink-0 text-grade-critical"
@@ -118,7 +120,7 @@ export function AuthForm({
         )}
 
         <Button type="submit" size="lg" loading={pending} className="mt-1 w-full">
-          {mode === "signin" ? "Sign in" : "Create account"}
+          {mode === "signin" ? t.auth.submitSignIn : t.auth.submitSignUp}
           {!pending && <ArrowRight aria-hidden />}
         </Button>
       </form>

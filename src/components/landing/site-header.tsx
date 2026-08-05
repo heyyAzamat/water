@@ -6,10 +6,13 @@ import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { MARKETING_NAV } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/provider";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/primitives";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
 export function SiteHeader({ signedIn }: { signedIn: boolean }) {
+  const t = useT();
   const { scrollY } = useScroll();
   const [condensed, setCondensed] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -37,7 +40,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
           className={cn(
             "flex w-full max-w-6xl items-center gap-3 rounded-2xl border px-3 py-2.5 transition-all duration-400 sm:px-4",
             condensed
-              ? "border-white/10 bg-ink-950/72 shadow-[0_10px_40px_-18px_oklch(0.145_0.014_258/0.9)] backdrop-blur-2xl"
+              ? "border-white/10 bg-abyss-1000/70 shadow-[0_18px_60px_-32px_oklch(0.71_0.15_213/0.7)] backdrop-blur-2xl"
               : "border-transparent bg-transparent",
           )}
         >
@@ -50,24 +53,31 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
                   href={item.href}
                   className="rounded-lg px-3 py-1.5 text-[13.5px] font-medium text-ink-400 transition-colors hover:bg-white/6 hover:text-ink-100"
                 >
-                  {item.label}
+                  {t.nav[item.key]}
                 </Link>
               </li>
             ))}
           </ul>
 
           <div className="ml-auto flex items-center gap-2">
+            <LanguageSwitcher />
+
             {signedIn ? (
               <Button asChild size="sm" className="hidden sm:inline-flex">
-                <Link href="/dashboard">Open dashboard</Link>
+                <Link href="/dashboard">{t.common.openDashboard}</Link>
               </Button>
             ) : (
               <>
-                <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                  <Link href="/login">Sign in</Link>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="hidden sm:inline-flex"
+                >
+                  <Link href="/login">{t.common.signIn}</Link>
                 </Button>
                 <Button asChild size="sm" className="hidden sm:inline-flex">
-                  <Link href="/signup">Start free</Link>
+                  <Link href="/signup">{t.common.startFree}</Link>
                 </Button>
               </>
             )}
@@ -79,7 +89,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? t.common.closeMenu : t.common.openMenu}
             >
               {open ? <X /> : <Menu />}
             </Button>
@@ -94,12 +104,12 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
         className="fixed inset-0 z-40 lg:hidden"
       >
         <button
-          className="absolute inset-0 bg-ink-950/80 backdrop-blur-md"
+          className="absolute inset-0 bg-abyss-1000/85 backdrop-blur-md"
           onClick={() => setOpen(false)}
-          aria-label="Close menu"
+          aria-label={t.common.closeMenu}
           tabIndex={-1}
         />
-        <div className="relative mt-20 mx-4 rounded-3xl border border-white/12 bg-ink-900/92 p-4 backdrop-blur-2xl">
+        <div className="relative mx-4 mt-20 rounded-3xl border border-white/12 bg-abyss-950/95 p-4 backdrop-blur-2xl">
           <ul className="flex flex-col gap-1">
             {MARKETING_NAV.map((item) => (
               <li key={item.href}>
@@ -108,7 +118,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
                   onClick={() => setOpen(false)}
                   className="block rounded-xl px-4 py-3 text-[15px] font-medium text-ink-200 transition-colors hover:bg-white/6 hover:text-white"
                 >
-                  {item.label}
+                  {t.nav[item.key]}
                 </Link>
               </li>
             ))}
@@ -116,15 +126,15 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
           <div className="mt-3 flex flex-col gap-2 border-t border-white/8 pt-3">
             {signedIn ? (
               <Button asChild size="lg">
-                <Link href="/dashboard">Open dashboard</Link>
+                <Link href="/dashboard">{t.common.openDashboard}</Link>
               </Button>
             ) : (
               <>
                 <Button asChild variant="outline" size="lg">
-                  <Link href="/login">Sign in</Link>
+                  <Link href="/login">{t.common.signIn}</Link>
                 </Button>
                 <Button asChild size="lg">
-                  <Link href="/signup">Start free</Link>
+                  <Link href="/signup">{t.common.startFree}</Link>
                 </Button>
               </>
             )}

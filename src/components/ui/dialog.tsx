@@ -4,6 +4,7 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/provider";
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
@@ -17,18 +18,20 @@ export function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showClose?: boolean;
 }) {
+  const t = useT();
+
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         className={cn(
-          "fixed inset-0 z-50 bg-ink-950/70 backdrop-blur-md",
+          "fixed inset-0 z-50 bg-abyss-1000/75 backdrop-blur-md",
           "data-[state=open]:animate-overlay-in data-[state=closed]:animate-overlay-out",
         )}
       />
       <DialogPrimitive.Content
         className={cn(
           "fixed left-1/2 top-1/2 z-50 max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto",
-          "rounded-3xl border border-white/12 bg-ink-900/85 p-6 shadow-2xl backdrop-blur-2xl",
+          "rounded-3xl border border-white/12 bg-abyss-900/88 p-6 shadow-2xl backdrop-blur-2xl",
           "data-[state=open]:animate-content-in data-[state=closed]:animate-content-out",
           className,
         )}
@@ -38,7 +41,7 @@ export function DialogContent({
         {showClose && (
           <DialogPrimitive.Close
             className="absolute right-4 top-4 rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-white/8 hover:text-white"
-            aria-label="Close dialog"
+            aria-label={t.ui.closeDialog}
           >
             <X className="size-4" />
           </DialogPrimitive.Close>

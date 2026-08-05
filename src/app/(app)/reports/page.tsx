@@ -4,17 +4,20 @@ import { Suspense } from "react";
 import { FileSearch, ScanLine } from "lucide-react";
 import type { ReportFilters as Filters, WaterBodyType, WaterQuality } from "@/types";
 import { listLocations, listReports } from "@/lib/data/repository";
+import { getT } from "@/lib/i18n/server";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/misc";
 import { EmptyState } from "@/components/shared/primitives";
 import { ReportCard } from "@/components/reports/report-card";
 import { Pagination, ReportFilters } from "@/components/reports/report-filters";
 
-export const metadata: Metadata = {
-  title: "Reports",
-  description:
-    "Browse, filter and search every AI water assessment on the network.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: t.pages.reports.metaTitle,
+    description: t.pages.reports.metaDescription,
+  };
+}
 
 interface SearchParams {
   q?: string;
@@ -34,24 +37,23 @@ export default async function ReportsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const params = await searchParams;
+  const [params, t] = await Promise.all([searchParams, getT()]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-[1.6rem] font-semibold tracking-[-0.035em] text-ink-50">
-            Assessment reports
+            {t.pages.reports.title}
           </h1>
           <p className="mt-1.5 text-[14px] text-ink-400">
-            Every published AI assessment, filterable by grade, region, water
-            body type and date.
+            {t.pages.reports.description}
           </p>
         </div>
         <Button asChild>
           <Link href="/upload">
             <ScanLine aria-hidden />
-            New analysis
+            {t.pages.reports.newAnalysis}
           </Link>
         </Button>
       </div>
@@ -82,9 +84,10 @@ async function ReportsResults({ params }: { params: SearchParams }) {
     pageSize: 12,
   };
 
-  const [result, locations] = await Promise.all([
+  const [result, locations, t] = await Promise.all([
     listReports(filters),
     listLocations(),
+    getT(),
   ]);
 
   const regions = [
@@ -102,11 +105,11 @@ async function ReportsResults({ params }: { params: SearchParams }) {
       {result.items.length === 0 ? (
         <EmptyState
           icon={<FileSearch />}
-          title="No reports match those filters"
-          description="Try widening the severity range, clearing the region, or searching for a different water body."
+          title={t.pages.reports.emptyTitle}
+          description={t.pages.reports.emptyDescription}
           action={
             <Button asChild variant="secondary" size="sm">
-              <Link href="/reports">Reset filters</Link>
+              <Link href="/reports">{t.pages.reports.resetFilters}</Link>
             </Button>
           }
           className="mt-6"

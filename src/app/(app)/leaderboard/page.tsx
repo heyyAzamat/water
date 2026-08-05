@@ -2,22 +2,28 @@ import type { Metadata } from "next";
 import { Award, Medal, Trophy } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { leaderboardEntries, platformStats } from "@/lib/data/repository";
+import { getT } from "@/lib/i18n/server";
+import { fmt } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/misc";
 import { ScoreChip, StatTile } from "@/components/shared/primitives";
 
-export const metadata: Metadata = {
-  title: "Leaderboard",
-  description: "Top contributors monitoring water bodies across the network.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: t.pages.leaderboard.metaTitle,
+    description: t.pages.leaderboard.metaDescription,
+  };
+}
 
 export default async function LeaderboardPage() {
-  const [entries, stats, user] = await Promise.all([
+  const [entries, stats, user, t] = await Promise.all([
     leaderboardEntries(50),
     platformStats(),
     getCurrentUser(),
+    getT(),
   ]);
 
   const podium = entries.slice(0, 3);
@@ -28,34 +34,38 @@ export default async function LeaderboardPage() {
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
       <div>
         <h1 className="text-[1.6rem] font-semibold tracking-[-0.035em] text-ink-50">
-          Contributor leaderboard
+          {t.pages.leaderboard.title}
         </h1>
         <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-ink-400">
-          Points reward finding what matters: a base award per published
-          assessment plus a bonus scaled to the severity discovered. Documenting
-          a critical site is worth more than a clean one.
+          {t.pages.leaderboard.description}
         </p>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <StatTile
-          label="Contributors"
+          label={t.pages.leaderboard.tileContributors}
           value={stats.contributors}
-          hint="publishing assessments"
+          hint={t.pages.leaderboard.tileContributorsHint}
           icon={<Trophy />}
         />
         <StatTile
-          label="Assessments"
+          label={t.pages.leaderboard.tileAssessments}
           value={stats.reports}
-          hint={`${stats.locations} water bodies covered`}
+          hint={fmt(t.pages.leaderboard.tileAssessmentsHint, {
+            count: stats.locations,
+          })}
           icon={<Award />}
           accent="flux"
           delay={0.06}
         />
         <StatTile
-          label="Your rank"
+          label={t.pages.leaderboard.tileRank}
           value={me ? `#${me.rank}` : "—"}
-          hint={me ? `${me.points} points` : "Publish to enter the ranking"}
+          hint={
+            me
+              ? fmt(t.pages.leaderboard.tileRankHint, { points: me.points })
+              : t.pages.leaderboard.tileRankHintEmpty
+          }
           icon={<Medal />}
           delay={0.12}
         />
@@ -111,7 +121,7 @@ export default async function LeaderboardPage() {
                   </p>
                   {entry.user.id === user?.id && (
                     <Badge variant="brand" size="sm" className="mt-1.5">
-                      you
+                      {t.pages.leaderboard.you}
                     </Badge>
                   )}
 
@@ -121,8 +131,8 @@ export default async function LeaderboardPage() {
                   >
                     {entry.points}
                   </p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.1em] text-ink-600">
-                    points
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-ink-600">
+                    {t.pages.leaderboard.points}
                   </p>
 
                   <dl className="mt-4 flex w-full items-center justify-around border-t border-white/8 pt-3.5 text-center">
@@ -130,19 +140,25 @@ export default async function LeaderboardPage() {
                       <dd className="text-[14px] font-semibold text-ink-100">
                         {entry.reports}
                       </dd>
-                      <dt className="text-[10.5px] text-ink-600">reports</dt>
+                      <dt className="text-[10.5px] text-ink-600">
+                        {t.pages.leaderboard.reports}
+                      </dt>
                     </div>
                     <div>
                       <dd className="text-[14px] font-semibold text-ink-100">
                         {entry.regions}
                       </dd>
-                      <dt className="text-[10.5px] text-ink-600">regions</dt>
+                      <dt className="text-[10.5px] text-ink-600">
+                        {t.pages.leaderboard.regions}
+                      </dt>
                     </div>
                     <div>
                       <dd className="text-[14px] font-semibold text-ink-100">
                         {entry.averageScore}
                       </dd>
-                      <dt className="text-[10.5px] text-ink-600">avg severity</dt>
+                      <dt className="text-[10.5px] text-ink-600">
+                        {t.pages.leaderboard.avgSeverity}
+                      </dt>
                     </div>
                   </dl>
                 </div>
@@ -155,16 +171,16 @@ export default async function LeaderboardPage() {
       {/* Full table */}
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle as="h2">Full ranking</CardTitle>
+          <CardTitle as="h2">{t.pages.leaderboard.fullTitle}</CardTitle>
           <CardDescription>
-            Ordered by contribution points, then by number of assessments.
+            {t.pages.leaderboard.fullDescription}
           </CardDescription>
         </CardHeader>
 
         <div className="overflow-x-auto px-2 pb-4 sm:px-4">
           <table className="w-full min-w-140 border-collapse">
             <caption className="sr-only">
-              Contributor leaderboard ranked by points
+              {t.pages.leaderboard.caption}
             </caption>
             <thead>
               <tr className="border-b border-white/8 text-left">
@@ -172,19 +188,19 @@ export default async function LeaderboardPage() {
                   #
                 </th>
                 <th scope="col" className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                  Contributor
+                  {t.pages.leaderboard.colContributor}
                 </th>
                 <th scope="col" className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                  Reports
+                  {t.pages.leaderboard.reports}
                 </th>
                 <th scope="col" className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                  Regions
+                  {t.pages.leaderboard.regions}
                 </th>
                 <th scope="col" className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                  Avg severity
+                  {t.pages.leaderboard.avgSeverity}
                 </th>
                 <th scope="col" className="px-3 py-2.5 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-600">
-                  Points
+                  {t.pages.leaderboard.points}
                 </th>
               </tr>
             </thead>
@@ -196,7 +212,7 @@ export default async function LeaderboardPage() {
                     key={entry.user.id}
                     className={cn(
                       "border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.03]",
-                      isMe && "bg-aqua-400/6",
+                      isMe && "bg-lume-400/6",
                     )}
                   >
                     <td className="px-3 py-3 text-[13px] font-medium tabular-nums text-ink-400">
@@ -214,12 +230,12 @@ export default async function LeaderboardPage() {
                         </span>
                         {isMe && (
                           <Badge variant="brand" size="sm">
-                            you
+                            {t.pages.leaderboard.you}
                           </Badge>
                         )}
                         {entry.user.role !== "user" && (
                           <Badge variant="outline" size="sm">
-                            {entry.user.role}
+                            {t.roles[entry.user.role]}
                           </Badge>
                         )}
                       </div>

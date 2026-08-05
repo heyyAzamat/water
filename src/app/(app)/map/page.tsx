@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { allMapReports } from "@/lib/data/repository";
+import { getT } from "@/lib/i18n/server";
 import { MapExplorer } from "@/components/map/map-explorer";
 
-export const metadata: Metadata = {
-  title: "Live map",
-  description:
-    "Every water assessment, clustered and heat-mapped by pollution severity.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: t.ui.mapPage.metaTitle,
+    description: t.ui.mapPage.metaDescription,
+  };
+}
 
 export default async function MapPage() {
   const reports = await allMapReports();

@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { Home, Map as MapIcon, Waves } from "lucide-react";
+import { getT } from "@/lib/i18n/server";
 import { Button } from "@/components/ui/button";
-import { AmbientBackdrop, Logo } from "@/components/shared/primitives";
+import { Logo } from "@/components/shared/primitives";
+import { AbyssBackdrop } from "@/components/shared/abyss";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getT();
+
   return (
     <div className="relative isolate grid min-h-dvh place-items-center px-5">
-      <AmbientBackdrop intensity={0.55} />
+      <AbyssBackdrop depth={0.7} particles />
 
       <div className="relative flex max-w-md flex-col items-center text-center">
         <Logo />
@@ -15,28 +19,27 @@ export default function NotFound() {
           <Waves className="size-7" aria-hidden />
         </span>
 
-        <p className="mt-6 font-mono text-[12px] uppercase tracking-[0.16em] text-ink-600">
-          404 · not found
+        <p className="mt-6 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-600">
+          404
         </p>
-        <h1 className="mt-3 text-balance text-[1.75rem] font-semibold leading-tight tracking-[-0.035em] text-ink-50">
-          This water runs somewhere else
+        <h1 className="text-lume-soft mt-3 text-balance text-[1.85rem] font-semibold leading-tight tracking-[-0.04em] text-ink-50">
+          {t.errors.notFoundTitle}
         </h1>
         <p className="mt-3 text-[14px] leading-relaxed text-ink-400">
-          The page, report or share link you followed does not exist — it may
-          have been deleted by its author or by a moderator.
+          {t.errors.notFoundBody}
         </p>
 
         <div className="mt-8 flex flex-col gap-2 sm:flex-row">
           <Button asChild>
             <Link href="/">
               <Home aria-hidden />
-              Back to home
+              {t.errors.notFoundHome}
             </Link>
           </Button>
           <Button asChild variant="secondary">
             <Link href="/map">
               <MapIcon aria-hidden />
-              Explore the map
+              {t.errors.notFoundMap}
             </Link>
           </Button>
         </div>

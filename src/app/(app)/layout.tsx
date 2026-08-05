@@ -30,7 +30,7 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-dvh">
       <aside
-        className="sticky top-0 hidden h-dvh w-68 shrink-0 border-r border-white/8 bg-ink-950/60 backdrop-blur-2xl lg:block"
+        className="sticky top-0 hidden h-dvh w-68 shrink-0 border-r border-white/8 bg-abyss-1000/70 backdrop-blur-2xl lg:block"
         data-app-sidebar
       >
         <AppSidebar role={user.role} unreadCount={unread} />

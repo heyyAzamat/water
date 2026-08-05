@@ -3,6 +3,8 @@
 import * as React from "react";
 import { MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import type { Author, Comment } from "@/types";
 import { timeAgo } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,8 @@ export function CommentThread({
   initialComments: Comment[];
   currentUser: Author | null;
 }) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const [comments, setComments] = React.useState(initialComments);
   const [body, setBody] = React.useState("");
   const [sending, setSending] = React.useState(false);
@@ -63,7 +67,7 @@ export function CommentThread({
     } catch (error) {
       setComments((prev) => prev.filter((c) => c.id !== optimistic.id));
       setBody(trimmed);
-      toast.error("Could not post your comment", {
+      toast.error(t.ui.comments.failed, {
         description: error instanceof Error ? error.message : undefined,
       });
     } finally {
@@ -86,8 +90,8 @@ export function CommentThread({
               value={body}
               onChange={(e) => setBody(e.target.value.slice(0, MAX_LENGTH))}
               rows={3}
-              placeholder="Add local context — when did you last see this stretch, is it getting worse, has anyone reported it?"
-              aria-label="Write a comment"
+              placeholder={t.ui.comments.placeholder}
+              aria-label={t.ui.comments.label}
               disabled={sending}
               onKeyDown={(event) => {
                 // ⌘/Ctrl+Enter submits — the convention people expect in a
@@ -100,7 +104,10 @@ export function CommentThread({
             />
             <div className="mt-2 flex items-center justify-between gap-3">
               <span className="text-[11px] text-ink-600">
-                {body.length}/{MAX_LENGTH} · ⌘↵ to post
+                {fmt(t.ui.comments.hint, {
+                  count: body.length,
+                  max: MAX_LENGTH,
+                })}
               </span>
               <Button
                 type="submit"
@@ -109,7 +116,7 @@ export function CommentThread({
                 disabled={!body.trim()}
               >
                 <Send />
-                Post
+                {t.ui.comments.post}
               </Button>
             </div>
           </div>
@@ -117,7 +124,7 @@ export function CommentThread({
       ) : (
         <div className="rounded-xl border border-white/8 bg-white/[0.03] p-4 text-center">
           <p className="text-[13px] text-ink-400">
-            Sign in to add local context to this assessment.
+            {t.ui.comments.signedOut}
           </p>
         </div>
       )}
@@ -125,8 +132,8 @@ export function CommentThread({
       {comments.length === 0 ? (
         <EmptyState
           icon={<MessageSquare />}
-          title="No comments yet"
-          description="Local knowledge often explains what a photograph cannot. Be the first to add context."
+          title={t.ui.comments.emptyTitle}
+          description={t.ui.comments.emptyBody}
         />
       ) : (
         <ul className="flex flex-col gap-3">
@@ -151,7 +158,7 @@ export function CommentThread({
                     </Badge>
                   )}
                   <span className="text-[11px] text-ink-600">
-                    {timeAgo(comment.createdAt)}
+                    {timeAgo(comment.createdAt, dateLocale)}
                   </span>
                 </div>
                 <p className="mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-ink-300">

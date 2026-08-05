@@ -17,9 +17,13 @@ export function compactNumber(n: number) {
   }).format(n);
 }
 
-export function formatDate(input: string | Date, withTime = false) {
+export function formatDate(
+  input: string | Date,
+  withTime = false,
+  locale = "en-GB",
+) {
   const d = typeof input === "string" ? new Date(input) : input;
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -27,10 +31,10 @@ export function formatDate(input: string | Date, withTime = false) {
   });
 }
 
-export function timeAgo(input: string | Date) {
+export function timeAgo(input: string | Date, locale = "en-GB") {
   const d = typeof input === "string" ? new Date(input) : input;
   const seconds = Math.round((Date.now() - d.getTime()) / 1000);
-  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
 
   const table: [Intl.RelativeTimeFormatUnit, number][] = [
     ["year", 31536000],

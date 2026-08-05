@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ImageUp, Loader2, RotateCcw, Upload, X } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { cn, formatBytes } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +42,7 @@ export function Dropzone({
   onChange: (image: PreparedImage | null) => void;
   disabled?: boolean;
 }) {
+  const t = useT();
   const [dragging, setDragging] = React.useState(false);
   const [preparing, setPreparing] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
@@ -64,15 +67,17 @@ export function Dropzone({
   const prepare = React.useCallback(
     async (file: File) => {
       if (!ACCEPTED.includes(file.type as (typeof ACCEPTED)[number])) {
-        toast.error("Unsupported format", {
-          description: "Upload a PNG, JPEG or WEBP image.",
+        toast.error(t.ui.dropzone.unsupported, {
+          description: t.ui.dropzone.unsupportedBody,
         });
         return;
       }
 
       if (file.size > MAX_INPUT_BYTES) {
-        toast.error("Image too large", {
-          description: `${formatBytes(file.size)} exceeds the 25 MB limit.`,
+        toast.error(t.ui.dropzone.tooLarge, {
+          description: fmt(t.ui.dropzone.tooLargeBody, {
+            size: formatBytes(file.size),
+          }),
         });
         return;
       }
@@ -120,8 +125,8 @@ export function Dropzone({
         setProgress(100);
       } catch (error) {
         console.error(error);
-        toast.error("Could not read that image", {
-          description: "The file may be corrupt. Try a different photograph.",
+        toast.error(t.ui.dropzone.unreadable, {
+          description: t.ui.dropzone.unreadableBody,
         });
       } finally {
         setPreparing(false);
@@ -149,7 +154,7 @@ export function Dropzone({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={value.previewUrl}
-            alt="Selected water body photograph, ready for analysis"
+            alt={t.ui.dropzone.selectedAlt}
             className="size-full object-contain"
           />
           <div className="absolute right-3 top-3 flex gap-2">
@@ -158,7 +163,7 @@ export function Dropzone({
               size="icon-sm"
               onClick={() => inputRef.current?.click()}
               disabled={disabled}
-              aria-label="Replace image"
+              aria-label={t.ui.dropzone.replace}
             >
               <RotateCcw />
             </Button>
@@ -167,7 +172,7 @@ export function Dropzone({
               size="icon-sm"
               onClick={() => onChange(null)}
               disabled={disabled}
-              aria-label="Remove image"
+              aria-label={t.ui.dropzone.remove}
             >
               <X />
             </Button>
@@ -175,12 +180,21 @@ export function Dropzone({
         </div>
 
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-white/8 p-4 sm:grid-cols-4">
-          <Meta label="Dimensions" value={`${value.width} × ${value.height}`} />
-          <Meta label="Format" value={value.mimeType.replace("image/", "").toUpperCase()} />
-          <Meta label="Size" value={formatBytes(value.compressedBytes)} />
           <Meta
-            label="Compressed"
-            value={savedPct > 0 ? `−${savedPct}%` : "no gain"}
+            label={t.ui.dropzone.dimensions}
+            value={`${value.width} × ${value.height}`}
+          />
+          <Meta
+            label={t.ui.dropzone.format}
+            value={value.mimeType.replace("image/", "").toUpperCase()}
+          />
+          <Meta
+            label={t.ui.dropzone.size}
+            value={formatBytes(value.compressedBytes)}
+          />
+          <Meta
+            label={t.ui.dropzone.compressed}
+            value={savedPct > 0 ? `−${savedPct}%` : t.ui.dropzone.noGain}
             accent={savedPct > 0}
           />
         </dl>
@@ -258,22 +272,22 @@ export function Dropzone({
         <span>
           <span className="block text-[15px] font-medium text-ink-100">
             {preparing
-              ? "Preparing image…"
+              ? t.ui.dropzone.preparing
               : dragging
-                ? "Drop to analyse"
-                : "Drag a photograph here"}
+                ? t.ui.dropzone.dropToAnalyse
+                : t.ui.dropzone.dragHere}
           </span>
           <span className="mt-1.5 block text-[13px] text-ink-500">
             {preparing
-              ? "Compressing and measuring colourimetry"
-              : "or click to browse · PNG, JPEG, WEBP up to 25 MB"}
+              ? t.ui.dropzone.preparingHint
+              : t.ui.dropzone.browseHint}
           </span>
         </span>
 
         {preparing && (
           <span className="h-1 w-56 overflow-hidden rounded-full bg-white/8">
             <span
-              className="block h-full rounded-full bg-gradient-to-r from-aqua-400 to-flux-500 transition-all duration-300"
+              className="block h-full rounded-full bg-gradient-to-r from-lume-400 to-flux-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </span>

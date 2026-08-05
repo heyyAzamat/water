@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { WaterBodyType, WaterLocation } from "@/types";
 import { GRADES } from "@/lib/ai/scoring";
-import { cn, titleCase } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, NativeSelect } from "@/components/ui/field";
@@ -21,12 +23,7 @@ const WATER_TYPES: Array<WaterBodyType | "all"> = [
   "sea",
 ];
 
-const SORTS = [
-  { value: "recent", label: "Most recent" },
-  { value: "worst", label: "Worst first" },
-  { value: "best", label: "Cleanest first" },
-  { value: "popular", label: "Most viewed" },
-] as const;
+const SORT_VALUES = ["recent", "worst", "best", "popular"] as const;
 
 /**
  * URL-driven filter bar.
@@ -43,6 +40,7 @@ export function ReportFilters({
   regions: string[];
   total: number;
 }) {
+  const t = useT();
   const router = useRouter();
   const params = useSearchParams();
   const [query, setQuery] = React.useState(params.get("q") ?? "");
@@ -128,8 +126,8 @@ export function ReportFilters({
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 160)}
-            placeholder="Search reports, rivers, lakes, regions…"
-            aria-label="Search reports"
+            placeholder={t.ui.filters.searchPlaceholder}
+            aria-label={t.ui.filters.searchLabel}
             className="pl-9"
             role="combobox"
             aria-expanded={showSuggestions && suggestions.length > 0}
@@ -139,7 +137,7 @@ export function ReportFilters({
           {showSuggestions && suggestions.length > 0 && (
             <ul
               role="listbox"
-              className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-white/12 bg-ink-850/96 p-1.5 shadow-2xl backdrop-blur-2xl"
+              className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-xl border border-white/12 bg-abyss-900/96 p-1.5 shadow-2xl backdrop-blur-2xl"
             >
               {suggestions.map((location) => (
                 <li key={location.id}>
@@ -168,7 +166,7 @@ export function ReportFilters({
                       </span>
                     </span>
                     <Badge variant="outline" size="sm">
-                      {titleCase(location.type)}
+                      {t.domain.waterBody[location.type]}
                     </Badge>
                   </button>
                 </li>
@@ -185,12 +183,18 @@ export function ReportFilters({
               else next.set("sort", e.target.value);
             })
           }
-          aria-label="Sort reports"
+          aria-label={t.ui.filters.sortLabel}
           className="sm:w-44"
         >
-          {SORTS.map((sort) => (
-            <option key={sort.value} value={sort.value}>
-              {sort.label}
+          {SORT_VALUES.map((value) => (
+            <option key={value} value={value}>
+              {value === "recent"
+                ? t.ui.filters.sortRecent
+                : value === "worst"
+                  ? t.ui.filters.sortWorst
+                  : value === "best"
+                    ? t.ui.filters.sortBest
+                    : t.ui.filters.sortPopular}
             </option>
           ))}
         </NativeSelect>
@@ -201,7 +205,7 @@ export function ReportFilters({
           aria-expanded={expanded}
         >
           <SlidersHorizontal />
-          Filters
+          {t.ui.filters.button}
           {activeCount > 0 && (
             <Badge variant="brand" size="sm">
               {activeCount}
@@ -213,7 +217,7 @@ export function ReportFilters({
       {expanded && (
         <div className="mt-4 grid gap-3 border-t border-white/8 pt-4 sm:grid-cols-2 lg:grid-cols-4">
           <FilterSelect
-            label="Water quality"
+            label={t.ui.filters.quality}
             value={active.quality}
             onChange={(value) =>
               push((next) => {
@@ -222,16 +226,16 @@ export function ReportFilters({
               })
             }
             options={[
-              { value: "all", label: "All grades" },
+              { value: "all", label: t.ui.filters.allGrades },
               ...GRADES.map((g) => ({
                 value: g.quality,
-                label: `${g.quality} (${g.min}–${g.max})`,
+                label: `${t.grades[g.quality].label} (${g.min}–${g.max})`,
               })),
             ]}
           />
 
           <FilterSelect
-            label="Water body type"
+            label={t.ui.filters.type}
             value={active.type}
             onChange={(value) =>
               push((next) => {
@@ -241,12 +245,15 @@ export function ReportFilters({
             }
             options={WATER_TYPES.map((type) => ({
               value: type,
-              label: type === "all" ? "All types" : titleCase(type),
+              label:
+                type === "all"
+                  ? t.ui.filters.allTypes
+                  : t.domain.waterBody[type],
             }))}
           />
 
           <FilterSelect
-            label="Region"
+            label={t.ui.filters.region}
             value={active.region}
             onChange={(value) =>
               push((next) => {
@@ -255,13 +262,13 @@ export function ReportFilters({
               })
             }
             options={[
-              { value: "all", label: "All regions" },
+              { value: "all", label: t.ui.filters.allRegions },
               ...regions.map((region) => ({ value: region, label: region })),
             ]}
           />
 
           <FilterSelect
-            label="Minimum severity"
+            label={t.ui.filters.minSeverity}
             value={active.minScore || "0"}
             onChange={(value) =>
               push((next) => {
@@ -270,11 +277,16 @@ export function ReportFilters({
               })
             }
             options={[
-              { value: "0", label: "Any severity" },
-              { value: "21", label: "21+ (Good and worse)" },
-              { value: "41", label: "41+ (Moderate and worse)" },
-              { value: "61", label: "61+ (Poor and worse)" },
-              { value: "81", label: "81+ (Critical only)" },
+              { value: "0", label: t.ui.filters.anySeverity },
+              ...GRADES.filter((g) => g.min > 0).map((g) => ({
+                value: String(g.min),
+                label: fmt(
+                  g.quality === "Critical"
+                    ? t.ui.filters.criticalOnly
+                    : t.ui.filters.minAndWorse,
+                  { score: g.min, label: t.grades[g.quality].label },
+                ),
+              })),
             ]}
           />
 
@@ -283,7 +295,7 @@ export function ReportFilters({
               htmlFor="from"
               className="text-[11.5px] font-medium text-ink-500"
             >
-              Captured from
+              {t.ui.filters.from}
             </label>
             <Input
               id="from"
@@ -301,7 +313,7 @@ export function ReportFilters({
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="to" className="text-[11.5px] font-medium text-ink-500">
-              Captured until
+              {t.ui.filters.to}
             </label>
             <Input
               id="to"
@@ -321,8 +333,7 @@ export function ReportFilters({
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/8 pt-3.5">
         <p className="text-[12.5px] text-ink-500">
-          <span className="font-semibold text-ink-200">{total}</span> report
-          {total === 1 ? "" : "s"}
+          {fmt(t.ui.filters.totalReports, { count: total })}
         </p>
 
         {pinnedLocation && (
@@ -330,7 +341,9 @@ export function ReportFilters({
             {pinnedLocation.name}
             <button
               onClick={() => push((next) => next.delete("locationId"))}
-              aria-label={`Remove ${pinnedLocation.name} filter`}
+              aria-label={fmt(t.ui.filters.removeFilter, {
+                name: pinnedLocation.name,
+              })}
               className="ml-0.5 rounded hover:text-white"
             >
               <X className="size-3" />
@@ -349,7 +362,7 @@ export function ReportFilters({
             }}
           >
             <X />
-            Clear all filters
+            {t.ui.filters.clearAll}
           </Button>
         )}
       </div>
@@ -397,6 +410,7 @@ export function Pagination({
   page: number;
   totalPages: number;
 }) {
+  const t = useT();
   const params = useSearchParams();
   const router = useRouter();
 
@@ -419,7 +433,7 @@ export function Pagination({
   return (
     <nav
       className="mt-8 flex items-center justify-center gap-1.5"
-      aria-label="Pagination"
+      aria-label={t.ui.filters.pagination}
     >
       <Button
         variant="outline"
@@ -427,7 +441,7 @@ export function Pagination({
         onClick={() => go(page - 1)}
         disabled={page <= 1}
       >
-        Previous
+        {t.ui.filters.previous}
       </Button>
 
       {pages.map((p, i) => (
@@ -458,7 +472,7 @@ export function Pagination({
         onClick={() => go(page + 1)}
         disabled={page >= totalPages}
       >
-        Next
+        {t.ui.filters.next}
       </Button>
     </nav>
   );

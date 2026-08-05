@@ -9,6 +9,9 @@ import "leaflet.heat";
 import type { Report } from "@/types";
 import { gradeForScore } from "@/lib/ai/scoring";
 import { formatDate } from "@/lib/utils";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
+import { useI18n, useT } from "@/lib/i18n/provider";
+import { intlLocale } from "@/lib/i18n/format";
 
 /**
  * Leaflet map with severity markers, density clustering and a heat overlay.
@@ -51,6 +54,8 @@ export function WaterMap({
   interactive = true,
   fitToReports = false,
 }: WaterMapProps) {
+  const t = useT();
+  const dateLocale = intlLocale(useI18n().locale);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const mapRef = React.useRef<L.Map | null>(null);
   const clusterRef = React.useRef<L.MarkerClusterGroup | null>(null);
@@ -226,7 +231,7 @@ export function WaterMap({
         } as L.MarkerOptions & { severity: number });
 
         if (interactive) {
-          marker.bindPopup(popupHtml(report), {
+          marker.bindPopup(popupHtml(report, t, dateLocale), {
             closeButton: true,
             offset: [0, -6],
             maxWidth: 300,
@@ -283,7 +288,7 @@ export function WaterMap({
   );
 }
 
-function popupHtml(report: Report) {
+function popupHtml(report: Report, t: Dictionary, dateLocale: string) {
   const grade = gradeForScore(report.analysis.pollutionScore);
   const tags = report.analysis.pollutionTags.slice(0, 3);
 
@@ -306,7 +311,7 @@ function popupHtml(report: Report) {
         color:${grade.hex};font-size:11px;font-weight:600;
       ">
         <span style="width:5px;height:5px;border-radius:50%;background:${grade.hex};"></span>
-        ${grade.quality} · ${report.analysis.pollutionScore}
+        ${escapeHtml(t.grades[grade.quality].label)} · ${report.analysis.pollutionScore}
       </div>
     </div>
 
@@ -315,8 +320,8 @@ function popupHtml(report: Report) {
         ${escapeHtml(report.location?.name ?? report.title)}
       </div>
       <div style="margin-top:3px;font-size:11.5px;color:oklch(0.545 0.021 258);">
-        ${escapeHtml([report.location?.region, report.location?.country].filter(Boolean).join(", ") || "Unmapped location")}
-        · ${formatDate(report.capturedAt ?? report.createdAt)}
+        ${escapeHtml([report.location?.region, report.location?.country].filter(Boolean).join(", ") || t.ui.unmappedLocation)}
+        · ${formatDate(report.capturedAt ?? report.createdAt, false, dateLocale)}
       </div>
 
       ${
@@ -328,7 +333,7 @@ function popupHtml(report: Report) {
                     padding:2px 7px;border-radius:6px;font-size:10.5px;
                     background:oklch(1 0 0 / .07);color:oklch(0.775 0.016 258);
                     border:1px solid oklch(1 0 0 / .08);
-                  ">${escapeHtml(tag.replace(/_/g, " "))}</span>`,
+                  ">${escapeHtml(t.domain.indicators[tag].label)}</span>`,
                 )
                 .join("")}
             </div>`
@@ -342,9 +347,9 @@ function popupHtml(report: Report) {
         <a href="/reports/${escapeAttr(report.id)}" style="
           display:inline-flex;align-items:center;gap:4px;
           padding:5px 10px;border-radius:9px;text-decoration:none;
-          background:linear-gradient(135deg, oklch(0.755 0.135 192), oklch(0.63 0.19 272));
+          background:linear-gradient(135deg, oklch(0.78 0.14 206), oklch(0.59 0.185 269));
           color:oklch(0.145 0.014 258);font-size:11.5px;font-weight:600;
-        ">Open report →</a>
+        ">${escapeHtml(t.ui.moderation.openReport)} →</a>
       </div>
     </div>
   </div>`;

@@ -7,6 +7,8 @@ import type { PollutionTag } from "@/types";
 import { gradeForScore } from "@/lib/ai/scoring";
 import { sampleWaterImage } from "@/lib/data/sample-image";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { ScoreRing } from "@/components/shared/score-ring";
 import { QualityBadge } from "@/components/shared/primitives";
 
@@ -21,68 +23,56 @@ import { QualityBadge } from "@/components/shared/primitives";
 
 interface Scene {
   place: string;
-  region: string;
   score: number;
   confidence: number;
   tags: PollutionTag[];
-  objects: string[];
-  indicators: { label: string; severity: number }[];
-  explanation: string;
+  /** Copy (region, objects, explanation) lives in the dictionary, by index. */
+  indicators: { key: PollutionTag | "clarity"; severity: number }[];
 }
 
 const SCENES: Scene[] = [
   {
     place: "Yamuna — Kalindi Kunj",
-    region: "Delhi, India",
     score: 91,
     confidence: 93,
     tags: ["foam", "sewage", "industrial_discharge"],
-    objects: ["Persistent white foam", "Organic sludge", "Discharge outfall"],
     indicators: [
-      { label: "Surface foam", severity: 94 },
-      { label: "Sewage indicators", severity: 88 },
-      { label: "Water clarity", severity: 82 },
-      { label: "Industrial discharge", severity: 71 },
+      { key: "foam", severity: 94 },
+      { key: "sewage", severity: 88 },
+      { key: "clarity", severity: 82 },
+      { key: "industrial_discharge", severity: 71 },
     ],
-    explanation:
-      "Dense surfactant foam covers the majority of the frame and persists well away from any weir, ruling out simple aeration.",
   },
   {
     place: "Lake Erie — Maumee Bay",
-    region: "Ohio, United States",
     score: 64,
     confidence: 88,
     tags: ["algae_bloom", "eutrophication"],
-    objects: ["Green algal mats", "Dense surface vegetation"],
     indicators: [
-      { label: "Algae bloom", severity: 76 },
-      { label: "Eutrophication", severity: 63 },
-      { label: "Water clarity", severity: 54 },
-      { label: "Sediment load", severity: 31 },
+      { key: "algae_bloom", severity: 76 },
+      { key: "eutrophication", severity: 63 },
+      { key: "clarity", severity: 54 },
+      { key: "turbidity", severity: 31 },
     ],
-    explanation:
-      "Green channel leads red and blue by 19% across a contiguous surface region, consistent with cyanobacteria biomass rather than reflected foliage.",
   },
   {
     place: "Big Almaty Lake",
-    region: "Almaty, Kazakhstan",
     score: 11,
     confidence: 95,
     tags: [],
-    objects: ["Clear open water", "Visible substrate"],
     indicators: [
-      { label: "Water clarity", severity: 12 },
-      { label: "Floating garbage", severity: 4 },
-      { label: "Surface foam", severity: 2 },
+      { key: "clarity", severity: 12 },
+      { key: "floating_garbage", severity: 4 },
+      { key: "foam", severity: 2 },
     ],
-    explanation:
-      "High luminance contrast with a neutral colour cast and a visible bottom gradient in the shallows. No anthropogenic pollution signature measurable.",
   },
 ];
 
 export function AnalysisPreview() {
+  const t = useT();
   const [index, setIndex] = React.useState(0);
   const scene = SCENES[index];
+  const copy = t.ui.preview.scenes[index];
   const grade = gradeForScore(scene.score);
 
   React.useEffect(() => {
@@ -144,7 +134,7 @@ export function AnalysisPreview() {
 
           {/* Detection boxes */}
           <AnimatePresence>
-            {scene.objects.slice(0, 3).map((object, i) => (
+            {copy.objects.slice(0, 3).map((object, i) => (
               <motion.div
                 key={`${scene.place}-${object}`}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -178,7 +168,7 @@ export function AnalysisPreview() {
                 {scene.place}
               </span>
               <span className="hidden shrink-0 text-ink-500 sm:inline">
-                · {scene.region}
+                · {copy.region}
               </span>
             </div>
           </div>
@@ -191,11 +181,11 @@ export function AnalysisPreview() {
             <div className="min-w-0 flex-1">
               <QualityBadge quality={grade.quality} />
               <p className="mt-2.5 text-[12.5px] leading-relaxed text-ink-400">
-                {grade.blurb}
+                {t.grades[grade.quality].blurb}
               </p>
               <div className="mt-3 flex items-center gap-1.5 text-[11.5px] text-ink-500">
                 <Gauge className="size-3.5" aria-hidden />
-                Confidence
+                {t.ui.preview.confidence}
                 <span className="font-semibold text-ink-200">
                   {scene.confidence}%
                 </span>
@@ -205,18 +195,18 @@ export function AnalysisPreview() {
 
           <div className="space-y-2.5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-500">
-              Indicator matrix
+              {t.ui.preview.indicatorMatrix}
             </p>
             {scene.indicators.map((indicator, i) => {
               const bar = gradeForScore(indicator.severity);
               return (
-                <div key={indicator.label} className="flex items-center gap-3">
+                <div key={t.domain.indicators[indicator.key].label} className="flex items-center gap-3">
                   <span className="w-[7.5rem] shrink-0 truncate text-[12px] text-ink-300">
-                    {indicator.label}
+                    {t.domain.indicators[indicator.key].label}
                   </span>
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/8">
                     <motion.div
-                      key={`${scene.place}-${indicator.label}`}
+                      key={`${scene.place}-${indicator.key}`}
                       className="h-full rounded-full"
                       style={{ background: bar.hex }}
                       initial={{ width: 0 }}
@@ -243,14 +233,14 @@ export function AnalysisPreview() {
             </div>
             <AnimatePresence mode="wait">
               <motion.p
-                key={scene.explanation}
+                key={copy.explanation}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.4 }}
                 className="mt-2 text-[12.5px] leading-relaxed text-ink-300"
               >
-                {scene.explanation}
+                {copy.explanation}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -258,19 +248,19 @@ export function AnalysisPreview() {
           <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/8 pt-4">
             <div className="flex items-center gap-1.5 text-[11.5px] text-ink-500">
               <CheckCircle2 className="size-3.5 text-grade-excellent" aria-hidden />
-              Stored, mapped &amp; trended
+              {t.ui.preview.stored}
             </div>
-            <div className="flex gap-1.5" role="tablist" aria-label="Preview scenes">
+            <div className="flex gap-1.5" role="tablist" aria-label={t.ui.preview.scenesLabel}>
               {SCENES.map((s, i) => (
                 <button
                   key={s.place}
                   role="tab"
                   aria-selected={i === index}
-                  aria-label={`Show ${s.place}`}
+                  aria-label={fmt(t.ui.preview.showScene, { place: s.place })}
                   onClick={() => setIndex(i)}
                   className={cn(
                     "h-1.5 rounded-full transition-all duration-300",
-                    i === index ? "w-6 bg-aqua-400" : "w-1.5 bg-white/18 hover:bg-white/30",
+                    i === index ? "w-6 bg-lume-400" : "w-1.5 bg-white/18 hover:bg-white/30",
                   )}
                 />
               ))}

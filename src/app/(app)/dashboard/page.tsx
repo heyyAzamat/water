@@ -25,6 +25,8 @@ import {
 } from "@/lib/data/repository";
 import { gradeForScore } from "@/lib/ai/scoring";
 import { cn, formatDate } from "@/lib/utils";
+import { getI18n, getT } from "@/lib/i18n/server";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,10 +45,13 @@ import {
   ScoreHistoryChart,
 } from "@/components/charts/score-charts";
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Your assessments, statistics, score history and achievements.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: t.pages.dashboard.metaTitle,
+    description: t.pages.dashboard.metaDescription,
+  };
+}
 
 const ACHIEVEMENT_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   droplet: Droplet,
@@ -59,8 +64,10 @@ const ACHIEVEMENT_ICONS: Record<string, React.ComponentType<{ className?: string
 };
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
+  const [user, { locale, t }] = await Promise.all([getCurrentUser(), getI18n()]);
   if (!user) return null;
+
+  const dateLocale = intlLocale(locale);
 
   const [reports, stats, platform, leaderboard, hotspots] = await Promise.all([
     listUserReports(user.id, 6),
@@ -90,15 +97,20 @@ export default async function DashboardPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[12.5px] font-medium uppercase tracking-[0.1em] text-ink-500">
-            {formatDate(new Date())}
+            {formatDate(new Date(), false, dateLocale)}
           </p>
           <h1 className="mt-1.5 text-[1.75rem] font-semibold tracking-[-0.035em] text-ink-50">
-            Welcome back, {user.name.split(" ")[0]}
+            {fmt(t.pages.dashboard.greeting, {
+              name: user.name.split(" ")[0],
+            })}
           </h1>
           <p className="mt-1.5 text-[14px] text-ink-400">
             {stats.reports === 0
-              ? "You haven't published an assessment yet — your first one becomes a location's baseline."
-              : `You've published ${stats.reports} assessment${stats.reports === 1 ? "" : "s"} across ${stats.locations} water bod${stats.locations === 1 ? "y" : "ies"}.`}
+              ? t.pages.dashboard.introEmpty
+              : fmt(t.pages.dashboard.intro, {
+                  reports: stats.reports,
+                  locations: stats.locations,
+                })}
           </p>
         </div>
 
@@ -106,13 +118,13 @@ export default async function DashboardPage() {
           <Button asChild>
             <Link href="/upload">
               <ScanLine aria-hidden />
-              New analysis
+              {t.pages.dashboard.newAnalysis}
             </Link>
           </Button>
           <Button asChild variant="secondary">
             <Link href="/map">
               <MapIcon aria-hidden />
-              Map
+              {t.pages.dashboard.map}
             </Link>
           </Button>
         </div>
@@ -121,29 +133,35 @@ export default async function DashboardPage() {
       {/* Personal statistics */}
       <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile
-          label="Assessments"
+          label={t.pages.dashboard.tileAssessments}
           value={stats.reports}
-          hint={`${stats.criticalFindings} critical finding${stats.criticalFindings === 1 ? "" : "s"}`}
+          hint={fmt(t.pages.dashboard.tileAssessmentsHint, {
+            count: stats.criticalFindings,
+          })}
           icon={<ScanLine />}
           delay={0}
         />
         <StatTile
-          label="Water bodies"
+          label={t.pages.dashboard.tileWaterBodies}
           value={stats.locations}
-          hint="distinct locations documented"
+          hint={t.pages.dashboard.tileWaterBodiesHint}
           icon={<Waves />}
           accent="flux"
           delay={0.06}
         />
         <StatTile
-          label="Contribution points"
+          label={t.pages.dashboard.tilePoints}
           value={stats.points}
-          hint={stats.rank ? `Rank #${stats.rank} network-wide` : "Publish to enter the ranking"}
+          hint={
+            stats.rank
+              ? fmt(t.pages.dashboard.tilePointsHint, { rank: stats.rank })
+              : t.pages.dashboard.tilePointsHintEmpty
+          }
           icon={<Trophy />}
           delay={0.12}
         />
         <StatTile
-          label="Mean severity"
+          label={t.pages.dashboard.tileSeverity}
           value={
             stats.reports > 0 ? (
               <span className="flex items-baseline gap-2">
@@ -156,8 +174,11 @@ export default async function DashboardPage() {
           }
           hint={
             stats.bestScore !== null
-              ? `best ${stats.bestScore} · worst ${stats.worstScore}`
-              : "across your uploads"
+              ? fmt(t.pages.dashboard.tileSeverityHint, {
+                  best: stats.bestScore,
+                  worst: stats.worstScore ?? "—",
+                })
+              : t.pages.dashboard.tileSeverityHintEmpty
           }
           icon={<Gauge />}
           accent="flux"
@@ -170,9 +191,9 @@ export default async function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-start justify-between gap-3">
             <div>
-              <CardTitle as="h2">Your pollution score history</CardTitle>
+              <CardTitle as="h2">{t.pages.dashboard.historyTitle}</CardTitle>
               <CardDescription>
-                Severity of every assessment you have published, oldest first.
+                {t.pages.dashboard.historyDescription}
               </CardDescription>
             </div>
             {history.length >= 2 && (
@@ -197,8 +218,10 @@ export default async function DashboardPage() {
         {/* Latest assessment */}
         <Card>
           <CardHeader>
-            <CardTitle as="h2">Latest assessment</CardTitle>
-            <CardDescription>Most recent AI verdict on your uploads.</CardDescription>
+            <CardTitle as="h2">{t.pages.dashboard.latestTitle}</CardTitle>
+            <CardDescription>
+              {t.pages.dashboard.latestDescription}
+            </CardDescription>
           </CardHeader>
           <div className="flex flex-col items-center px-5 pb-6">
             {reports[0] ? (
@@ -208,21 +231,27 @@ export default async function DashboardPage() {
                   {reports[0].location?.name ?? reports[0].title}
                 </p>
                 <p className="mt-1 text-center text-[12px] text-ink-500">
-                  Confidence {reports[0].analysis.confidence}% ·{" "}
-                  {formatDate(reports[0].capturedAt ?? reports[0].createdAt)}
+                  {fmt(t.pages.dashboard.confidence, {
+                    value: reports[0].analysis.confidence,
+                  })}{" "}
+                  · {formatDate(reports[0].capturedAt ?? reports[0].createdAt, false, dateLocale)}
                 </p>
                 <Button asChild variant="secondary" size="sm" className="mt-4">
-                  <Link href={`/reports/${reports[0].id}`}>Open full report</Link>
+                  <Link href={`/reports/${reports[0].id}`}>
+                    {t.pages.dashboard.openReport}
+                  </Link>
                 </Button>
               </>
             ) : (
               <EmptyState
                 icon={<ScanLine />}
-                title="No assessments yet"
-                description="Upload a photograph of any water body to get your first score."
+                title={t.pages.dashboard.latestEmptyTitle}
+                description={t.pages.dashboard.latestEmptyDescription}
                 action={
                   <Button asChild size="sm">
-                    <Link href="/upload">Analyse a photograph</Link>
+                    <Link href="/upload">
+                      {t.pages.dashboard.latestEmptyAction}
+                    </Link>
                   </Button>
                 }
                 className="border-0 bg-transparent py-6"
@@ -237,19 +266,21 @@ export default async function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle as="h2">Recent uploads</CardTitle>
-              <CardDescription>Your last six published assessments.</CardDescription>
+              <CardTitle as="h2">{t.pages.dashboard.recentTitle}</CardTitle>
+              <CardDescription>
+                {t.pages.dashboard.recentDescription}
+              </CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/reports">View all</Link>
+              <Link href="/reports">{t.pages.dashboard.viewAll}</Link>
             </Button>
           </CardHeader>
           <div className="px-5 pb-5 sm:px-6">
             {reports.length === 0 ? (
               <EmptyState
                 icon={<ScanLine />}
-                title="Nothing uploaded yet"
-                description="Your uploads will appear here with their AI score the moment they are analysed."
+                title={t.pages.dashboard.recentEmptyTitle}
+                description={t.pages.dashboard.recentEmptyDescription}
               />
             ) : (
               <ul className="flex flex-col gap-2">
@@ -267,11 +298,15 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle as="h2">Leaderboard</CardTitle>
-              <CardDescription>Top contributors this cycle.</CardDescription>
+              <CardTitle as="h2">{t.pages.dashboard.leaderboardTitle}</CardTitle>
+              <CardDescription>
+                {t.pages.dashboard.leaderboardDescription}
+              </CardDescription>
             </div>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/leaderboard">All</Link>
+              <Link href="/leaderboard">
+                {t.pages.dashboard.leaderboardAll}
+              </Link>
             </Button>
           </CardHeader>
           <div className="px-5 pb-5 sm:px-6">
@@ -284,7 +319,7 @@ export default async function DashboardPage() {
                     className={cn(
                       "flex items-center gap-3 rounded-xl border p-2.5 transition-colors",
                       isMe
-                        ? "border-aqua-400/30 bg-aqua-400/8"
+                        ? "border-lume-400/30 bg-lume-400/8"
                         : "border-white/8 bg-white/[0.025]",
                     )}
                   >
@@ -311,13 +346,15 @@ export default async function DashboardPage() {
                       <span className="block truncate text-[12.5px] font-medium text-ink-100">
                         {entry.user.name}
                         {isMe && (
-                          <span className="ml-1.5 text-[10.5px] text-aqua-300">
-                            you
+                          <span className="ml-1.5 text-[10.5px] text-lume-300">
+                            {t.pages.dashboard.you}
                           </span>
                         )}
                       </span>
                       <span className="block text-[11px] text-ink-500">
-                        {entry.reports} reports
+                        {fmt(t.pages.dashboard.reportsCount, {
+                          count: entry.reports,
+                        })}
                       </span>
                     </span>
                     <span className="shrink-0 text-[12.5px] font-semibold tabular-nums text-ink-200">
@@ -336,14 +373,17 @@ export default async function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle as="h2">Achievements</CardTitle>
+              <CardTitle as="h2">{t.pages.dashboard.achievementsTitle}</CardTitle>
               <CardDescription>
-                {unlocked} of {achievements.length} unlocked.
+                {fmt(t.pages.dashboard.achievementsDescription, {
+                  unlocked,
+                  total: achievements.length,
+                })}
               </CardDescription>
             </div>
             <Badge variant="brand" size="sm">
               <Trophy />
-              {stats.points} pts
+              {fmt(t.topbar.points, { count: stats.points })}
             </Badge>
           </CardHeader>
           <div className="grid gap-3 px-5 pb-5 sm:grid-cols-2 sm:px-6">
@@ -356,9 +396,9 @@ export default async function DashboardPage() {
         {/* Network hotspots */}
         <Card>
           <CardHeader>
-            <CardTitle as="h2">Network hotspots</CardTitle>
+            <CardTitle as="h2">{t.pages.dashboard.hotspotsTitle}</CardTitle>
             <CardDescription>
-              Highest-severity locations right now.
+              {t.pages.dashboard.hotspotsDescription}
             </CardDescription>
           </CardHeader>
           <div className="px-5 pb-5 sm:px-6">
@@ -382,7 +422,9 @@ export default async function DashboardPage() {
                         size="sm"
                       />
                       <span className="text-[11px] text-ink-600">
-                        {hotspot.reportCount} reports
+                        {fmt(t.pages.dashboard.reportsCount, {
+                          count: hotspot.reportCount,
+                        })}
                       </span>
                     </div>
                   </Link>
@@ -397,10 +439,13 @@ export default async function DashboardPage() {
       <Card className="mt-4">
         <CardHeader className="flex-row items-start justify-between gap-3">
           <div>
-            <CardTitle as="h2">Network grade distribution</CardTitle>
+            <CardTitle as="h2">
+              {t.pages.dashboard.distributionTitle}
+            </CardTitle>
             <CardDescription>
-              How all {platform.reports} published assessments fall across the
-              severity bands.
+              {fmt(t.pages.dashboard.distributionDescription, {
+                count: platform.reports,
+              })}
             </CardDescription>
           </div>
           <QualityBadge quality={gradeForScore(platform.averageScore).quality} score={platform.averageScore} />

@@ -13,6 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/provider";
 import type { ModerationStatus } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ export function ReportActions({
   canDelete: boolean;
   status: ModerationStatus;
 }) {
+  const t = useT();
   const router = useRouter();
   const [exporting, setExporting] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
@@ -68,7 +70,7 @@ export function ReportActions({
     setExporting(true);
     try {
       const target = document.getElementById("report-document");
-      if (!target) throw new Error("Report content not found");
+      if (!target) throw new Error(t.ui.actions.contentNotFound);
 
       const [{ default: html2canvas }, { default: JsPDF }] = await Promise.all([
         import("html2canvas-pro"),
@@ -124,11 +126,11 @@ export function ReportActions({
         .slice(0, 60);
 
       pdf.save(`aquavision-${slug || reportId}.pdf`);
-      toast.success("PDF exported");
+      toast.success(t.ui.actions.pdfExported);
     } catch (error) {
       console.error(error);
-      toast.error("Could not generate the PDF", {
-        description: "Try the print option instead — it produces the same layout.",
+      toast.error(t.ui.actions.pdfFailed, {
+        description: t.ui.actions.pdfFailedBody,
       });
     } finally {
       setExporting(false);
@@ -139,10 +141,10 @@ export function ReportActions({
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success("Share link copied");
+      toast.success(t.ui.actions.shareCopied);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      toast.error("Clipboard unavailable", { description: shareUrl });
+      toast.error(t.ui.actions.clipboardUnavailable, { description: shareUrl });
     }
   }
 
@@ -158,7 +160,7 @@ export function ReportActions({
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Moderation failed");
+      toast.error(t.ui.actions.moderationFailed);
     }
   }
 
@@ -169,11 +171,11 @@ export function ReportActions({
         method: "DELETE",
       });
       if (!response.ok) throw new Error(`Failed (${response.status})`);
-      toast.success("Report deleted");
+      toast.success(t.ui.actions.reportDeleted);
       router.push("/reports");
     } catch (error) {
       console.error(error);
-      toast.error("Could not delete this report");
+      toast.error(t.ui.actions.deleteFailed);
       setDeleting(false);
     }
   }
@@ -183,7 +185,7 @@ export function ReportActions({
       <div className="flex flex-wrap items-center gap-2 no-print">
         <Button variant="secondary" size="sm" onClick={exportPdf} disabled={exporting}>
           {exporting ? <Loader2 className="animate-spin" /> : <Download />}
-          {exporting ? "Generating…" : "Export PDF"}
+          {exporting ? t.ui.actions.generating : t.ui.actions.exportPdf}
         </Button>
 
         <Button variant="outline" size="sm" onClick={() => window.print()}>
@@ -193,7 +195,7 @@ export function ReportActions({
 
         <Button variant="outline" size="sm" onClick={copyShareLink}>
           {copied ? <Check /> : <Link2 />}
-          {copied ? "Copied" : "Share link"}
+          {copied ? t.ui.actions.copied : t.ui.actions.shareLink}
         </Button>
 
         {(canModerate || canDelete) && (
@@ -243,12 +245,8 @@ export function ReportActions({
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete this report?</DialogTitle>
-            <DialogDescription>
-              The photograph, its AI analysis and every comment will be removed.
-              This cannot be undone, and the location loses this point from its
-              trend series.
-            </DialogDescription>
+            <DialogTitle>{t.ui.moderation.deleteTitle}</DialogTitle>
+            <DialogDescription>{t.ui.moderation.deleteBody}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
@@ -256,11 +254,11 @@ export function ReportActions({
               onClick={() => setConfirmDelete(false)}
               disabled={deleting}
             >
-              Keep it
+              {t.ui.moderation.keepIt}
             </Button>
             <Button variant="danger" onClick={remove} loading={deleting}>
               <Trash2 />
-              Delete permanently
+              {t.ui.moderation.deletePermanently}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -270,6 +268,7 @@ export function ReportActions({
 }
 
 export function ShareLinkBox({ shareToken }: { shareToken: string }) {
+  const t = useT();
   const [copied, setCopied] = React.useState(false);
   const url =
     typeof window !== "undefined"
@@ -284,14 +283,14 @@ export function ShareLinkBox({ shareToken }: { shareToken: string }) {
       <Button
         variant="ghost"
         size="icon-sm"
-        aria-label="Copy share link"
+        aria-label={t.ui.actions.copyShareLink}
         onClick={async () => {
           try {
             await navigator.clipboard.writeText(url);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           } catch {
-            toast.error("Clipboard unavailable");
+            toast.error(t.ui.actions.clipboardUnavailable);
           }
         }}
       >

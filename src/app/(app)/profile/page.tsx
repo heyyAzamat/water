@@ -4,7 +4,8 @@ import { Award, Cpu, Database, Gauge, ScanLine, Waves } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { capabilities } from "@/lib/env";
 import { listUserReports, userStats } from "@/lib/data/repository";
-import { formatDate } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
+import { fmt } from "@/lib/i18n/format";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/misc";
@@ -13,13 +14,16 @@ import { EmptyState, StatTile } from "@/components/shared/primitives";
 import { ReportRow } from "@/components/reports/report-card";
 import { ProfileSettings } from "@/components/app/profile-settings";
 
-export const metadata: Metadata = {
-  title: "Profile & settings",
-  description: "Your contributor profile, statistics and notification settings.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  return {
+    title: t.pages.profile.metaTitle,
+    description: t.pages.profile.metaDescription,
+  };
+}
 
 export default async function ProfilePage() {
-  const user = await getCurrentUser();
+  const [user, t] = await Promise.all([getCurrentUser(), getT()]);
   if (!user) return null;
 
   const [stats, reports] = await Promise.all([
@@ -32,7 +36,7 @@ export default async function ProfilePage() {
       {/* Identity */}
       <Card className="overflow-hidden">
         <div
-          className="h-28 bg-gradient-to-br from-aqua-500/22 via-ink-900/40 to-flux-600/22"
+          className="h-28 bg-gradient-to-br from-lume-500/24 via-abyss-900/50 to-flux-600/22"
           aria-hidden
         />
         <div className="-mt-12 flex flex-col gap-4 p-6 sm:flex-row sm:items-end">
@@ -40,7 +44,7 @@ export default async function ProfilePage() {
             name={user.name}
             src={user.avatarUrl}
             size={88}
-            className="ring-4 ring-ink-950"
+            className="ring-4 ring-abyss-1000"
           />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -49,12 +53,12 @@ export default async function ProfilePage() {
               </h1>
               {user.role !== "user" && (
                 <Badge variant="brand" size="md">
-                  {user.role}
+                  {t.roles[user.role]}
                 </Badge>
               )}
               {user.isDemo && (
                 <Badge variant="neutral" size="md">
-                  demo account
+                  {t.pages.profile.demoAccount}
                 </Badge>
               )}
             </div>
@@ -70,7 +74,7 @@ export default async function ProfilePage() {
             <Button asChild size="sm">
               <Link href="/upload">
                 <ScanLine aria-hidden />
-                New analysis
+                {t.pages.profile.newAnalysis}
               </Link>
             </Button>
           </div>
@@ -80,33 +84,42 @@ export default async function ProfilePage() {
       {/* Stats */}
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile
-          label="Assessments"
+          label={t.pages.profile.tileAssessments}
           value={stats.reports}
-          hint={`${stats.criticalFindings} critical`}
+          hint={fmt(t.pages.profile.tileAssessmentsHint, {
+            count: stats.criticalFindings,
+          })}
           icon={<ScanLine />}
         />
         <StatTile
-          label="Water bodies"
+          label={t.pages.profile.tileWaterBodies}
           value={stats.locations}
-          hint="documented"
+          hint={t.pages.profile.tileWaterBodiesHint}
           icon={<Waves />}
           accent="flux"
           delay={0.06}
         />
         <StatTile
-          label="Points"
+          label={t.pages.profile.tilePoints}
           value={stats.points}
-          hint={stats.rank ? `rank #${stats.rank}` : "unranked"}
+          hint={
+            stats.rank
+              ? fmt(t.pages.profile.tilePointsHint, { rank: stats.rank })
+              : t.pages.profile.tilePointsHintEmpty
+          }
           icon={<Award />}
           delay={0.12}
         />
         <StatTile
-          label="Mean severity"
+          label={t.pages.profile.tileSeverity}
           value={stats.reports ? `${stats.averageScore}/100` : "—"}
           hint={
             stats.bestScore !== null
-              ? `best ${stats.bestScore} · worst ${stats.worstScore}`
-              : "no data yet"
+              ? fmt(t.pages.profile.tileSeverityHint, {
+                  best: stats.bestScore,
+                  worst: stats.worstScore ?? "—",
+                })
+              : t.pages.profile.tileSeverityHintEmpty
           }
           icon={<Gauge />}
           accent="flux"
@@ -131,24 +144,24 @@ export default async function ProfilePage() {
       <Card className="mt-4">
         <CardHeader className="flex-row items-center justify-between">
           <div>
-            <CardTitle as="h2">Your assessments</CardTitle>
+            <CardTitle as="h2">{t.pages.profile.contributionsTitle}</CardTitle>
             <CardDescription>
-              Everything you have published, most recent first.
+              {t.pages.profile.contributionsDescription}
             </CardDescription>
           </div>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/reports">Browse all</Link>
+            <Link href="/reports">{t.pages.profile.browseAll}</Link>
           </Button>
         </CardHeader>
         <div className="px-5 pb-5 sm:px-6">
           {reports.length === 0 ? (
             <EmptyState
               icon={<ScanLine />}
-              title="No assessments yet"
-              description="Upload a photograph of any river, lake or reservoir to publish your first one."
+              title={t.pages.profile.emptyTitle}
+              description={t.pages.profile.emptyDescription}
               action={
                 <Button asChild size="sm">
-                  <Link href="/upload">Start an analysis</Link>
+                  <Link href="/upload">{t.pages.profile.emptyAction}</Link>
                 </Button>
               }
             />
@@ -167,39 +180,45 @@ export default async function ProfilePage() {
       {/* Deployment info — useful when reviewing or handing the project over */}
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle as="h2">Deployment</CardTitle>
+          <CardTitle as="h2">{t.pages.profile.deploymentTitle}</CardTitle>
           <CardDescription>
-            Which subsystems this instance is currently running.
+            {t.pages.profile.deploymentDescription}
           </CardDescription>
         </CardHeader>
         <dl className="grid gap-3 px-5 pb-5 sm:grid-cols-3 sm:px-6">
           <Subsystem
             icon={<Database />}
-            label="Database"
-            value={capabilities.database === "supabase" ? "Supabase Postgres" : "Bundled demo dataset"}
+            label={t.pages.profile.subsystemDatabase}
+            value={
+              capabilities.database === "supabase"
+                ? t.pages.profile.valueSupabase
+                : t.pages.profile.valueDemoDataset
+            }
             live={capabilities.database === "supabase"}
           />
           <Subsystem
             icon={<Cpu />}
-            label="Vision"
-            value={capabilities.vision === "gemini" ? "Gemini Vision" : "Colourimetric heuristic"}
+            label={t.pages.profile.subsystemVision}
+            value={
+              capabilities.vision === "gemini"
+                ? t.pages.profile.valueGemini
+                : t.pages.profile.valueHeuristic
+            }
             live={capabilities.vision === "gemini"}
           />
           <Subsystem
             icon={<Waves />}
-            label="Storage"
+            label={t.pages.profile.subsystemStorage}
             value={
               capabilities.storage === "supabase-storage"
-                ? "Supabase Storage"
-                : "In-memory (session only)"
+                ? t.pages.profile.valueSupabaseStorage
+                : t.pages.profile.valueInMemory
             }
             live={capabilities.storage === "supabase-storage"}
           />
         </dl>
         <p className="px-5 pb-5 text-[11.5px] text-ink-600 sm:px-6">
-          Member since {formatDate(new Date())} · configure keys in{" "}
-          <code className="font-mono text-[11px] text-ink-500">.env.local</code> to
-          switch any subsystem to production mode.
+          {t.pages.profile.deploymentNote}
         </p>
       </Card>
     </div>

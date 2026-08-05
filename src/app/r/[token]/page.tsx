@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Calendar, Cpu, MapPin, Sparkles } from "lucide-react";
 import { getReportByShareToken } from "@/lib/data/repository";
 import { gradeForScore } from "@/lib/ai/scoring";
-import { formatCoords, formatDate, titleCase } from "@/lib/utils";
+import { formatCoords, formatDate } from "@/lib/utils";
+import { getI18n, getT } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +31,11 @@ export async function generateMetadata({
   const { token } = await params;
   const report = await getReportByShareToken(token);
 
-  if (!report) return { title: "Report not found", robots: { index: false } };
+  if (!report)
+    return {
+      title: (await getT()).ui.report.notFound,
+      robots: { index: false },
+    };
 
   return {
     title: `${report.title} — ${report.analysis.pollutionScore}/100`,
@@ -44,9 +50,14 @@ export default async function SharedReportPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const report = await getReportByShareToken(token);
+  const [report, { locale, t }] = await Promise.all([
+    getReportByShareToken(token),
+    getI18n(),
+  ]);
 
   if (!report || !report.isPublic) notFound();
+
+  const dateLocale = intlLocale(locale);
 
   const grade = gradeForScore(report.analysis.pollutionScore);
   const captured = report.capturedAt ?? report.createdAt;
@@ -78,11 +89,11 @@ export default async function SharedReportPage({
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-ink-500">
           <span className="inline-flex items-center gap-1.5">
             <MapPin className="size-3.5" aria-hidden />
-            {report.location?.name ?? "Unmapped location"}
+            {report.location?.name ?? t.ui.unmappedLocation}
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Calendar className="size-3.5" aria-hidden />
-            {formatDate(captured, true)}
+            {formatDate(captured, true, dateLocale)}
           </span>
           <span className="font-mono">
             {formatCoords(report.lat, report.lng)}
@@ -161,7 +172,7 @@ export default async function SharedReportPage({
               <span className="inline-flex items-center gap-1.5">
                 <Cpu className="size-3.5" aria-hidden />
                 {report.analysis.model} · analysed{" "}
-                {formatDate(report.analysis.createdAt)}
+                {formatDate(report.analysis.createdAt, false, dateLocale)}
               </span>
             </CardDescription>
           </CardHeader>
@@ -174,7 +185,7 @@ export default async function SharedReportPage({
               <div className="mt-4 flex flex-wrap gap-1.5">
                 {report.analysis.pollutionTags.map((tag) => (
                   <Badge key={tag} variant="flux" size="md">
-                    {titleCase(tag)}
+                    {t.domain.indicators[tag].label}
                   </Badge>
                 ))}
               </div>
@@ -185,7 +196,7 @@ export default async function SharedReportPage({
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle as="h2">Indicator matrix</CardTitle>
+              <CardTitle as="h2">{t.ui.report.indicatorsTitle}</CardTitle>
             </CardHeader>
             <div className="px-5 pb-5 sm:px-6">
               <IndicatorBars indicators={report.analysis.indicators} />
@@ -194,13 +205,13 @@ export default async function SharedReportPage({
 
           <Card>
             <CardHeader>
-              <CardTitle as="h2">Recommendations</CardTitle>
+              <CardTitle as="h2">{t.ui.report.recommendationsTitle}</CardTitle>
             </CardHeader>
             <div className="px-5 pb-5 sm:px-6">
               <ol className="flex flex-col gap-3">
                 {report.analysis.recommendations.map((recommendation, i) => (
                   <li key={recommendation} className="flex gap-3">
-                    <span className="grid size-5 shrink-0 place-items-center rounded-md bg-aqua-400/14 font-mono text-[10.5px] font-semibold text-aqua-200">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-md bg-lume-400/16 font-mono text-[10.5px] font-semibold text-lume-200">
                       {i + 1}
                     </span>
                     <span className="text-[13.5px] leading-relaxed text-ink-300">

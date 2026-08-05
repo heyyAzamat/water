@@ -35,26 +35,28 @@ export function Hero({ stats }: { stats: PlatformStats }) {
         photoFocus="center 34%"
       />
 
-      <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col px-5 pb-12 pt-24 sm:pt-28">
+      <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col px-5 pb-8 pt-20 sm:pb-12 sm:pt-28">
         <EditionMark
           left={`${t.hero.kicker} · ${t.common.edition}`}
           right={String(year)}
           className="pt-2"
         />
 
-        <div className="flex flex-1 flex-col items-center justify-center gap-7 py-8 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-5 text-center sm:gap-7 sm:py-8">
           <Reveal>
             <Link
               href="/#features"
-              className="group inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.05] py-1.5 pl-1.5 pr-3.5 text-[12.5px] backdrop-blur-xl transition-colors hover:border-lume-400/40 hover:bg-white/[0.09]"
+              className="group inline-flex max-w-full items-center gap-2 rounded-full border border-white/12 bg-white/[0.05] py-1.5 pl-1.5 pr-3 text-[12px] backdrop-blur-xl transition-colors hover:border-lume-400/40 hover:bg-white/[0.09] sm:pr-3.5 sm:text-[12.5px]"
             >
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-lume-300 to-aqua-500 px-2 py-0.5 text-[11px] font-semibold text-abyss-1000">
+              <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-lume-300 to-aqua-500 px-2 py-0.5 text-[11px] font-semibold text-abyss-1000">
                 <Sparkles className="size-3" aria-hidden />
                 {t.hero.badge}
               </span>
-              <span className="text-ink-300">{t.hero.badgeText}</span>
+              {/* Truncated rather than wrapped: a two-line pill reads as a
+                  broken button on a narrow screen. */}
+              <span className="truncate text-ink-300">{t.hero.badgeText}</span>
               <ArrowRight
-                className="size-3.5 text-ink-500 transition-transform group-hover:translate-x-0.5"
+                className="size-3.5 shrink-0 text-ink-500 transition-transform group-hover:translate-x-0.5"
                 aria-hidden
               />
             </Link>
@@ -67,7 +69,7 @@ export function Hero({ stats }: { stats: PlatformStats }) {
               initial={{ opacity: 0, y: 28, filter: "blur(14px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-lume text-[clamp(3.5rem,14vw,9.5rem)] font-semibold tracking-[-0.055em]"
+              className="text-lume text-[clamp(3rem,13.5vw,9.5rem)] font-semibold tracking-[-0.055em]"
             >
               {t.hero.titleTop}
             </motion.span>
@@ -75,21 +77,21 @@ export function Hero({ stats }: { stats: PlatformStats }) {
               initial={{ opacity: 0, y: 22, filter: "blur(14px)" }}
               animate={{ opacity: 0.92, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="-mt-[0.17em] text-[clamp(2.25rem,8vw,5.5rem)] font-medium tracking-[-0.05em] text-ink-100/85 text-lume-soft"
+              className="-mt-[0.17em] text-[clamp(2rem,7.5vw,5.5rem)] font-medium tracking-[-0.05em] text-ink-100/85 text-lume-soft"
             >
               {t.hero.titleMain}
             </motion.span>
           </h1>
 
           <Reveal delay={0.34}>
-            <p className="max-w-2xl text-pretty text-[15.5px] leading-relaxed text-ink-300 sm:text-[17px]">
+            <p className="max-w-2xl text-pretty text-[14px] leading-[1.55] text-ink-300 sm:text-[17px] sm:leading-relaxed">
               {t.hero.subtitle}{" "}
               <span className="text-ink-100">{t.hero.subtitleStrong}</span>
             </p>
           </Reveal>
 
           <Reveal delay={0.42}>
-            <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <div className="flex w-full flex-col items-center gap-2.5 sm:w-auto sm:flex-row sm:gap-3">
               <Button asChild size="lg" className="w-full sm:w-auto">
                 <Link href="/upload">
                   <Upload aria-hidden />
@@ -111,14 +113,16 @@ export function Hero({ stats }: { stats: PlatformStats }) {
           </Reveal>
 
           <Reveal delay={0.5}>
-            <p className="text-[12.5px] text-ink-500">{t.hero.noAccount}</p>
+            <p className="text-[12px] leading-snug text-ink-500 sm:text-[12.5px]">
+              {t.hero.noAccount}
+            </p>
           </Reveal>
         </div>
 
         {/* Live counters pinned to the bottom of the opening screen */}
         <Reveal delay={0.58}>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 backdrop-blur-xl">
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3.5 backdrop-blur-xl sm:px-5 sm:py-4">
+            <dl className="grid grid-cols-4 gap-x-2 gap-y-4 sm:gap-x-6">
               {[
                 { label: t.hero.stats.assessments, value: stats.reports },
                 { label: t.hero.stats.waterBodies, value: stats.locations },
@@ -126,10 +130,10 @@ export function Hero({ stats }: { stats: PlatformStats }) {
                 { label: t.hero.stats.countries, value: stats.countries },
               ].map((stat) => (
                 <div key={stat.label} className="flex flex-col items-center">
-                  <dd className="text-[24px] font-semibold tracking-[-0.03em] text-ink-50 sm:text-[28px]">
+                  <dd className="text-[19px] font-semibold tracking-[-0.03em] text-ink-50 sm:text-[28px]">
                     <AnimatedCounter value={stat.value} />
                   </dd>
-                  <dt className="mt-1 text-[10px] font-medium uppercase tracking-[0.18em] text-ink-500">
+                  <dt className="mt-1 text-center text-[8.5px] font-medium uppercase leading-tight tracking-[0.1em] text-ink-500 sm:text-[10px] sm:tracking-[0.18em]">
                     {stat.label}
                   </dt>
                 </div>
@@ -138,7 +142,7 @@ export function Hero({ stats }: { stats: PlatformStats }) {
           </div>
         </Reveal>
 
-        <Reveal delay={0.66} className="mt-6 flex justify-center">
+        <Reveal delay={0.66} className="mt-5 hidden justify-center sm:mt-6 sm:flex">
           <a
             href="#lead"
             aria-label={t.common.scrollDown}

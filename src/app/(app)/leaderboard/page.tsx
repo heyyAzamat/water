@@ -41,7 +41,7 @@ export default async function LeaderboardPage() {
         </p>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatTile
           label={t.pages.leaderboard.tileContributors}
           value={stats.contributors}

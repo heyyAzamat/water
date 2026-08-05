@@ -252,7 +252,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
   const busy = stage === "analysing" || stage === "publishing";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.15fr_1fr]">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.15fr_1fr] [&>*]:min-w-0">
       {/* ------------------------------ Left: input ------------------------------ */}
       <div className="flex flex-col gap-4">
         <Card>
@@ -307,7 +307,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                   />
                 </Field>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field label={t.ui.upload.waterBodyType} htmlFor="waterType">
                     <NativeSelect
                       value={waterType}
@@ -337,12 +337,14 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                 </div>
 
                 <div>
-                  <div className="flex items-end gap-2">
+                  {/* Wraps rather than squeezing: two number inputs plus a
+                      button do not fit side by side on a 320 px screen. */}
+                  <div className="flex flex-wrap items-end gap-2">
                     <Field
                       label={t.ui.upload.latitude}
                       htmlFor="lat"
                       required
-                      className="flex-1"
+                      className="min-w-28 flex-1"
                     >
                       <Input
                         value={coords.lat}
@@ -358,7 +360,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                       label={t.ui.upload.longitude}
                       htmlFor="lng"
                       required
-                      className="flex-1"
+                      className="min-w-28 flex-1"
                     >
                       <Input
                         value={coords.lng}

@@ -190,7 +190,7 @@ export function ReportActions({
 
         <Button variant="outline" size="sm" onClick={() => window.print()}>
           <Printer />
-          Print
+          {t.ui.actions.print}
         </Button>
 
         <Button variant="outline" size="sm" onClick={copyShareLink}>
@@ -203,7 +203,7 @@ export function ReportActions({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
                 <ShieldCheck />
-                Manage
+                {t.ui.actions.manage}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -212,15 +212,15 @@ export function ReportActions({
                   <DropdownMenuLabel>Moderation · {status}</DropdownMenuLabel>
                   <DropdownMenuItem onSelect={() => moderate("approved")}>
                     <Check />
-                    Approve
+                    {t.ui.actions.approve}
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => moderate("flagged")}>
                     <ShieldCheck />
-                    Flag for review
+                    {t.ui.actions.flag}
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => moderate("rejected")}>
                     <Trash2 />
-                    Reject
+                    {t.ui.actions.reject}
                   </DropdownMenuItem>
                 </>
               )}
@@ -233,7 +233,7 @@ export function ReportActions({
                     onSelect={() => setConfirmDelete(true)}
                   >
                     <Trash2 />
-                    Delete permanently
+                    {t.ui.moderation.deletePermanently}
                   </DropdownMenuItem>
                 </>
               )}

@@ -160,7 +160,7 @@ export function Features() {
           description={t.features.description}
         />
 
-        <div className="mt-16 grid gap-4 lg:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-4 lg:grid-cols-3">
           {t.features.items.map((feature, i) => {
             const Icon = FEATURE_ICONS[i] ?? Eye;
             const warm = i % 2 === 0;
@@ -213,7 +213,7 @@ export function Features() {
               </span>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-5">
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-5">
               {GRADES.map((grade, i) => (
                 <motion.div
                   key={grade.quality}
@@ -280,7 +280,7 @@ export function Statistics({ stats }: { stats: PlatformStats }) {
 
         <SectionHeading title={t.stats.title} description={t.stats.description} />
 
-        <div className="mt-16 grid gap-4 lg:grid-cols-[1.25fr_1fr]">
+        <div className="mt-16 grid grid-cols-1 gap-4 lg:grid-cols-[1.25fr_1fr]">
           <Reveal>
             <Card className="h-full p-6 sm:p-7">
               <h3 className="text-[15px] font-semibold text-ink-50">
@@ -358,7 +358,7 @@ export function Statistics({ stats }: { stats: PlatformStats }) {
             </Card>
           </Reveal>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[
               {
                 icon: <FileText />,
@@ -447,7 +447,7 @@ export function Benefits() {
         />
 
         {/* Each card sits on two rotated ghosts, like a stack of prints. */}
-        <div className="mt-20 grid gap-8 sm:gap-4 lg:grid-cols-3">
+        <div className="mt-20 grid grid-cols-1 gap-8 sm:gap-4 lg:grid-cols-3">
           {t.benefits.audiences.map((audience, i) => {
             const Icon = AUDIENCE_ICONS[i] ?? Users;
             return (
@@ -493,7 +493,7 @@ export function Benefits() {
           })}
         </div>
 
-        <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {t.benefits.advantages.map((advantage, i) => {
             const Icon = ADVANTAGE_ICONS[i] ?? Banknote;
             return (
@@ -576,7 +576,7 @@ export function Contact() {
       <div className="relative mx-auto max-w-6xl px-5">
         <EditionMark left={t.contact.eyebrow} right="07" className="mb-12" />
 
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <SectionHeading
               align="left"
@@ -653,7 +653,7 @@ export function Contact() {
                 </div>
               ) : (
                 <form onSubmit={onSubmit} className="flex flex-col gap-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field
                       label={t.contact.nameLabel}
                       htmlFor="contact-name"
@@ -850,7 +850,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-5 py-14">
         <FadeRule className="mb-12 opacity-60" />
 
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-ink-500">

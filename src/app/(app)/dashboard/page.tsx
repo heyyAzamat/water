@@ -133,7 +133,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Personal statistics */}
-      <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatTile
           label={t.pages.dashboard.tileAssessments}
           value={stats.reports}
@@ -188,7 +188,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3 [&>*]:min-w-0">
         {/* Score history */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-start justify-between gap-3">
@@ -263,7 +263,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Recent uploads */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between">
@@ -370,7 +370,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Achievements */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between">
@@ -388,7 +388,7 @@ export default async function DashboardPage() {
               {fmt(t.topbar.points, { count: stats.points })}
             </Badge>
           </CardHeader>
-          <div className="grid gap-3 px-5 pb-5 sm:grid-cols-2 sm:px-6">
+          <div className="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-2 sm:px-6">
             {achievements.map((achievement) => (
               <AchievementTile key={achievement.id} achievement={achievement} />
             ))}

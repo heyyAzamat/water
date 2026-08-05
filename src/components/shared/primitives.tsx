@@ -297,7 +297,7 @@ export function StatTile({
           aria-hidden
         />
         <div className="relative flex items-start justify-between gap-3">
-          <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-ink-500">
+          <p className="min-w-0 break-words text-[11.5px] font-medium uppercase tracking-[0.06em] text-ink-500 sm:text-[12px] sm:tracking-[0.08em]">
             {label}
           </p>
           {icon && (

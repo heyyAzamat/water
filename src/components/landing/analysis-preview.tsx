@@ -104,7 +104,7 @@ export function AnalysisPreview() {
         </span>
       </div>
 
-      <div className="grid gap-0 lg:grid-cols-[1.15fr_1fr]">
+      <div className="grid grid-cols-1 gap-0 lg:grid-cols-[1.15fr_1fr]">
         {/* Image panel */}
         <div className="relative aspect-[4/3] overflow-hidden border-b border-white/8 lg:aspect-auto lg:border-b-0 lg:border-r">
           <AnimatePresence mode="wait">

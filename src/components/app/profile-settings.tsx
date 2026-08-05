@@ -111,7 +111,7 @@ export function ProfileSettings({
       </CardHeader>
 
       <form onSubmit={save} className="flex flex-col gap-5 px-5 pb-6 sm:px-6">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label={t.ui.settings.displayName} htmlFor="fullName" required>
             <Input
               value={form.fullName}

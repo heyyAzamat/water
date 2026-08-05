@@ -102,7 +102,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
   }
 
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader>
         <CardTitle as="h2">{t.ui.moderation.queueTitle}</CardTitle>
         <CardDescription>{t.ui.moderation.queueBody}</CardDescription>
@@ -234,7 +234,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                             onClick={() => moderate(report, "approved")}
                           >
                             <Check />
-                            Approve
+                            {t.ui.actions.approve}
                           </Button>
                         )}
                         {report.status !== "flagged" && (
@@ -244,7 +244,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                             onClick={() => moderate(report, "flagged")}
                           >
                             <Flag />
-                            Flag
+                            {t.ui.moderation.flagShort}
                           </Button>
                         )}
                         {report.status !== "rejected" && (
@@ -254,7 +254,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                             onClick={() => moderate(report, "rejected")}
                           >
                             <X />
-                            Reject
+                            {t.ui.actions.reject}
                           </Button>
                         )}
 
@@ -266,7 +266,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                         >
                           <Link href={`/reports/${report.id}`}>
                             <ExternalLink />
-                            Open
+                            {t.ui.moderation.open}
                           </Link>
                         </Button>
 
@@ -276,7 +276,7 @@ export function ModerationQueue({ reports }: { reports: Report[] }) {
                           onClick={() => remove(report)}
                         >
                           <Trash2 />
-                          Delete
+                          {t.ui.moderation.delete}
                         </Button>
                       </>
                     )}

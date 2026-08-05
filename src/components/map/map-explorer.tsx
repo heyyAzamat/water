@@ -17,7 +17,7 @@ import type { Report, WaterBodyType, WaterQuality } from "@/types";
 import { GRADES, gradeForScore } from "@/lib/ai/scoring";
 import { cn, formatCoords, formatDate, timeAgo } from "@/lib/utils";
 import { useI18n, useT } from "@/lib/i18n/provider";
-import { intlLocale } from "@/lib/i18n/format";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, NativeSelect } from "@/components/ui/field";
@@ -141,7 +141,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
       {/* ------------------------------ Sidebar ------------------------------ */}
       <aside
         className={cn(
-          "z-20 flex w-full shrink-0 flex-col border-white/8 bg-ink-950/70 backdrop-blur-2xl lg:w-96 lg:border-r",
+          "z-[1002] flex w-full shrink-0 flex-col border-white/8 bg-abyss-1000/92 backdrop-blur-2xl lg:z-20 lg:w-96 lg:border-r lg:bg-abyss-1000/70",
           "absolute inset-0 transition-transform duration-300 lg:relative lg:translate-x-0",
           panelOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
@@ -150,7 +150,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
         <div className="border-b border-white/8 p-4">
           <div className="flex items-center justify-between gap-3">
             <h1 className="text-[15px] font-semibold tracking-[-0.01em] text-ink-50">
-              Water body explorer
+              {t.ui.mapExplorer.title}
             </h1>
             <Button
               variant="ghost"
@@ -249,7 +249,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
             >
               <span className="inline-flex items-center gap-1.5">
                 <SlidersHorizontal className="size-3.5" aria-hidden />
-                Minimum severity
+                {t.ui.mapExplorer.minSeverity}
               </span>
               <span className="font-semibold tabular-nums text-ink-200">
                 {filters.minScore}
@@ -263,14 +263,16 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
               step={5}
               value={filters.minScore}
               onChange={(e) => set("minScore", Number(e.target.value))}
-              className="mt-2 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-grade-excellent via-grade-moderate to-grade-critical [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-ink-950 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-lg"
+              className="mt-2 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-gradient-to-r from-grade-excellent via-grade-moderate to-grade-critical [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-abyss-1000 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-lg"
             />
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-2">
             <p className="text-[12.5px] text-ink-500">
-              <span className="font-semibold text-ink-200">{filtered.length}</span>{" "}
-              of {reports.length} reports
+              {fmt(t.ui.mapExplorer.shownOf, {
+                shown: filtered.length,
+                total: reports.length,
+              })}
             </p>
             {activeFilterCount > 0 && (
               <Button
@@ -279,7 +281,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                 onClick={() => setFilters(INITIAL_FILTERS)}
               >
                 <X />
-                Clear {activeFilterCount}
+                {fmt(t.ui.mapExplorer.clearCount, { count: activeFilterCount })}
               </Button>
             )}
           </div>
@@ -344,7 +346,10 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                         <span>{timeAgo(report.capturedAt ?? report.createdAt, dateLocale)}</span>
                         {report.analysis.pollutionTags.length > 0 && (
                           <span className="truncate">
-                            · {report.analysis.pollutionTags.length} indicators
+                            ·{" "}
+                            {fmt(t.ui.mapExplorer.indicators, {
+                              count: report.analysis.pollutionTags.length,
+                            })}
                           </span>
                         )}
                       </span>
@@ -354,7 +359,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
               ))}
               {filtered.length > 120 && (
                 <li className="px-2 py-3 text-center text-[12px] text-ink-600">
-                  Showing the first 120 — narrow the filters to see the rest.
+                  {fmt(t.ui.mapExplorer.truncated, { count: 120 })}
                 </li>
               )}
             </ul>
@@ -373,7 +378,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
         />
 
         {/* Layer switch */}
-        <div className="pointer-events-auto absolute left-3 top-3 z-10 flex gap-2 lg:left-4 lg:top-4">
+        <div className="pointer-events-auto absolute left-3 top-3 z-[1001] flex flex-wrap gap-2 lg:left-4 lg:top-4">
           <Button
             variant="secondary"
             size="sm"
@@ -381,7 +386,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
             onClick={() => setPanelOpen(true)}
           >
             <Filter />
-            Filters
+            {t.ui.mapExplorer.filters}
             {activeFilterCount > 0 && (
               <Badge variant="brand" size="sm">
                 {activeFilterCount}

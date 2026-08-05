@@ -171,7 +171,7 @@ export default async function ReportPage({
 
       {/* Printable document */}
       <div id="report-document" className="mt-6 flex flex-col gap-4">
-        <div className="grid gap-4 lg:grid-cols-[1.35fr_1fr]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.35fr_1fr] [&>*]:min-w-0">
           {/* Photograph */}
           <Card className="overflow-hidden print-surface print-break">
             <div className="relative aspect-[4/3] bg-abyss-1000">
@@ -269,7 +269,7 @@ export default async function ReportPage({
         </div>
 
         {/* Findings */}
-        <div className="grid gap-4 lg:grid-cols-[1.35fr_1fr]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.35fr_1fr]">
           <div className="flex flex-col gap-4">
             <Card className="print-surface print-break">
               <CardHeader>
@@ -477,9 +477,11 @@ export default async function ReportPage({
             </Button>
           </CardHeader>
           <div className="px-5 pb-5 sm:px-6">
-            <ul className="grid gap-2 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {nearby.slice(0, 6).map((entry) => (
-                <li key={entry.id} className="relative">
+                // `min-w-0` or the row's flex content sets a min-content
+                // width wider than the grid track and pushes the page sideways.
+                <li key={entry.id} className="relative min-w-0">
                   <ReportRow report={entry} />
                   <span className="pointer-events-none absolute right-16 top-1/2 -translate-y-1/2 font-mono text-[10.5px] text-ink-600">
                     {entry.distanceKm.toFixed(1)} km

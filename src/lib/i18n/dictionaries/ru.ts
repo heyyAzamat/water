@@ -585,6 +585,11 @@ export const ru: Dictionary = {
     },
 
     actions: {
+      print: "Печать",
+      manage: "Управление",
+      approve: "Одобрить",
+      flag: "Отметить на проверку",
+      reject: "Отклонить",
       exportPdf: "Экспорт в PDF",
       generating: "Создаём…",
       shareLink: "Ссылка",
@@ -615,6 +620,9 @@ export const ru: Dictionary = {
     },
 
     moderation: {
+      open: "Открыть",
+      delete: "Удалить",
+      flagShort: "Отметить",
       queueTitle: "Очередь модерации",
       queueBody:
         "Одобрить — публикация на карте, отметить — нужен второй взгляд, отклонить — скрыть, удалить — навсегда.",
@@ -671,6 +679,13 @@ export const ru: Dictionary = {
     },
 
     mapExplorer: {
+      minSeverity: "Минимальная тяжесть",
+      shownOf: "{shown} из {total} отчётов",
+      clearCount: "Сбросить {count}",
+      title: "Обзор водоёмов",
+      indicators: "индикаторов: {count}",
+      truncated: "Показаны первые {count} — сузьте фильтры, чтобы увидеть остальные.",
+      filters: "Фильтры",
       panelLabel: "Фильтры карты и результаты",
       closeFilters: "Закрыть фильтры",
       searchPlaceholder: "Поиск рек, озёр, регионов…",

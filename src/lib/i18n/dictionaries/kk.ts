@@ -585,6 +585,11 @@ export const kk: Dictionary = {
     },
 
     actions: {
+      print: "Басып шығару",
+      manage: "Басқару",
+      approve: "Мақұлдау",
+      flag: "Тексеруге белгілеу",
+      reject: "Қабылдамау",
       exportPdf: "PDF-ке экспорт",
       generating: "Жасалуда…",
       shareLink: "Сілтеме",
@@ -615,6 +620,9 @@ export const kk: Dictionary = {
     },
 
     moderation: {
+      open: "Ашу",
+      delete: "Жою",
+      flagShort: "Белгілеу",
       queueTitle: "Модерация кезегі",
       queueBody:
         "Мақұлдау — картада жариялау, белгілеу — екінші пікір керек, қабылдамау — жасыру, жою — біржола.",
@@ -671,6 +679,13 @@ export const kk: Dictionary = {
     },
 
     mapExplorer: {
+      minSeverity: "Ең төмен ауырлық",
+      shownOf: "{total} есептің {shown}-і",
+      clearCount: "Тазалау {count}",
+      title: "Су нысандарын шолу",
+      indicators: "индикатор: {count}",
+      truncated: "Алғашқы {count} көрсетілді — қалғанын көру үшін сүзгіні тарылтыңыз.",
+      filters: "Сүзгілер",
       panelLabel: "Карта сүзгілері және нәтижелер",
       closeFilters: "Сүзгілерді жабу",
       searchPlaceholder: "Өзен, көл, өңір іздеу…",

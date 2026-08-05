@@ -18,13 +18,13 @@ export default function AppLoading() {
         <Skeleton className="h-10 w-36" />
       </div>
 
-      <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (
           <Skeleton key={i} className="h-32" />
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Skeleton className="h-80 lg:col-span-2" />
         <Skeleton className="h-80" />
       </div>

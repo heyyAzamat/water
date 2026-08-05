@@ -643,6 +643,14 @@ body {
   box-shadow: none !important;
 }
 
+/* Below `lg` the app overlays its own controls in the top-left corner, so the
+   zoom buttons move down out of their way. */
+@media (max-width: 1023px) {
+  .leaflet-top.leaflet-left {
+    top: 3.5rem;
+  }
+}
+
 .leaflet-control-zoom a {
   background: oklch(0.2 0.017 258 / 0.85) !important;
   backdrop-filter: blur(12px);

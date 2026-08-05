@@ -82,7 +82,7 @@ export default async function ProfilePage() {
       </Card>
 
       {/* Stats */}
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatTile
           label={t.pages.profile.tileAssessments}
           value={stats.reports}
@@ -185,7 +185,7 @@ export default async function ProfilePage() {
             {t.pages.profile.deploymentDescription}
           </CardDescription>
         </CardHeader>
-        <dl className="grid gap-3 px-5 pb-5 sm:grid-cols-3 sm:px-6">
+        <dl className="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-3 sm:px-6">
           <Subsystem
             icon={<Database />}
             label={t.pages.profile.subsystemDatabase}

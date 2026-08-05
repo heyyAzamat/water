@@ -3,7 +3,10 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full border font-medium whitespace-nowrap transition-colors [&_svg]:shrink-0",
+  // `max-w-full` + truncation: an indicator label like "Industrial discharge"
+  // is wider than a card column on a small phone, and a badge that refuses to
+  // shrink drags the whole layout sideways.
+  "inline-flex max-w-full items-center gap-1.5 truncate rounded-full border font-medium whitespace-nowrap transition-colors [&_svg]:shrink-0",
   {
     variants: {
       variant: {

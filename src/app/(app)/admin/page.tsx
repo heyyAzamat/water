@@ -62,7 +62,7 @@ export default async function AdminPage() {
         </Badge>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatTile
           label={t.pages.admin.tilePending}
           value={pending.length}
@@ -98,7 +98,7 @@ export default async function AdminPage() {
         />
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr] [&>*]:min-w-0">
         <ModerationQueue reports={queue} />
 
         <div className="flex flex-col gap-4">

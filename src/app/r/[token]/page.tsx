@@ -100,7 +100,7 @@ export default async function SharedReportPage({
           </span>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
           <Card className="overflow-hidden">
             <div className="relative aspect-[4/3] bg-ink-950">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -193,7 +193,7 @@ export default async function SharedReportPage({
           </div>
         </Card>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle as="h2">{t.ui.report.indicatorsTitle}</CardTitle>

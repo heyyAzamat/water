@@ -590,6 +590,11 @@ export const en = {
     },
 
     actions: {
+      print: "Print",
+      manage: "Manage",
+      approve: "Approve",
+      flag: "Flag for review",
+      reject: "Reject",
       exportPdf: "Export PDF",
       generating: "Generating…",
       shareLink: "Share link",
@@ -621,6 +626,9 @@ export const en = {
     },
 
     moderation: {
+      open: "Open",
+      delete: "Delete",
+      flagShort: "Flag",
       queueTitle: "Moderation queue",
       queueBody:
         "Approve to publish to the map, flag for a second opinion, reject to hide, or delete permanently.",
@@ -677,6 +685,13 @@ export const en = {
     },
 
     mapExplorer: {
+      minSeverity: "Minimum severity",
+      shownOf: "{shown} of {total} reports",
+      clearCount: "Clear {count}",
+      title: "Water body explorer",
+      indicators: "{count} indicators",
+      truncated: "Showing the first {count} — narrow the filters to see the rest.",
+      filters: "Filters",
       panelLabel: "Map filters and results",
       closeFilters: "Close filters",
       searchPlaceholder: "Search rivers, lakes, regions…",

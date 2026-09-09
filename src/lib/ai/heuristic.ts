@@ -1,6 +1,11 @@
 import type { AiIndicator, PollutionTag, VisionAnalysis } from "@/types";
 import type { ImageFeatures } from "./image-features";
+import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { fmt } from "@/lib/i18n/format";
 import { clamp } from "@/lib/utils";
+import { analysisCopy, type AnalysisCopy } from "./copy";
 import {
   computeComposite,
   defaultRecommendations,
@@ -19,12 +24,17 @@ import {
  *
  * It is honest about what it is: results are flagged `simulated: true` and the
  * UI labels them "Heuristic engine".
+ *
+ * Prose is written in `locale` so a reporter never gets an English assessment
+ * inside a Russian or Kazakh interface.
  */
 export function heuristicAnalysis(
   features: ImageFeatures | null,
   context?: { userNotes?: string | null; observations?: string[] },
+  locale: Locale = DEFAULT_LOCALE,
 ): VisionAnalysis {
   const f = features ?? NEUTRAL_FEATURES;
+  const c = analysisCopy(locale);
   const indicators: AiIndicator[] = [];
   const objects = new Set<string>();
 
@@ -35,13 +45,13 @@ export function heuristicAnalysis(
   const claritySeverity = clamp(Math.round(turbiditySignal), 4, 96);
   indicators.push({
     key: "clarity",
-    label: label("clarity"),
+    label: label("clarity", locale),
     severity: claritySeverity,
     detected: true,
-    note:
-      claritySeverity > 55
-        ? `Low transparency: contrast ${(f.contrast * 100).toFixed(0)}% with a strong sediment cast.`
-        : `Water column reads as reasonably transparent (contrast ${(f.contrast * 100).toFixed(0)}%).`,
+    note: fmt(
+      claritySeverity > 55 ? c.notes.clarityLow : c.notes.clarityOk,
+      { contrast: (f.contrast * 100).toFixed(0) },
+    ),
   });
 
   /* --------------------------- sediment --------------------------- */
@@ -49,12 +59,12 @@ export function heuristicAnalysis(
   if (sediment >= 18) {
     indicators.push({
       key: "turbidity",
-      label: label("turbidity"),
+      label: label("turbidity", locale),
       severity: sediment,
       detected: sediment >= 28,
-      note: `Warm muddy tint across ${(f.brownness * 100).toFixed(0)}% of the frame.`,
+      note: fmt(c.notes.sediment, { pct: (f.brownness * 100).toFixed(0) }),
     });
-    if (sediment >= 40) objects.add("Sediment-laden water");
+    if (sediment >= 40) objects.add(c.objects.sediment);
   }
 
   /* ---------------------------- algae ----------------------------- */
@@ -62,19 +72,19 @@ export function heuristicAnalysis(
   if (algae >= 18) {
     indicators.push({
       key: "algae_bloom",
-      label: label("algae_bloom"),
+      label: label("algae_bloom", locale),
       severity: algae,
       detected: algae >= 30,
-      note: `Green channel leads red/blue by ${(f.greenExcess * 100).toFixed(0)}% — consistent with algal biomass.`,
+      note: fmt(c.notes.algae, { pct: (f.greenExcess * 100).toFixed(0) }),
     });
-    if (algae >= 35) objects.add("Green algal mats");
+    if (algae >= 35) objects.add(c.objects.algalMats);
     if (algae >= 55) {
       indicators.push({
         key: "eutrophication",
-        label: label("eutrophication"),
+        label: label("eutrophication", locale),
         severity: clamp(algae - 12, 0, 92),
         detected: true,
-        note: "Dense surface vegetation suggests elevated nutrient load.",
+        note: c.notes.eutrophication,
       });
     }
   }
@@ -86,12 +96,12 @@ export function heuristicAnalysis(
   if (foam >= 16) {
     indicators.push({
       key: "foam",
-      label: label("foam"),
+      label: label("foam", locale),
       severity: foam,
       detected: foam >= 26,
-      note: `Bright desaturated texture over ${(f.whiteRatio * 100).toFixed(0)}% of the surface.`,
+      note: fmt(c.notes.foam, { pct: (f.whiteRatio * 100).toFixed(0) }),
     });
-    if (foam >= 30) objects.add("Surface foam");
+    if (foam >= 30) objects.add(c.objects.foam);
   }
 
   /* ------------------------- oil / sheen -------------------------- */
@@ -104,12 +114,12 @@ export function heuristicAnalysis(
   if (oil >= 16) {
     indicators.push({
       key: "oil_film",
-      label: label("oil_film"),
+      label: label("oil_film", locale),
       severity: oil,
       detected: oil >= 28,
-      note: `Iridescent hue spread (${(f.hueEntropy * 100).toFixed(0)}%) inside dark surface regions.`,
+      note: fmt(c.notes.oil, { pct: (f.hueEntropy * 100).toFixed(0) }),
     });
-    if (oil >= 30) objects.add("Oil sheen");
+    if (oil >= 30) objects.add(c.objects.oilSheen);
   }
 
   /* -------------------- unnatural coloration ---------------------- */
@@ -117,12 +127,12 @@ export function heuristicAnalysis(
   if (unnatural >= 14) {
     indicators.push({
       key: "unnatural_color",
-      label: label("unnatural_color"),
+      label: label("unnatural_color", locale),
       severity: unnatural,
       detected: unnatural >= 24,
-      note: `${(f.unnaturalHueRatio * 100).toFixed(1)}% of pixels fall in hue ranges rare in natural water.`,
+      note: fmt(c.notes.unnaturalColour, { pct: (f.unnaturalHueRatio * 100).toFixed(1) }),
     });
-    if (unnatural >= 30) objects.add("Discoloured plume");
+    if (unnatural >= 30) objects.add(c.objects.plume);
   }
 
   /* ---------------------- solid waste / litter -------------------- */
@@ -135,21 +145,21 @@ export function heuristicAnalysis(
   if (litter >= 18) {
     indicators.push({
       key: "floating_garbage",
-      label: label("floating_garbage"),
+      label: label("floating_garbage", locale),
       severity: litter,
       detected: litter >= 30,
-      note: `Fragmented high-contrast edges across the surface (edge density ${(f.edgeDensity * 100).toFixed(0)}%).`,
+      note: fmt(c.notes.litter, { pct: (f.edgeDensity * 100).toFixed(0) }),
     });
     if (litter >= 34) {
       indicators.push({
         key: "plastic",
-        label: label("plastic"),
+        label: label("plastic", locale),
         severity: clamp(litter - 8, 0, 90),
         detected: litter >= 42,
-        note: "Bright, saturated, geometrically irregular fragments typical of packaging waste.",
+        note: c.notes.plastic,
       });
-      objects.add("Floating debris");
-      objects.add("Plastic fragments");
+      objects.add(c.objects.debris);
+      objects.add(c.objects.plastic);
     }
   }
 
@@ -167,14 +177,14 @@ export function heuristicAnalysis(
         96,
       );
       existing.detected = true;
-      existing.note = `${existing.note ?? ""} Corroborated by reporter observation.`.trim();
+      existing.note = `${existing.note ?? ""} ${c.notes.corroborated}`.trim();
     } else {
       indicators.push({
         key: mapped.key,
-        label: label(mapped.key),
+        label: label(mapped.key, locale),
         severity: mapped.severity,
         detected: true,
-        note: "Reported by the observer on site; not independently visible in this frame.",
+        note: c.notes.observationOnly,
       });
     }
   }
@@ -187,11 +197,11 @@ export function heuristicAnalysis(
     .filter((i) => i.detected && i.key !== "clarity")
     .map((i) => i.key as PollutionTag);
 
-  if (objects.size === 0) objects.add("Open water surface");
+  if (objects.size === 0) objects.add(c.objects.openWater);
 
   return normaliseAnalysis({
     is_water_body: true,
-    scene_summary: sceneSummary(f, composite.score),
+    scene_summary: sceneSummary(f, composite.score, c),
     pollution_score: composite.score,
     water_quality: composite.quality,
     clarity_score: 100 - claritySeverity,
@@ -199,9 +209,9 @@ export function heuristicAnalysis(
     detected_objects: [...objects],
     pollution_tags: tags,
     indicators,
-    explanation: explain(f, indicators, composite.score, context?.userNotes),
-    recommendations: defaultRecommendations(composite.score, tags),
-  });
+    explanation: explain(f, indicators, composite.score, c, context?.userNotes),
+    recommendations: defaultRecommendations(composite.score, tags, locale),
+  }, locale);
 }
 
 function estimateOverall(indicators: AiIndicator[]) {
@@ -244,22 +254,27 @@ function estimateConfidence(
   return clamp(Math.round(confidence), 38, 88);
 }
 
-function sceneSummary(f: ImageFeatures, score: number) {
+function sceneSummary(f: ImageFeatures, score: number, c: AnalysisCopy) {
   const light =
-    f.brightness > 0.62 ? "brightly lit" : f.brightness < 0.28 ? "dim" : "evenly lit";
+    f.brightness > 0.62
+      ? c.scene.light.bright
+      : f.brightness < 0.28
+        ? c.scene.light.dim
+        : c.scene.light.even;
   const tone =
     f.greenExcess > 0.08
-      ? "green-tinted"
+      ? c.scene.tone.green
       : f.brownness > 0.1
-        ? "brown-tinted"
-        : "neutral-toned";
-  return `A ${light}, ${tone} water surface with composite severity ${score}/100.`;
+        ? c.scene.tone.brown
+        : c.scene.tone.neutral;
+  return fmt(c.scene.summary, { light, tone, score });
 }
 
 function explain(
   f: ImageFeatures,
   indicators: AiIndicator[],
   score: number,
+  c: AnalysisCopy,
   userNotes?: string | null,
 ) {
   const drivers = indicators
@@ -271,34 +286,33 @@ function explain(
 
   if (drivers.length) {
     parts.push(
-      `Colourimetric analysis of this frame flags ${drivers
-        .map((d) => `${d.label.toLowerCase()} (${d.severity}/100)`)
-        .join(", ")}.`,
+      fmt(c.explain.drivers, {
+        list: drivers
+          .map((d) =>
+            fmt(c.explain.driverItem, {
+              label: d.label.toLowerCase(),
+              severity: d.severity,
+            }),
+          )
+          .join(", "),
+      }),
     );
   } else {
-    parts.push(
-      "No significant anthropogenic pollution signature was measurable in this frame.",
-    );
+    parts.push(c.explain.noDrivers);
   }
 
   const clarity = indicators.find((i) => i.key === "clarity");
   if (clarity) {
     parts.push(
-      clarity.severity > 55
-        ? `Water transparency is poor — luminance contrast sits at ${(f.contrast * 100).toFixed(0)}% with a heavy sediment cast.`
-        : `Water transparency is acceptable, with luminance contrast at ${(f.contrast * 100).toFixed(0)}%.`,
+      fmt(clarity.severity > 55 ? c.explain.clarityPoor : c.explain.clarityOk, {
+        pct: (f.contrast * 100).toFixed(0),
+      }),
     );
   }
 
-  parts.push(
-    `The weighted indicator matrix yields a composite environmental severity of ${score}/100.`,
-  );
+  parts.push(fmt(c.explain.composite, { score }));
 
-  if (userNotes) {
-    parts.push(
-      "The reporter's field note has been recorded alongside this assessment but was not used to raise the visual score beyond corroboration.",
-    );
-  }
+  if (userNotes) parts.push(c.explain.fieldNote);
 
   return parts.join(" ");
 }
@@ -317,8 +331,12 @@ const OBSERVATION_TO_INDICATOR: Record<
   excess_vegetation: { key: "eutrophication", severity: 46 },
 };
 
-function label(key: PollutionTag | "clarity") {
-  return INDICATOR_SPECS.find((s) => s.key === key)?.label ?? key;
+function label(key: PollutionTag | "clarity", locale: Locale) {
+  return (
+    getDictionary(locale).domain.indicators[key]?.label ??
+    INDICATOR_SPECS.find((s) => s.key === key)?.label ??
+    key
+  );
 }
 
 const NEUTRAL_FEATURES: ImageFeatures = {

@@ -515,6 +515,7 @@ export const en = {
   ui: {
     closeDialog: "Close dialog",
     preview: {
+      explanationTitle: "AI explanation",
       scenesLabel: "Preview scenes",
       showScene: "Show {place}",
       confidence: "Confidence",
@@ -545,6 +546,19 @@ export const en = {
         },
       ],
     },
+    appNavLabel: "Application",
+
+    share: {
+      exploreCta: "Explore AquaVision",
+      analysedOn: "analysed {date}",
+      badge: "Shared environmental assessment",
+      reportedBy: "Reported by",
+      ctaTitle: "Assess your own water body",
+      ctaBody:
+        "One photograph is enough. No sensors, no hardware — the analysis is entirely digital.",
+      ctaAction: "Start monitoring",
+    },
+
     report: {
       notFound: "Report not found",
       allReports: "All reports",
@@ -560,6 +574,7 @@ export const en = {
       factClarity: "Clarity",
       statModel: "Model",
       statAnalysed: "Analysed",
+      contributionPoints: "{count} contribution points",
       findingsTitle: "AI findings",
       findingsBody: "What the vision model concluded and why.",
       detectedObjects: "Detected objects",
@@ -665,6 +680,16 @@ export const en = {
       geoFailed: "Could not read your position — enter it manually.",
       saved: "Profile saved",
       saveFailed: "Could not save your profile",
+      cardTitle: "Profile & notifications",
+      cardDescription:
+        "Your public details, and the area you want to be alerted about.",
+      alertsTitle: "Alert preferences",
+      alertsDescription:
+        "Alerts fire when a report is published inside your radius, or when a location's trend turns critical.",
+      kmValue: "{km} km",
+      monitoringRadius: "Monitoring radius",
+      alertsWithin: "alerts within {km} km",
+      saveChanges: "Save changes",
       displayName: "Display name",
       region: "Region",
       regionHint: "Shown on your profile",
@@ -709,6 +734,10 @@ export const en = {
       layerHeat: "Heat",
       layerBoth: "Both",
       closePreview: "Close report preview",
+      openReport: "Open report",
+      loadingTiles: "Loading map tiles…",
+      highestSeverity: "Highest severity right now",
+      openFullMap: "Open the full map",
     },
 
     charts: {
@@ -798,9 +827,13 @@ export const en = {
       metricConfidence: "Confidence",
       metricClarity: "Clarity",
       metricLatency: "Latency",
-      heuristicEngine: "Heuristic engine",
-      heuristicNote:
-        "No vision API key is configured, so this score came from the colourimetric engine. Add GOOGLE_GENERATIVE_AI_API_KEY for full model analysis.",
+      pickerLabel: "Map — click to mark where the photograph was taken",
+      pickerHintEmpty:
+        "Click the map to mark the spot, or pick one of the highlighted water bodies.",
+      pickerHintPlaced:
+        "Drag the pin to correct it, or click elsewhere on the map to move it.",
+      pickerTitle: "Mark it on the map",
+      engineDefault: "AquaVision Vision v1",
       notWaterWarning:
         "The model did not identify open water in this frame. Publishing is still allowed, but consider a photograph where the water surface fills most of the image.",
       explanationTitle: "AI explanation",
@@ -934,11 +967,7 @@ export const en = {
       description:
         "One photograph is enough. The vision model scores thirteen pollution indicators, a weighted matrix composes the overall severity, and the result joins the location's time series.",
       engineGemini: "Gemini Vision active",
-      engineHeuristic: "Heuristic engine",
-      heuristicNoticeBefore:
-        "No vision API key is configured, so uploads are scored by the built-in colourimetric engine — it measures real image statistics (contrast, colour casts, edge density, hue entropy) and maps them onto the same indicator matrix. Set",
-      heuristicNoticeMiddle: "in",
-      heuristicNoticeAfter: "to switch to full model analysis.",
+      engineDefault: "AquaVision Vision v1",
     },
 
     notifications: {
@@ -952,6 +981,32 @@ export const en = {
       emptyDescription:
         "Set a monitoring area in your profile and we will alert you when something changes nearby.",
       emptyAction: "Set monitoring area",
+      kinds: {
+        nearby_report: {
+          title: "New water report nearby",
+          body: "{author} published a new assessment for {location}.",
+        },
+        pollution_increase: {
+          title: "Pollution rising at a location you follow",
+          body: "{location} moved to {score}/100 ({grade}), up from its previous assessment.",
+        },
+        critical_trend: {
+          title: "Critical pollution detected nearby",
+          body: "{location} scored {score}/100 (Critical). Immediate environmental response is recommended.",
+        },
+        comment: {
+          title: "New comment on your report",
+          body: "{author} replied to your assessment of {location}.",
+        },
+        achievement: {
+          title: "Achievement unlocked — {badge}",
+          body: "You have published {count} verified assessments. Keep going to reach {nextBadge}.",
+        },
+        moderation: {
+          title: "Moderation update",
+          body: "Your assessment of {location} was reviewed by a moderator.",
+        },
+      },
     },
 
     reports: {
@@ -998,7 +1053,6 @@ export const en = {
       metaTitle: "Profile & settings",
       metaDescription:
         "Your contributor profile, statistics and notification settings.",
-      demoAccount: "demo account",
       newAnalysis: "New analysis",
       tileAssessments: "Assessments",
       tileAssessmentsHint: "{count} critical",
@@ -1018,20 +1072,6 @@ export const en = {
       emptyDescription:
         "Upload a photograph of any river, lake or reservoir to publish your first one.",
       emptyAction: "Start an analysis",
-      deploymentTitle: "Deployment",
-      deploymentDescription:
-        "Which subsystems this instance is currently running.",
-      subsystemDatabase: "Database",
-      subsystemVision: "Vision",
-      subsystemStorage: "Storage",
-      valueSupabase: "Supabase Postgres",
-      valueDemoDataset: "Bundled demo dataset",
-      valueGemini: "Gemini Vision",
-      valueHeuristic: "Colourimetric heuristic",
-      valueSupabaseStorage: "Supabase Storage",
-      valueInMemory: "In-memory (session only)",
-      deploymentNote:
-        "Configure keys in .env.local to switch any subsystem to production mode.",
     },
 
     admin: {

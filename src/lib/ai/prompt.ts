@@ -1,10 +1,11 @@
+import type { Locale } from "@/lib/i18n/config";
 import { INDICATOR_SPECS } from "./scoring";
 
 const INDICATOR_DOC = INDICATOR_SPECS.map(
   (s) => `  - "${s.key}" — ${s.label}: ${s.description}`,
 ).join("\n");
 
-export const SYSTEM_INSTRUCTION = `You are AquaVision, an environmental computer-vision analyst specialising in surface-water assessment from photographs.
+const SYSTEM_INSTRUCTION_BASE = `You are AquaVision, an environmental computer-vision analyst specialising in surface-water assessment from photographs.
 
 You receive a single photograph of a water body (river, lake, reservoir, pond, canal, wetland or coastal water) and must produce a rigorous, conservative visual assessment.
 
@@ -45,6 +46,30 @@ Return ONLY a JSON object. No markdown fences, no prose before or after.
   "explanation": "2-4 sentences of expert reasoning, referencing what in the image drove the score",
   "recommendations": ["3-5 concrete, actionable environmental actions for a local authority or volunteer group"]
 }`;
+
+/**
+ * The prose the model writes is shown to the reporter verbatim, so it has to
+ * come back in the language they are using the app in. Enum values and
+ * indicator keys stay English — they are parsed, not read.
+ */
+const OUTPUT_LANGUAGE: Record<Locale, string> = {
+  en: "English",
+  ru: "Russian",
+  kk: "Kazakh",
+};
+
+export function systemInstruction(locale: Locale = "en"): string {
+  return `${SYSTEM_INSTRUCTION_BASE}
+
+## Output language
+Write every human-readable field — "scene_summary", "detected_objects", every
+indicator "note", "explanation" and every entry of "recommendations" — in
+${OUTPUT_LANGUAGE[locale] ?? "English"}.
+
+The "water_quality" value, the indicator "key" values and the "pollution_tags"
+values are machine-parsed identifiers: keep those exactly as specified above, in
+English, regardless of the output language.`;
+}
 
 export function buildUserPrompt(context?: {
   locationName?: string | null;

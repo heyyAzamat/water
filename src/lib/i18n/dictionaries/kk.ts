@@ -509,6 +509,7 @@ export const kk: Dictionary = {
   ui: {
     closeDialog: "Терезені жабу",
     preview: {
+      explanationTitle: "ЖИ түсіндірмесі",
       scenesLabel: "Алдын ала қарау көріністері",
       showScene: "Көрсету: {place}",
       confidence: "Сенімділік",
@@ -539,6 +540,19 @@ export const kk: Dictionary = {
         },
       ],
     },
+    appNavLabel: "Қосымша",
+
+    share: {
+      exploreCta: "AquaVision ашу",
+      analysedOn: "{date} талданды",
+      badge: "Жарияланған экологиялық баға",
+      reportedBy: "Бағаны жариялаған",
+      ctaTitle: "Өз су айдыныңызды бағалаңыз",
+      ctaBody:
+        "Бір фотосурет жеткілікті. Датчиксіз, жабдықсыз — талдау толықтай цифрлық.",
+      ctaAction: "Бақылауды бастау",
+    },
+
     report: {
       notFound: "Есеп табылмады",
       allReports: "Барлық есеп",
@@ -554,6 +568,7 @@ export const kk: Dictionary = {
       factClarity: "Мөлдірлік",
       statModel: "Модель",
       statAnalysed: "Талданған уақыты",
+      contributionPoints: "{count} үлес балы",
       findingsTitle: "ЖИ нәтижелері",
       findingsBody: "Көру моделі неге келді және неліктен.",
       detectedObjects: "Анықталған нысандар",
@@ -659,6 +674,16 @@ export const kk: Dictionary = {
       geoFailed: "Орныңызды анықтау мүмкін болмады — қолмен енгізіңіз.",
       saved: "Профиль сақталды",
       saveFailed: "Профильді сақтау мүмкін болмады",
+      cardTitle: "Профиль және хабарламалар",
+      cardDescription:
+        "Сіздің ашық деректеріңіз және хабарлама алғыңыз келетін аймақ.",
+      alertsTitle: "Хабарлама баптаулары",
+      alertsDescription:
+        "Хабарламалар радиусыңызда есеп жарияланғанда немесе нүкте трендi сыни болғанда келеді.",
+      kmValue: "{km} км",
+      monitoringRadius: "Бақылау радиусы",
+      alertsWithin: "{km} км радиуста хабарламалар",
+      saveChanges: "Өзгерістерді сақтау",
       displayName: "Көрсетілетін аты",
       region: "Өңір",
       regionHint: "Профиліңізде көрінеді",
@@ -703,6 +728,10 @@ export const kk: Dictionary = {
       layerHeat: "Жылу",
       layerBoth: "Екеуі",
       closePreview: "Есеп алдын ала қарауын жабу",
+      openReport: "Есепті ашу",
+      loadingTiles: "Карта тайлдары жүктелуде…",
+      highestSeverity: "Қазіргі ең жоғары ауырлық",
+      openFullMap: "Толық картаны ашу",
     },
 
     charts: {
@@ -792,9 +821,13 @@ export const kk: Dictionary = {
       metricConfidence: "Сенімділік",
       metricClarity: "Мөлдірлік",
       metricLatency: "Кідіріс",
-      heuristicEngine: "Эвристикалық жүйе",
-      heuristicNote:
-        "Vision API кілті бапталмаған, сондықтан бұл баға колориметриялық жүйеден алынды. Толық модельдік талдау үшін GOOGLE_GENERATIVE_AI_API_KEY қосыңыз.",
+      pickerLabel: "Карта — түсірілген жерді белгілеу үшін басыңыз",
+      pickerHintEmpty:
+        "Орынды белгілеу үшін картаны басыңыз немесе белгіленген су айдындарының бірін таңдаңыз.",
+      pickerHintPlaced:
+        "Нақтылау үшін белгіні сүйреңіз немесе картаның басқа жерін басыңыз.",
+      pickerTitle: "Картада белгілеңіз",
+      engineDefault: "AquaVision Vision v1",
       notWaterWarning:
         "Модель бұл кадрда ашық суды танымады. Жариялауға болады, бірақ су беті кадрдың көбін алатын суретті таңдаған жөн.",
       explanationTitle: "ЖИ түсіндірмесі",
@@ -928,11 +961,7 @@ export const kk: Dictionary = {
       description:
         "Бір фотосурет жеткілікті. Көру моделі ластанудың он үш индикаторын бағалайды, салмақталған матрица жалпы ауырлықты құрайды, ал нәтиже нысанның уақыт қатарына қосылады.",
       engineGemini: "Gemini Vision қосулы",
-      engineHeuristic: "Эвристикалық жүйе",
-      heuristicNoticeBefore:
-        "Vision API кілті бапталмаған, сондықтан жүктемелерді кірістірілген колориметриялық жүйе бағалайды: ол суреттің нақты статистикасын (контраст, түс ығысуы, шекара тығыздығы, реңк энтропиясы) өлшеп, сол индикатор матрицасына түсіреді. Толық модельдік талдауға көшу үшін",
-      heuristicNoticeMiddle: "мәнін",
-      heuristicNoticeAfter: "файлында орнатыңыз.",
+      engineDefault: "AquaVision Vision v1",
     },
 
     notifications: {
@@ -946,6 +975,32 @@ export const kk: Dictionary = {
       emptyDescription:
         "Профиліңізде бақылау аймағын белгілеңіз, жақын маңда бірдеңе өзгергенде хабарлаймыз.",
       emptyAction: "Бақылау аймағын белгілеу",
+      kinds: {
+        nearby_report: {
+          title: "Жаныңызда жаңа есеп",
+          body: "{author} «{location}» нүктесі үшін жаңа баға жариялады.",
+        },
+        pollution_increase: {
+          title: "Бақылаудағы нүктеде ластану өсіп жатыр",
+          body: "«{location}» өткен бағамен салыстырғанда {score}/100 ({grade}) деңгейіне көтерілді.",
+        },
+        critical_trend: {
+          title: "Жаныңызда сыни ластану анықталды",
+          body: "«{location}» {score}/100 (сыни) алды. Дереу шара қолдану ұсынылады.",
+        },
+        comment: {
+          title: "Есебіңізге жаңа пікір",
+          body: "{author} «{location}» бағаңызға жауап берді.",
+        },
+        achievement: {
+          title: "Жетістік ашылды — {badge}",
+          body: "Сіз {count} расталған баға жарияладыңыз. «{nextBadge}» алу үшін жалғастырыңыз.",
+        },
+        moderation: {
+          title: "Модерация жаңарту",
+          body: "«{location}» бағаңызды модератор тексерді.",
+        },
+      },
     },
 
     reports: {
@@ -991,7 +1046,6 @@ export const kk: Dictionary = {
       metaTitle: "Профиль және баптаулар",
       metaDescription:
         "Қатысушы профиліңіз, статистика және хабарлама баптаулары.",
-      demoAccount: "демо тіркелгі",
       newAnalysis: "Жаңа талдау",
       tileAssessments: "Баға",
       tileAssessmentsHint: "сыни: {count}",
@@ -1011,20 +1065,6 @@ export const kk: Dictionary = {
       emptyDescription:
         "Алғашқысын жариялау үшін кез келген өзеннің, көлдің немесе су қоймасының суретін жүктеңіз.",
       emptyAction: "Талдауды бастау",
-      deploymentTitle: "Орналастыру",
-      deploymentDescription:
-        "Бұл данада қазір қандай ішкі жүйелер жұмыс істеп тұр.",
-      subsystemDatabase: "Дерекқор",
-      subsystemVision: "Көру",
-      subsystemStorage: "Қойма",
-      valueSupabase: "Supabase Postgres",
-      valueDemoDataset: "Кірістірілген демо жинақ",
-      valueGemini: "Gemini Vision",
-      valueHeuristic: "Колориметриялық эвристика",
-      valueSupabaseStorage: "Supabase Storage",
-      valueInMemory: "Жадта (тек сеанс ішінде)",
-      deploymentNote:
-        "Кез келген ішкі жүйені жұмыс режиміне ауыстыру үшін .env.local ішінде кілттерді орнатыңыз.",
     },
 
     admin: {

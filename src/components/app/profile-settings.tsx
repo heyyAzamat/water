@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Crosshair, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n/provider";
+import { fmt } from "@/lib/i18n/format";
 import { formatCoords } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -104,10 +105,8 @@ export function ProfileSettings({
   return (
     <Card>
       <CardHeader>
-        <CardTitle as="h2">Profile &amp; notifications</CardTitle>
-        <CardDescription>
-          Your public details, and the area you want to be alerted about.
-        </CardDescription>
+        <CardTitle as="h2">{t.ui.settings.cardTitle}</CardTitle>
+        <CardDescription>{t.ui.settings.cardDescription}</CardDescription>
       </CardHeader>
 
       <form onSubmit={save} className="flex flex-col gap-5 px-5 pb-6 sm:px-6">
@@ -152,11 +151,10 @@ export function ProfileSettings({
 
         <div>
           <h3 className="text-[14px] font-semibold text-ink-50">
-            Alert preferences
+            {t.ui.settings.alertsTitle}
           </h3>
           <p className="mt-1 text-[13px] text-ink-400">
-            Alerts fire when a report is published inside your radius, or when a
-            location&apos;s trend turns critical.
+            {t.ui.settings.alertsDescription}
           </p>
 
           <div className="mt-4 flex flex-col gap-3">
@@ -182,9 +180,9 @@ export function ProfileSettings({
             htmlFor="radius"
             className="flex items-center justify-between text-[13px] font-medium text-ink-300"
           >
-            Monitoring radius
+            {t.ui.settings.monitoringRadius}
             <span className="font-semibold tabular-nums text-ink-100">
-              {form.notifyRadiusKm} km
+              {fmt(t.ui.settings.kmValue, { km: form.notifyRadiusKm })}
             </span>
           </label>
           <input
@@ -239,23 +237,16 @@ export function ProfileSettings({
           </div>
           {hasHome && (
             <p className="mt-2 font-mono text-[11.5px] text-ink-500">
-              {formatCoords(Number(form.homeLat), Number(form.homeLng))} · alerts
-              within {form.notifyRadiusKm} km
+              {formatCoords(Number(form.homeLat), Number(form.homeLng))} ·{" "}
+              {fmt(t.ui.settings.alertsWithin, { km: form.notifyRadiusKm })}
             </p>
           )}
         </div>
 
-        {user.isDemo && (
-          <p className="rounded-xl border border-aqua-400/20 bg-aqua-400/6 p-3 text-[12px] leading-relaxed text-ink-300">
-            This instance runs on the bundled demo dataset, so profile changes
-            are not persisted between restarts. Connect Supabase to store them.
-          </p>
-        )}
-
         <div className="flex justify-end">
           <Button type="submit" loading={saving}>
             <Save />
-            Save changes
+            {t.ui.settings.saveChanges}
           </Button>
         </div>
       </form>

@@ -509,6 +509,7 @@ export const ru: Dictionary = {
   ui: {
     closeDialog: "Закрыть окно",
     preview: {
+      explanationTitle: "Объяснение ИИ",
       scenesLabel: "Сцены превью",
       showScene: "Показать: {place}",
       confidence: "Уверенность",
@@ -539,6 +540,19 @@ export const ru: Dictionary = {
         },
       ],
     },
+    appNavLabel: "Приложение",
+
+    share: {
+      exploreCta: "Открыть AquaVision",
+      analysedOn: "проанализировано {date}",
+      badge: "Опубликованная экологическая оценка",
+      reportedBy: "Автор оценки",
+      ctaTitle: "Оцените свой водоём",
+      ctaBody:
+        "Достаточно одной фотографии. Без датчиков и оборудования — анализ полностью цифровой.",
+      ctaAction: "Начать наблюдение",
+    },
+
     report: {
       notFound: "Отчёт не найден",
       allReports: "Все отчёты",
@@ -554,6 +568,7 @@ export const ru: Dictionary = {
       factClarity: "Прозрачность",
       statModel: "Модель",
       statAnalysed: "Проанализировано",
+      contributionPoints: "{count} баллов вклада",
       findingsTitle: "Находки ИИ",
       findingsBody: "К чему пришла модель зрения и почему.",
       detectedObjects: "Обнаруженные объекты",
@@ -659,6 +674,16 @@ export const ru: Dictionary = {
       geoFailed: "Не удалось определить положение — введите вручную.",
       saved: "Профиль сохранён",
       saveFailed: "Не удалось сохранить профиль",
+      cardTitle: "Профиль и уведомления",
+      cardDescription:
+        "Ваши публичные данные и зона, о которой вы хотите получать оповещения.",
+      alertsTitle: "Настройки оповещений",
+      alertsDescription:
+        "Оповещения приходят, когда отчёт публикуют в вашем радиусе или когда тренд точки становится критическим.",
+      kmValue: "{km} км",
+      monitoringRadius: "Радиус наблюдения",
+      alertsWithin: "оповещения в радиусе {km} км",
+      saveChanges: "Сохранить изменения",
       displayName: "Отображаемое имя",
       region: "Регион",
       regionHint: "Показывается в профиле",
@@ -703,6 +728,10 @@ export const ru: Dictionary = {
       layerHeat: "Тепло",
       layerBoth: "Оба",
       closePreview: "Закрыть превью отчёта",
+      openReport: "Открыть отчёт",
+      loadingTiles: "Загрузка тайлов карты…",
+      highestSeverity: "Сейчас самая высокая тяжесть",
+      openFullMap: "Открыть полную карту",
     },
 
     charts: {
@@ -792,9 +821,13 @@ export const ru: Dictionary = {
       metricConfidence: "Уверенность",
       metricClarity: "Прозрачность",
       metricLatency: "Задержка",
-      heuristicEngine: "Эвристический движок",
-      heuristicNote:
-        "Ключ Vision API не настроен, поэтому оценка получена колориметрическим движком. Добавьте GOOGLE_GENERATIVE_AI_API_KEY для полного анализа моделью.",
+      pickerLabel: "Карта — нажмите, чтобы отметить место съёмки",
+      pickerHintEmpty:
+        "Нажмите на карту, чтобы отметить место, или выберите один из подсвеченных водоёмов.",
+      pickerHintPlaced:
+        "Перетащите метку, чтобы уточнить, или нажмите в другом месте карты.",
+      pickerTitle: "Отметьте на карте",
+      engineDefault: "AquaVision Vision v1",
       notWaterWarning:
         "Модель не распознала открытую воду в этом кадре. Опубликовать всё равно можно, но лучше выбрать снимок, где поверхность воды занимает большую часть кадра.",
       explanationTitle: "Объяснение ИИ",
@@ -927,11 +960,7 @@ export const ru: Dictionary = {
       description:
         "Достаточно одной фотографии. Модель зрения оценивает тринадцать индикаторов загрязнения, взвешенная матрица собирает итоговую тяжесть, а результат добавляется во временной ряд точки.",
       engineGemini: "Gemini Vision активен",
-      engineHeuristic: "Эвристический движок",
-      heuristicNoticeBefore:
-        "Ключ Vision API не настроен, поэтому загрузки оцениваются встроенным колориметрическим движком: он измеряет реальные статистики изображения (контраст, цветовые сдвиги, плотность границ, энтропию оттенков) и переносит их на ту же матрицу индикаторов. Задайте",
-      heuristicNoticeMiddle: "в",
-      heuristicNoticeAfter: ", чтобы перейти к полному анализу моделью.",
+      engineDefault: "AquaVision Vision v1",
     },
 
     notifications: {
@@ -945,6 +974,32 @@ export const ru: Dictionary = {
       emptyDescription:
         "Задайте зону наблюдения в профиле, и мы сообщим, когда рядом что-то изменится.",
       emptyAction: "Задать зону наблюдения",
+      kinds: {
+        nearby_report: {
+          title: "Новый отчёт рядом с вами",
+          body: "{author} опубликовал новую оценку для точки «{location}».",
+        },
+        pollution_increase: {
+          title: "Загрязнение растёт в отслеживаемой точке",
+          body: "«{location}» поднялась до {score}/100 ({grade}) по сравнению с прошлой оценкой.",
+        },
+        critical_trend: {
+          title: "Рядом обнаружено критическое загрязнение",
+          body: "«{location}» получила {score}/100 (критично). Рекомендуется немедленное реагирование.",
+        },
+        comment: {
+          title: "Новый комментарий к вашему отчёту",
+          body: "{author} ответил на вашу оценку точки «{location}».",
+        },
+        achievement: {
+          title: "Достижение получено — {badge}",
+          body: "Вы опубликовали {count} проверенных оценок. Продолжайте, чтобы получить «{nextBadge}».",
+        },
+        moderation: {
+          title: "Обновление модерации",
+          body: "Вашу оценку точки «{location}» проверил модератор.",
+        },
+      },
     },
 
     reports: {
@@ -990,7 +1045,6 @@ export const ru: Dictionary = {
       metaTitle: "Профиль и настройки",
       metaDescription:
         "Ваш профиль участника, статистика и настройки уведомлений.",
-      demoAccount: "демо-аккаунт",
       newAnalysis: "Новый анализ",
       tileAssessments: "Оценок",
       tileAssessmentsHint: "критических: {count}",
@@ -1010,20 +1064,6 @@ export const ru: Dictionary = {
       emptyDescription:
         "Загрузите фотографию любой реки, озера или водохранилища, чтобы опубликовать первую.",
       emptyAction: "Начать анализ",
-      deploymentTitle: "Развёртывание",
-      deploymentDescription:
-        "Какие подсистемы сейчас работают в этом экземпляре.",
-      subsystemDatabase: "База данных",
-      subsystemVision: "Зрение",
-      subsystemStorage: "Хранилище",
-      valueSupabase: "Supabase Postgres",
-      valueDemoDataset: "Встроенный демо-набор",
-      valueGemini: "Gemini Vision",
-      valueHeuristic: "Колориметрическая эвристика",
-      valueSupabaseStorage: "Supabase Storage",
-      valueInMemory: "В памяти (только на сессию)",
-      deploymentNote:
-        "Задайте ключи в .env.local, чтобы перевести любую подсистему в рабочий режим.",
     },
 
     admin: {

@@ -6,7 +6,7 @@ import { getReportByShareToken } from "@/lib/data/repository";
 import { gradeForScore } from "@/lib/ai/scoring";
 import { formatCoords, formatDate } from "@/lib/utils";
 import { getI18n, getT } from "@/lib/i18n/server";
-import { intlLocale } from "@/lib/i18n/format";
+import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +69,7 @@ export default async function SharedReportPage({
           <Logo />
           <Button asChild size="sm" variant="secondary">
             <Link href="/">
-              Explore AquaVision
+              {t.ui.share.exploreCta}
               <ArrowRight />
             </Link>
           </Button>
@@ -79,7 +79,7 @@ export default async function SharedReportPage({
       <main id="main" className="mx-auto max-w-4xl px-5 py-8">
         <Badge variant="outline" size="sm">
           <Sparkles />
-          Shared environmental assessment
+          {t.ui.share.badge}
         </Badge>
 
         <h1 className="mt-3 text-balance text-[1.75rem] font-semibold leading-[1.15] tracking-[-0.035em] text-ink-50">
@@ -158,7 +158,7 @@ export default async function SharedReportPage({
                   <p className="truncate text-[12.5px] font-medium text-ink-100">
                     {report.author.name}
                   </p>
-                  <p className="text-[11px] text-ink-500">Reported by</p>
+                  <p className="text-[11px] text-ink-500">{t.ui.share.reportedBy}</p>
                 </div>
               </div>
             </div>
@@ -167,12 +167,14 @@ export default async function SharedReportPage({
 
         <Card className="mt-4">
           <CardHeader>
-            <CardTitle as="h2">AI findings</CardTitle>
+            <CardTitle as="h2">{t.ui.report.findingsTitle}</CardTitle>
             <CardDescription>
               <span className="inline-flex items-center gap-1.5">
                 <Cpu className="size-3.5" aria-hidden />
-                {report.analysis.model} · analysed{" "}
-                {formatDate(report.analysis.createdAt, false, dateLocale)}
+                {report.analysis.model} ·{" "}
+                {fmt(t.ui.share.analysedOn, {
+                  date: formatDate(report.analysis.createdAt, false, dateLocale),
+                })}
               </span>
             </CardDescription>
           </CardHeader>
@@ -226,14 +228,13 @@ export default async function SharedReportPage({
 
         <div className="mt-8 rounded-2xl border border-white/10 bg-gradient-to-br from-aqua-500/10 to-flux-600/10 p-6 text-center backdrop-blur-xl">
           <h2 className="text-[17px] font-semibold text-ink-50">
-            Assess your own water body
+            {t.ui.share.ctaTitle}
           </h2>
           <p className="mx-auto mt-2 max-w-md text-[13.5px] leading-relaxed text-ink-400">
-            One photograph is enough. No sensors, no hardware — the analysis is
-            free.
+            {t.ui.share.ctaBody}
           </p>
           <Button asChild size="lg" className="mt-5">
-            <Link href="/signup">Start monitoring</Link>
+            <Link href="/signup">{t.ui.share.ctaAction}</Link>
           </Button>
         </div>
       </main>

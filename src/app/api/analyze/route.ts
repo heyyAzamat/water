@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { analyseImage } from "@/lib/ai/vision";
 import { getCurrentUser } from "@/lib/auth";
+import { getLocale } from "@/lib/i18n/server";
 
 /** Vision calls can take a while on a cold model; give them room. */
 export const maxDuration = 60;
@@ -77,6 +78,9 @@ export async function POST(request: Request) {
       mimeType: parsed.data.mimeType,
       features: parsed.data.features ?? null,
       context: parsed.data.context,
+      // Read from the locale cookie, not the request body — the reporter's
+      // language is not something the client should be able to spoof.
+      locale: await getLocale(),
     });
 
     return NextResponse.json(envelope, {

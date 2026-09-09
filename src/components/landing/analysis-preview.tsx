@@ -229,7 +229,7 @@ export function AnalysisPreview() {
           <div className="rounded-xl border border-white/8 bg-white/[0.03] p-3.5">
             <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-aqua-300">
               <Sparkles className="size-3" aria-hidden />
-              AI explanation
+              {t.ui.preview.explanationTitle}
             </div>
             <AnimatePresence mode="wait">
               <motion.p

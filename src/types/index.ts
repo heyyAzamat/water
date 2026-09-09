@@ -270,12 +270,29 @@ export interface Comment {
 export interface Notification {
   id: string;
   kind: NotificationKind;
+  /** English fallback, used when the locale has no template for `kind`. */
   title: string;
   body: string;
+  /**
+   * Substitution values for the localised `kind` template. Rows written before
+   * localisation (and any produced outside this app) omit this, in which case
+   * the stored `title`/`body` are rendered as-is.
+   */
+  params?: NotificationParams;
   reportId: string | null;
   locationId: string | null;
   readAt: string | null;
   createdAt: string;
+}
+
+export interface NotificationParams {
+  location?: string;
+  author?: string;
+  score?: number;
+  grade?: string;
+  count?: number;
+  badge?: string;
+  nextBadge?: string;
 }
 
 /* ------------------------------------------------------------------ *

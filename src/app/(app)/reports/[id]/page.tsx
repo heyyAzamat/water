@@ -255,7 +255,9 @@ export default async function ReportPage({
                     {report.author.name}
                   </p>
                   <p className="text-[11.5px] text-ink-500">
-                    {report.author.points} contribution points
+                    {fmt(t.ui.report.contributionPoints, {
+                      count: report.author.points,
+                    })}
                   </p>
                 </div>
                 {report.author.role !== "user" && (

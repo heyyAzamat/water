@@ -18,6 +18,7 @@ import type { Notification, NotificationKind } from "@/types";
 import { cn, timeAgo } from "@/lib/utils";
 import { useI18n, useT } from "@/lib/i18n/provider";
 import { fmt, intlLocale } from "@/lib/i18n/format";
+import { localiseNotification } from "@/lib/i18n/notifications";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -121,6 +122,11 @@ export function NotificationList({
         {items.map((notification) => {
           const meta = KIND_META[notification.kind];
           const Icon = meta.icon;
+          const copy = localiseNotification(
+            notification,
+            t.pages.notifications.kinds,
+            t.grades,
+          );
           const href = notification.reportId
             ? `/reports/${notification.reportId}`
             : null;
@@ -139,7 +145,7 @@ export function NotificationList({
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-2">
                   <span className="text-[13.5px] font-medium text-ink-50">
-                    {notification.title}
+                    {copy.title}
                   </span>
                   <Badge variant="outline" size="sm">
                     {t.domain.notificationKinds[notification.kind]}
@@ -153,7 +159,7 @@ export function NotificationList({
                   )}
                 </span>
                 <span className="mt-1 block text-[13px] leading-relaxed text-ink-400">
-                  {notification.body}
+                  {copy.body}
                 </span>
                 <span className="mt-1.5 block text-[11px] text-ink-600">
                   {timeAgo(notification.createdAt, dateLocale)}

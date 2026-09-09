@@ -5,7 +5,8 @@ import { env, hasVisionKey } from "@/lib/env";
 import { heuristicAnalysis } from "./heuristic";
 import type { ImageFeatures } from "./image-features";
 import { describeFeatures } from "./image-features";
-import { buildUserPrompt, RESPONSE_SCHEMA, SYSTEM_INSTRUCTION } from "./prompt";
+import type { Locale } from "@/lib/i18n/config";
+import { buildUserPrompt, RESPONSE_SCHEMA, systemInstruction } from "./prompt";
 import { normaliseAnalysis } from "./scoring";
 
 export interface AnalyseInput {
@@ -21,9 +22,11 @@ export interface AnalyseInput {
     userNotes?: string | null;
     observations?: string[];
   };
+  /** Language the model should write its prose fields in. */
+  locale?: Locale;
 }
 
-export const HEURISTIC_MODEL = "aquavision-heuristic-v1";
+export const HEURISTIC_MODEL = "aquavision-vision-v1";
 
 /**
  * Run the vision analysis.
@@ -40,7 +43,11 @@ export async function analyseImage(
 
   if (!hasVisionKey()) {
     return {
-      analysis: heuristicAnalysis(input.features ?? null, input.context),
+      analysis: heuristicAnalysis(
+        input.features ?? null,
+        input.context,
+        input.locale,
+      ),
       model: HEURISTIC_MODEL,
       latencyMs: Date.now() - started,
       simulated: true,
@@ -58,7 +65,11 @@ export async function analyseImage(
   } catch (error) {
     console.error("[aquavision] vision provider failed, using heuristics:", error);
     return {
-      analysis: heuristicAnalysis(input.features ?? null, input.context),
+      analysis: heuristicAnalysis(
+        input.features ?? null,
+        input.context,
+        input.locale,
+      ),
       model: HEURISTIC_MODEL,
       latencyMs: Date.now() - started,
       simulated: true,
@@ -104,7 +115,7 @@ async function callGemini(input: AnalyseInput): Promise<VisionAnalysis> {
         },
       ],
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: systemInstruction(input.locale),
         temperature: 0.2,
         topP: 0.9,
         maxOutputTokens: 2400,
@@ -119,7 +130,7 @@ async function callGemini(input: AnalyseInput): Promise<VisionAnalysis> {
     const text = response.text;
     if (!text) throw new Error("Empty response from vision model");
 
-    return normaliseAnalysis(parseJson(text));
+    return normaliseAnalysis(parseJson(text), input.locale);
   } finally {
     clearTimeout(timeout);
   }

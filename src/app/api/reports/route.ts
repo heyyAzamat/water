@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { listReports } from "@/lib/data/repository";
 import { createReport } from "@/lib/data/write";
 import { normaliseAnalysis } from "@/lib/ai/scoring";
+import { getLocale } from "@/lib/i18n/server";
 
 export const maxDuration = 60;
 
@@ -169,7 +170,7 @@ export async function POST(request: Request) {
 
     // Re-normalise server-side: the client could have posted anything, and the
     // score must always come out of our own scoring engine.
-    const analysis = normaliseAnalysis(parsed.data.analysis);
+    const analysis = normaliseAnalysis(parsed.data.analysis, await getLocale());
 
     const { id } = await createReport({
       userId: user.id,

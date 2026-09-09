@@ -20,6 +20,7 @@ import { APP_NAV, ADMIN_NAV } from "@/lib/navigation";
 import { cn, initials, timeAgo } from "@/lib/utils";
 import { useI18n, useT } from "@/lib/i18n/provider";
 import { fmt, intlLocale } from "@/lib/i18n/format";
+import { localiseNotification } from "@/lib/i18n/notifications";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -188,7 +189,13 @@ export function AppTopbar({
                     {t.topbar.notificationsEmpty}
                   </li>
                 ) : (
-                  notifications.slice(0, 8).map((notification) => (
+                  notifications.slice(0, 8).map((notification) => {
+                    const copy = localiseNotification(
+                      notification,
+                      t.pages.notifications.kinds,
+                      t.grades,
+                    );
+                    return (
                     <li key={notification.id}>
                       <Link
                         href={
@@ -210,10 +217,10 @@ export function AppTopbar({
                         />
                         <span className="min-w-0 flex-1">
                           <span className="block text-[13px] font-medium leading-snug text-ink-100">
-                            {notification.title}
+                            {copy.title}
                           </span>
                           <span className="mt-0.5 block line-clamp-2 text-[12px] leading-relaxed text-ink-500">
-                            {notification.body}
+                            {copy.body}
                           </span>
                           <span className="mt-1 block text-[11px] text-ink-600">
                             {timeAgo(notification.createdAt, dateLocale)}
@@ -221,7 +228,8 @@ export function AppTopbar({
                         </span>
                       </Link>
                     </li>
-                  ))
+                    );
+                  })
                 )}
               </ul>
 

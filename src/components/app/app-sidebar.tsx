@@ -41,7 +41,7 @@ export function AppSidebar({
         <Logo />
       </div>
 
-      <nav className="flex flex-1 flex-col gap-6" aria-label="Application">
+      <nav className="flex flex-1 flex-col gap-6" aria-label={t.ui.appNavLabel}>
         {sections.map((section) => (
           <div key={section.headingKey ?? "main"}>
             {section.headingKey && (

@@ -4,7 +4,12 @@ import type {
   VisionAnalysis,
   WaterQuality,
 } from "@/types";
+import type { Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { fmt } from "@/lib/i18n/format";
 import { clamp } from "@/lib/utils";
+import { analysisCopy } from "./copy";
 
 /* ------------------------------------------------------------------ *
  * Grade bands
@@ -297,10 +302,14 @@ export function computeComposite(
  * `VisionAnalysis`. Never throws: a malformed field degrades to a safe
  * default rather than failing the whole upload.
  */
-export function normaliseAnalysis(raw: unknown): VisionAnalysis {
+export function normaliseAnalysis(
+  raw: unknown,
+  locale: Locale = DEFAULT_LOCALE,
+): VisionAnalysis {
+  const copy = analysisCopy(locale);
   const input = (raw ?? {}) as Record<string, unknown>;
 
-  const indicators = normaliseIndicators(input.indicators);
+  const indicators = normaliseIndicators(input.indicators, locale);
   const modelScore = num(input.pollution_score, 50);
   const modelConfidence = num(input.confidence, 70);
 
@@ -339,17 +348,22 @@ export function normaliseAnalysis(raw: unknown): VisionAnalysis {
     pollution_tags: pollutionTags,
     explanation:
       str(input.explanation) ||
-      `Composite severity ${composite.score}/100 (${composite.quality}). Derived from ${indicators.length} visual indicators.`,
+      fmt(copy.explain.fallback, {
+        score: composite.score,
+        quality: composite.quality,
+        count: indicators.length,
+      }),
     recommendations: arr(input.recommendations).map(String).slice(0, 8).length
       ? arr(input.recommendations).map(String).slice(0, 8)
-      : defaultRecommendations(composite.score, pollutionTags),
+      : defaultRecommendations(composite.score, pollutionTags, locale),
     indicators,
     is_water_body: isWaterBody,
-    scene_summary: str(input.scene_summary) || "Water body surface photograph.",
+    scene_summary: str(input.scene_summary) || copy.scene.fallback,
   };
 }
 
-function normaliseIndicators(value: unknown): AiIndicator[] {
+function normaliseIndicators(value: unknown, locale: Locale): AiIndicator[] {
+  const labels = getDictionary(locale).domain.indicators;
   const list = arr(value);
   const byKey = new Map<string, AiIndicator>();
 
@@ -365,7 +379,7 @@ function normaliseIndicators(value: unknown): AiIndicator[] {
     const severity = clamp(Math.round(num(obj.severity, 0)), 0, 100);
     byKey.set(spec.key, {
       key: spec.key,
-      label: spec.label,
+      label: labels[spec.key]?.label ?? spec.label,
       severity,
       detected: obj.detected === undefined ? severity >= 25 : !!obj.detected,
       note: str(obj.note) || undefined,
@@ -380,55 +394,28 @@ function normaliseIndicators(value: unknown): AiIndicator[] {
 export function defaultRecommendations(
   score: number,
   tags: PollutionTag[],
+  locale: Locale = DEFAULT_LOCALE,
 ): string[] {
+  const r = analysisCopy(locale).recommendations;
   const recs: string[] = [];
 
   if (tags.includes("plastic") || tags.includes("floating_garbage")) {
-    recs.push(
-      "Organise a shoreline cleanup and install a floating debris boom at the nearest inflow.",
-    );
+    recs.push(r.litter);
   }
-  if (tags.includes("oil_film")) {
-    recs.push(
-      "Report a suspected hydrocarbon spill to the regional environmental inspectorate within 24 hours.",
-    );
-  }
+  if (tags.includes("oil_film")) recs.push(r.oil);
   if (tags.includes("algae_bloom") || tags.includes("eutrophication")) {
-    recs.push(
-      "Trace upstream nutrient sources — agricultural runoff and untreated greywater are the usual drivers.",
-    );
+    recs.push(r.algae);
   }
-  if (tags.includes("foam") || tags.includes("sewage")) {
-    recs.push(
-      "Sample for surfactants and coliform bacteria; check nearby outfalls for illegal connections.",
-    );
-  }
-  if (tags.includes("dead_fish")) {
-    recs.push(
-      "Escalate immediately: a fish kill indicates acute toxicity or oxygen collapse.",
-    );
-  }
-  if (tags.includes("industrial_discharge")) {
-    recs.push(
-      "Document the outfall location and request the operator's discharge permit from the regulator.",
-    );
-  }
+  if (tags.includes("foam") || tags.includes("sewage")) recs.push(r.sewage);
+  if (tags.includes("dead_fish")) recs.push(r.deadFish);
+  if (tags.includes("industrial_discharge")) recs.push(r.industrial);
 
-  if (score >= 81) {
-    recs.push("Restrict public contact with the water until laboratory testing is complete.");
-  } else if (score >= 61) {
-    recs.push("Schedule follow-up photography every 7 days to track progression.");
-  } else if (score >= 41) {
-    recs.push("Add this location to the monthly monitoring rotation.");
-  } else {
-    recs.push("Condition is healthy — re-photograph seasonally to establish a baseline.");
-  }
+  if (score >= 81) recs.push(r.critical);
+  else if (score >= 61) recs.push(r.poor);
+  else if (score >= 41) recs.push(r.moderate);
+  else recs.push(r.healthy);
 
-  if (recs.length < 3) {
-    recs.push(
-      "Upload additional angles (shoreline, inflow, outflow) to raise analysis confidence.",
-    );
-  }
+  if (recs.length < 3) recs.push(r.moreAngles);
 
   return [...new Set(recs)].slice(0, 6);
 }

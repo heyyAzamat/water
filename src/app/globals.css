@@ -634,8 +634,17 @@ body {
   outline: none;
 }
 
+/* Tuned for the Esri Dark Gray canvas, which ships far darker than the CARTO
+   basemap this used to sit on: without the lift, landmasses and country
+   borders collapse into the near-black page background. */
 .leaflet-tile-pane {
-  filter: brightness(0.78) saturate(0.7) contrast(1.05);
+  filter: brightness(1.45) contrast(1.12) saturate(0.85);
+}
+
+/* The boundary/label overlay is already bright — double-filtering it turns the
+   place names into glare. */
+.leaflet-tile-pane .aqua-reference-tiles {
+  filter: brightness(0.72) saturate(0.55);
 }
 
 .leaflet-control-zoom {

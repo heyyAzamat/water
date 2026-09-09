@@ -25,17 +25,25 @@ import { Skeleton } from "@/components/ui/misc";
 import { EmptyState, QualityBadge, ScoreChip } from "@/components/shared/primitives";
 import type { MapMode } from "./water-map";
 
-// Leaflet touches `window` at import time, so it can never be server-rendered.
-const WaterMap = dynamic(() => import("./water-map").then((m) => m.WaterMap), {
-  ssr: false,
-  loading: () => (
+/** Rendered inside the i18n provider, so it can read the dictionary. */
+function MapLoading() {
+  const t = useT();
+  return (
     <div className="grid size-full place-items-center bg-ink-900/40">
       <div className="flex flex-col items-center gap-3">
         <div className="size-8 animate-spin rounded-full border-2 border-white/10 border-t-aqua-400" />
-        <p className="text-[12.5px] text-ink-500">Loading map tiles…</p>
+        <p className="text-[12.5px] text-ink-500">
+          {t.ui.mapExplorer.loadingTiles}
+        </p>
       </div>
     </div>
-  ),
+  );
+}
+
+// Leaflet touches `window` at import time, so it can never be server-rendered.
+const WaterMap = dynamic(() => import("./water-map").then((m) => m.WaterMap), {
+  ssr: false,
+  loading: () => <MapLoading />,
 });
 
 const WATER_TYPES: Array<WaterBodyType | "all"> = [
@@ -525,7 +533,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
                       {selected.author.name}
                     </span>
                     <Button asChild size="sm">
-                      <Link href={`/reports/${selected.id}`}>Open report</Link>
+                      <Link href={`/reports/${selected.id}`}>{t.ui.mapExplorer.openReport}</Link>
                     </Button>
                   </div>
                 </div>
@@ -540,6 +548,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
 
 /** Landing-page preview: non-interactive map with a live report overlay. */
 export function MapPreview({ reports }: { reports: Report[] }) {
+  const t = useT();
   const critical = React.useMemo(
     () =>
       [...reports]
@@ -569,7 +578,7 @@ export function MapPreview({ reports }: { reports: Report[] }) {
         <div className="pointer-events-auto flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="rounded-2xl border border-white/10 bg-ink-950/80 p-4 backdrop-blur-2xl">
             <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-500">
-              Highest severity right now
+              {t.ui.mapExplorer.highestSeverity}
             </p>
             <ul className="mt-2.5 flex flex-col gap-2">
               {critical.map((report) => (
@@ -593,7 +602,7 @@ export function MapPreview({ reports }: { reports: Report[] }) {
           <Button asChild size="lg">
             <Link href="/map">
               <MapPin aria-hidden />
-              Open the full map
+              {t.ui.mapExplorer.openFullMap}
             </Link>
           </Button>
         </div>

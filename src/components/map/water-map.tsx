@@ -38,10 +38,25 @@ export interface WaterMapProps {
   fitToReports?: boolean;
 }
 
-const TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+/**
+ * Esri's Dark Gray Canvas — a keyless dark basemap.
+ *
+ * CARTO's `dark_all` used to serve keyless too, but now stamps every tile with
+ * an "API KEY REQUIRED" watermark, which made the whole map unreadable. Esri
+ * serves this canvas without a token and its palette matches the app's abyss
+ * theme. Note the `{z}/{y}/{x}` order — ArcGIS puts row before column.
+ *
+ * Base and labels ship as two separate services, so the reference layer goes on
+ * top of the base to restore the place names CARTO baked in.
+ */
+export const TILE_URL =
+  "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+export const LABEL_TILE_URL =
+  "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}";
+export const TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.esri.com">Esri</a>, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+/** The canvas is only cached to z16; past that Leaflet upscales z16 tiles. */
+export const TILE_MAX_NATIVE_ZOOM = 16;
 
 export function WaterMap({
   reports,
@@ -76,7 +91,10 @@ export function WaterMap({
     const map = L.map(containerRef.current, {
       center,
       zoom,
-      zoomControl: interactive,
+      // Added below instead, on the right — the default top-left corner is
+      // occupied by the explorer's marker/heat mode toolbar, which covered the
+      // zoom-in button entirely.
+      zoomControl: false,
       attributionControl: true,
       dragging: interactive,
       scrollWheelZoom: interactive,
@@ -90,10 +108,19 @@ export function WaterMap({
 
     L.tileLayer(TILE_URL, {
       attribution: TILE_ATTRIBUTION,
-      subdomains: "abcd",
-      maxZoom: 19,
-      detectRetina: true,
+      maxZoom: 18,
+      maxNativeZoom: TILE_MAX_NATIVE_ZOOM,
     }).addTo(map);
+
+    L.tileLayer(LABEL_TILE_URL, {
+      maxZoom: 18,
+      maxNativeZoom: TILE_MAX_NATIVE_ZOOM,
+      className: "aqua-reference-tiles",
+    }).addTo(map);
+
+    if (interactive) {
+      L.control.zoom({ position: "topright" }).addTo(map);
+    }
 
     mapRef.current = map;
 

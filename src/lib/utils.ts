@@ -71,11 +71,28 @@ export function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
+/**
+ * Cyrillic transliteration, applied before the ASCII filter.
+ *
+ * Location slugs are unique keys (`on conflict (slug)` in the seed), so without
+ * this every Russian or Kazakh water body name would reduce to an empty string
+ * and collapse into a single row.
+ */
+const TRANSLITERATION: Record<string, string> = {
+  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z",
+  и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r",
+  с: "s", т: "t", у: "u", ф: "f", х: "h", ц: "ts", ч: "ch", ш: "sh", щ: "sch",
+  ъ: "", ы: "y", ь: "", э: "e", ю: "yu", я: "ya",
+  // Kazakh-specific letters.
+  ә: "a", ғ: "g", қ: "q", ң: "ng", ө: "o", ұ: "u", ү: "u", һ: "h", і: "i",
+};
+
 export function slugify(value: string) {
   return value
     .toLowerCase()
+    .replace(/[\u0400-\u04ff]/g, (char) => TRANSLITERATION[char] ?? "")
     .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }

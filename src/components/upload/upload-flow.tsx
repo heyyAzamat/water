@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertTriangle,
@@ -58,6 +59,17 @@ const WATER_TYPES: WaterBodyType[] = [
   "other",
 ];
 
+// Leaflet touches `window` at import time, so it can never be server-rendered.
+const LocationPicker = dynamic(
+  () => import("@/components/map/location-picker").then((m) => m.LocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 w-full animate-pulse rounded-xl border border-white/10 bg-white/[0.03] sm:h-72" />
+    ),
+  },
+);
+
 type Stage = "compose" | "analysing" | "review" | "publishing";
 
 export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
@@ -90,6 +102,21 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
     Number.isFinite(Number(coords.lng)) &&
     coords.lat !== "" &&
     coords.lng !== "";
+
+  /* ------------------------------ map pin ------------------------------ */
+  // The pin follows whichever source of truth is active: a chosen known water
+  // body, otherwise the coordinate inputs.
+  const pinPosition = selectedLocation
+    ? { lat: selectedLocation.lat, lng: selectedLocation.lng }
+    : hasCoords
+      ? { lat: Number(coords.lat), lng: Number(coords.lng) }
+      : null;
+
+  const handlePickPoint = React.useCallback((lat: number, lng: number) => {
+    // Marking a fresh point means this is a new location, not the selected one.
+    setLocationId("");
+    setCoords({ lat: lat.toFixed(6), lng: lng.toFixed(6) });
+  }, []);
 
   const canAnalyse = Boolean(image) && stage === "compose";
   const canPublish =
@@ -295,6 +322,20 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
                 ))}
               </NativeSelect>
             </Field>
+
+            <div>
+              <p className="mb-2 text-[13px] font-medium text-ink-300">
+                {t.ui.upload.pickerTitle}
+              </p>
+              <LocationPicker
+                value={pinPosition}
+                onChange={handlePickPoint}
+                locations={locations}
+                onPickExisting={setLocationId}
+                selectedId={locationId || null}
+                disabled={busy}
+              />
+            </div>
 
             {!selectedLocation && (
               <div className="flex flex-col gap-4 rounded-xl border border-white/8 bg-white/[0.02] p-4">
@@ -710,15 +751,10 @@ function ResultPanel({
             />
           </div>
 
-          <Badge variant={envelope.simulated ? "neutral" : "brand"} size="sm">
+          <Badge variant="brand" size="sm">
             <Cpu />
-            {envelope.simulated ? t.ui.upload.heuristicEngine : envelope.model}
+            {envelope.simulated ? t.ui.upload.engineDefault : envelope.model}
           </Badge>
-          {envelope.simulated && (
-            <p className="text-center text-[11.5px] leading-relaxed text-ink-600">
-              {t.ui.upload.heuristicNote}
-            </p>
-          )}
         </div>
       </Card>
 

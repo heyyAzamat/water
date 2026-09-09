@@ -5,12 +5,15 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { WaterLocation } from "@/types";
 import { useT } from "@/lib/i18n/provider";
-import {
-  LABEL_TILE_URL,
-  TILE_ATTRIBUTION,
-  TILE_MAX_NATIVE_ZOOM,
-  TILE_URL,
-} from "./water-map";
+import { LABEL_TILE_URL, TILE_MAX_NATIVE_ZOOM, TILE_URL } from "./water-map";
+
+/**
+ * Shorter than the explorer's credit line: the picker map is 256 px tall on a
+ * phone, where the full attribution wraps to two lines and sits on top of the
+ * map. Still names both tile sources, which is what Esri and OSM require.
+ */
+const COMPACT_ATTRIBUTION =
+  '&copy; <a href="https://www.esri.com">Esri</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 export interface LocationPickerProps {
   /** Currently marked point, or null when nothing has been placed yet. */
@@ -99,8 +102,11 @@ export function LocationPicker({
       maxZoom: 18,
     });
 
+    // Drops the "Leaflet" prefix, which is optional and costs a whole line here.
+    map.attributionControl.setPrefix(false);
+
     L.tileLayer(TILE_URL, {
-      attribution: TILE_ATTRIBUTION,
+      attribution: COMPACT_ATTRIBUTION,
       maxZoom: 18,
       maxNativeZoom: TILE_MAX_NATIVE_ZOOM,
     }).addTo(map);

@@ -652,13 +652,10 @@ body {
   box-shadow: none !important;
 }
 
-/* Below `lg` the app overlays its own controls in the top-left corner, so the
-   zoom buttons move down out of their way. */
-@media (max-width: 1023px) {
-  .leaflet-top.leaflet-left {
-    top: 3.5rem;
-  }
-}
+/* The explorer's zoom control now sits top-right, clear of its own toolbar, so
+   the old blanket nudge for `.leaflet-top.leaflet-left` is gone — it only hit
+   the upload picker, whose top-left corner is empty, and left its zoom buttons
+   floating mid-edge on phones. */
 
 .leaflet-control-zoom a {
   background: oklch(0.2 0.017 258 / 0.85) !important;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cpu, Info } from "lucide-react";
+import { Cpu } from "lucide-react";
 import { capabilities } from "@/lib/env";
 import { listLocations } from "@/lib/data/repository";
 import { getT } from "@/lib/i18n/server";
@@ -29,34 +29,14 @@ export default async function UploadPage() {
           </p>
         </div>
 
-        <Badge
-          variant={capabilities.vision === "gemini" ? "brand" : "neutral"}
-          size="md"
-          className="shrink-0"
-        >
+        <Badge variant="brand" size="md" className="shrink-0">
           <Cpu />
           {capabilities.vision === "gemini"
             ? t.pages.upload.engineGemini
-            : t.pages.upload.engineHeuristic}
+            : t.pages.upload.engineDefault}
         </Badge>
       </div>
 
-      {capabilities.vision === "heuristic" && (
-        <div className="mt-5 flex gap-3 rounded-xl border border-lume-400/20 bg-lume-400/6 p-4">
-          <Info className="mt-0.5 size-4 shrink-0 text-lume-300" aria-hidden />
-          <p className="text-[12.5px] leading-relaxed text-ink-300">
-            {t.pages.upload.heuristicNoticeBefore}{" "}
-            <code className="rounded bg-white/8 px-1.5 py-0.5 font-mono text-[11.5px] text-ink-200">
-              GOOGLE_GENERATIVE_AI_API_KEY
-            </code>{" "}
-            {t.pages.upload.heuristicNoticeMiddle}{" "}
-            <code className="font-mono text-[11.5px] text-ink-200">
-              .env.local
-            </code>{" "}
-            {t.pages.upload.heuristicNoticeAfter}
-          </p>
-        </div>
-      )}
 
       <div className="mt-6">
         <UploadFlow locations={locations} />

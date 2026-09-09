@@ -131,7 +131,7 @@ export function TrendChart({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="oklch(0.755 0.135 192)" stopOpacity={0.28} />
@@ -229,7 +229,7 @@ export function ScoreHistoryChart({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <LineChart data={data} margin={{ top: 8, right: 8, left: -22, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="oklch(1 0 0 / 0.06)" vertical={false} />
         <XAxis
           dataKey="label"
@@ -281,7 +281,7 @@ export function QualityDistributionChart({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="oklch(1 0 0 / 0.06)" vertical={false} />
         <XAxis
           dataKey="label"

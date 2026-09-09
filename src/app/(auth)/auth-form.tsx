@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useActionState } from "react";
-import { AlertCircle, ArrowRight, Info, MailCheck } from "lucide-react";
+import { AlertCircle, ArrowRight, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Separator } from "@/components/ui/misc";
@@ -105,14 +105,10 @@ export function AuthForm({
             role="alert"
             className="flex gap-2.5 rounded-xl border border-grade-critical/25 bg-grade-critical/8 p-3"
           >
-            {state.error.includes("demo mode") ? (
-              <Info className="mt-0.5 size-4 shrink-0 text-lume-300" aria-hidden />
-            ) : (
-              <AlertCircle
-                className="mt-0.5 size-4 shrink-0 text-grade-critical"
-                aria-hidden
-              />
-            )}
+            <AlertCircle
+              className="mt-0.5 size-4 shrink-0 text-grade-critical"
+              aria-hidden
+            />
             <p className="text-[12.5px] leading-relaxed text-ink-200">
               {state.error}
             </p>

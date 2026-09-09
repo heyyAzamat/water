@@ -33,8 +33,9 @@ async function origin() {
   return host ? `${proto}://${host}` : env.SITE_URL;
 }
 
-const DEMO_NOTICE =
-  "This deployment is running in demo mode — no auth provider is configured. Add your Supabase keys to .env.local to enable real accounts. Meanwhile the whole platform is explorable as the demo user.";
+/** Generic, user-facing wording: never expose how the instance is configured. */
+const AUTH_UNAVAILABLE =
+  "Sign-in is temporarily unavailable. Please try again in a moment.";
 
 export async function signInWithPassword(
   _prev: AuthState,
@@ -52,7 +53,7 @@ export async function signInWithPassword(
   }
 
   const supabase = await createServerSupabase();
-  if (!supabase) return { error: DEMO_NOTICE };
+  if (!supabase) return { error: AUTH_UNAVAILABLE };
 
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
@@ -88,7 +89,7 @@ export async function signUpWithPassword(
   }
 
   const supabase = await createServerSupabase();
-  if (!supabase) return { error: DEMO_NOTICE };
+  if (!supabase) return { error: AUTH_UNAVAILABLE };
 
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
@@ -151,7 +152,7 @@ export async function sendPasswordReset(
   }
 
   const supabase = await createServerSupabase();
-  if (!supabase) return { notice: DEMO_NOTICE };
+  if (!supabase) return { notice: AUTH_UNAVAILABLE };
 
   await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${await origin()}/auth/callback?next=/profile`,

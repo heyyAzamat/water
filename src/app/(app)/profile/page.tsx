@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Award, Cpu, Database, Gauge, ScanLine, Waves } from "lucide-react";
+import { Award, Gauge, ScanLine, Waves } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
-import { capabilities } from "@/lib/env";
 import { listUserReports, userStats } from "@/lib/data/repository";
 import { getT } from "@/lib/i18n/server";
 import { fmt } from "@/lib/i18n/format";
@@ -54,11 +53,6 @@ export default async function ProfilePage() {
               {user.role !== "user" && (
                 <Badge variant="brand" size="md">
                   {t.roles[user.role]}
-                </Badge>
-              )}
-              {user.isDemo && (
-                <Badge variant="neutral" size="md">
-                  {t.pages.profile.demoAccount}
                 </Badge>
               )}
             </div>
@@ -177,82 +171,6 @@ export default async function ProfilePage() {
         </div>
       </Card>
 
-      {/* Deployment info — useful when reviewing or handing the project over */}
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle as="h2">{t.pages.profile.deploymentTitle}</CardTitle>
-          <CardDescription>
-            {t.pages.profile.deploymentDescription}
-          </CardDescription>
-        </CardHeader>
-        <dl className="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-3 sm:px-6">
-          <Subsystem
-            icon={<Database />}
-            label={t.pages.profile.subsystemDatabase}
-            value={
-              capabilities.database === "supabase"
-                ? t.pages.profile.valueSupabase
-                : t.pages.profile.valueDemoDataset
-            }
-            live={capabilities.database === "supabase"}
-          />
-          <Subsystem
-            icon={<Cpu />}
-            label={t.pages.profile.subsystemVision}
-            value={
-              capabilities.vision === "gemini"
-                ? t.pages.profile.valueGemini
-                : t.pages.profile.valueHeuristic
-            }
-            live={capabilities.vision === "gemini"}
-          />
-          <Subsystem
-            icon={<Waves />}
-            label={t.pages.profile.subsystemStorage}
-            value={
-              capabilities.storage === "supabase-storage"
-                ? t.pages.profile.valueSupabaseStorage
-                : t.pages.profile.valueInMemory
-            }
-            live={capabilities.storage === "supabase-storage"}
-          />
-        </dl>
-        <p className="px-5 pb-5 text-[11.5px] text-ink-600 sm:px-6">
-          {t.pages.profile.deploymentNote}
-        </p>
-      </Card>
-    </div>
-  );
-}
-
-function Subsystem({
-  icon,
-  label,
-  value,
-  live,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  live: boolean;
-}) {
-  return (
-    <div className="rounded-xl border border-white/8 bg-white/[0.025] p-3.5">
-      <dt className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.08em] text-ink-600">
-        <span className="[&_svg]:size-3.5">{icon}</span>
-        {label}
-      </dt>
-      <dd className="mt-2 flex items-center gap-2">
-        <span
-          className={
-            live
-              ? "size-1.5 rounded-full bg-grade-excellent"
-              : "size-1.5 rounded-full bg-ink-600"
-          }
-          aria-hidden
-        />
-        <span className="text-[12.5px] text-ink-200">{value}</span>
-      </dd>
     </div>
   );
 }

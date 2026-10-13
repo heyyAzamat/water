@@ -47,7 +47,7 @@ export const ru: Dictionary = {
     noAccount: "Работает без регистрации — чтобы проанализировать фото, аккаунт не нужен.",
     kicker: "AquaVision",
     titleTop: "Живая",
-    titleMain: "вода.",
+    titleMain: "вода",
     tagline: "Интеллект о водоёмах",
     badge: "Vision AI",
     badgeText: "Оценка экологии по одной фотографии",
@@ -285,6 +285,8 @@ export const ru: Dictionary = {
   },
 
   footer: {
+    authors: "Авторы: Савич Екатерина, Менкеева Софья — ученицы 9 класса",
+    supervisor: "Руководитель: Негманова Каирпану Канапьяновна, учитель информатики",
     photoCredits:
       "Иллюстрации: свободно лицензированные фотографии с Wikimedia Commons. Фото в шапке — Mudasir Zainuddin, CC BY-SA 4.0.",
     tagline:

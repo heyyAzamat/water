@@ -56,7 +56,7 @@ export const en = {
     noAccount: "Works without an account — no sign-up to analyse a photograph.",
     kicker: "AquaVision",
     titleTop: "Living",
-    titleMain: "Water.",
+    titleMain: "Water",
     tagline: "Water body intelligence",
     badge: "Vision AI",
     badgeText: "Environmental scoring from a single photograph",
@@ -294,6 +294,8 @@ export const en = {
   },
 
   footer: {
+    authors: "Authors: Ekaterina Savich, Sofya Menkeeva — 9th-grade students",
+    supervisor: "Supervisor: Kairpanu Kanapyanovna Negmanova, computer science teacher",
     photoCredits:
       "Sample imagery: freely-licensed photographs from Wikimedia Commons. Hero photo by Mudasir Zainuddin, CC BY-SA 4.0.",
     tagline:

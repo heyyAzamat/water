@@ -907,6 +907,12 @@ export function SiteFooter() {
             <p className="text-[12.5px] text-ink-600">
               {fmt(t.footer.rights, { year })}
             </p>
+            <p className="mt-2 text-[12.5px] leading-relaxed text-ink-400">
+              {t.footer.authors}
+            </p>
+            <p className="text-[12.5px] leading-relaxed text-ink-400">
+              {t.footer.supervisor}
+            </p>
             <p className="mt-1 text-[11px] leading-relaxed text-ink-700">
               {t.footer.photoCredits}
             </p>

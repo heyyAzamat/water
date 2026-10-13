@@ -47,7 +47,7 @@ export const kk: Dictionary = {
     noAccount: "Тіркелусіз жұмыс істейді — фотосуретті талдау үшін тіркелгі қажет емес.",
     kicker: "AquaVision",
     titleTop: "Тірі",
-    titleMain: "су.",
+    titleMain: "су",
     tagline: "Су нысандары туралы дерек",
     badge: "Vision AI",
     badgeText: "Бір фотосуреттен экологиялық баға",
@@ -285,6 +285,8 @@ export const kk: Dictionary = {
   },
 
   footer: {
+    authors: "Авторлар: Савич Екатерина, Менкеева Софья — 9-сынып оқушылары",
+    supervisor: "Жетекші: Негманова Каирпану Канапьяновна, информатика пәнінің мұғалімі",
     photoCredits:
       "Суреттер: Wikimedia Commons сайтындағы еркін лицензиялы фотосуреттер. Бастапқы фото — Mudasir Zainuddin, CC BY-SA 4.0.",
     tagline:

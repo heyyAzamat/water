@@ -61,8 +61,8 @@ export const en = {
     badge: "Vision AI",
     badgeText: "Environmental scoring from a single photograph",
     subtitle:
-      "Photograph a river, lake or reservoir. AquaVision analyses the image with computer vision, scores its condition from 0–100, explains exactly what it found, and tracks how the site changes over time.",
-    subtitleStrong: "No sensors. No hardware. Entirely digital.",
+      "Photograph a water body — AI scores its condition from 0 to 100.",
+    subtitleStrong: "No sensors or hardware.",
     ctaPrimary: "Analyse a photograph",
     ctaSecondary: "Explore the live map",
     stats: {
@@ -77,28 +77,28 @@ export const en = {
 
   how: {
     eyebrow: "How it works",
-    title: "From photograph to defensible assessment in under a minute",
+    title: "From photo to score in a minute",
     description:
-      "Four stages, fully automated. The only manual step is pointing a camera at the water.",
+      "Fully automatic — all you do is take the photo.",
     steps: [
       {
         title: "Photograph the water",
-        body: "Any phone camera works. Shoot the surface from the bank, a bridge or a boat — PNG, JPEG or WEBP.",
+        body: "Any phone will do.",
         detail: "Drag & drop · client-side compression · EXIF capture time",
       },
       {
         title: "Computer vision analyses it",
-        body: "The model measures clarity, plastics, foam, oil film, algae and unnatural colour, then rates each one 0–100.",
+        body: "The model looks for litter, foam, oil and algae.",
         detail: "13 indicators · structured JSON · confidence-scored",
       },
       {
         title: "The scoring engine composes the verdict",
-        body: "A weighted matrix recomputes the overall severity so the number is reproducible — not just whatever the model felt like saying.",
+        body: "The signals are combined into a 0–100 score.",
         detail: "Peak-biased weighting · divergence penalty · 5 grade bands",
       },
       {
         title: "It lands on the map and the timeline",
-        body: "Every assessment is stored, pinned, clustered and compared against the location's history to detect the trend.",
+        body: "The score appears on the map and in the site's history.",
         detail: "Heatmap · clusters · 30-day projection · PDF export",
       },
     ],
@@ -106,38 +106,38 @@ export const en = {
 
   features: {
     eyebrow: "AI capabilities",
-    title: "Not a classifier bolted onto an upload form",
+    title: "What AquaVision can do",
     description:
-      "AquaVision is an assessment pipeline: measure, recompute, explain, compare against history, and stay honest about uncertainty.",
+      "It measures, explains and tracks change.",
     items: [
       {
         title: "Multi-indicator vision analysis",
-        body: "Thirteen independent pollution signals — plastics, floating garbage, oil film, foam, algal bloom, unnatural colour, sediment, sewage, industrial discharge, dead fauna and more — each with its own severity and evidence note.",
+        body: "13 pollution signals, each with its own score.",
       },
       {
         title: "Reproducible 0–100 scoring",
-        body: "A weighted matrix blends every indicator, biased toward the worst single signal so one oil slick in a clean frame still registers. Model disagreement docks the confidence rather than being hidden.",
+        body: "Same photo, same score.",
       },
       {
         title: "Trend detection & projection",
-        body: "Confidence-weighted least squares across a location's history, with an explicit noise floor so seasonal light variation is never reported as a crisis. Projects 30 days ahead.",
+        body: "Shows whether the water is getting cleaner, with a 30-day forecast.",
       },
       {
         title: "Live heatmap & clustering",
-        body: "Every report pinned and colour-coded by severity, aggregated into density clusters, filterable by date, region, water body type and grade.",
+        body: "Every report on the map, with filters.",
       },
       {
         title: "Automatic environmental reports",
-        body: "Coordinates, imagery, findings, indicator table, AI reasoning, recommendations and trend summary — exportable to PDF, printable, shareable by link.",
+        body: "A ready-made report as a PDF or a link.",
       },
       {
         title: "Crowdsourced corroboration",
-        body: "Field observers add smell, dead fish, foam, illegal dumping and nearby industry. Human notes corroborate the vision result — capped so they can never manufacture a critical score alone.",
+        body: "People on site add their own observations to the score.",
       },
     ],
     scale: {
       title: "The severity scale",
-      body: "One scale, five bands, used identically by the score ring, the map markers, the alert thresholds and the PDF.",
+      body: "Five bands — from clean water to catastrophe.",
       legend: "0 = pristine · 100 = ecological emergency",
     },
   },
@@ -147,14 +147,14 @@ export const en = {
     title: "One map.",
     titleSub: "Every assessment.",
     description:
-      "Markers are coloured by severity and cluster by density. Switch to the heat layer to see where pollution concentrates across a whole basin.",
+      "Marker colour shows how polluted the water is.",
   },
 
   stats: {
     eyebrow: "Network impact",
     title: "What the network has measured so far",
     description:
-      "Every number below is computed live from the assessment database — no marketing figures.",
+      "Data updates in real time.",
     distributionTitle: "Grade distribution",
     distributionBody:
       "How the {total} assessed images fall across the severity bands.",
@@ -176,9 +176,9 @@ export const en = {
 
   benefits: {
     eyebrow: "Why it works",
-    title: "Sensor-grade coverage without a single sensor",
+    title: "Monitoring without sensors",
     description:
-      "Hardware monitoring is accurate and expensive, which is why most water bodies have none at all. AquaVision trades a little precision for orders of magnitude more coverage.",
+      "Sensors are expensive; a photo is free.",
     audiences: [
       {
         who: "Citizens & volunteers",
@@ -208,51 +208,51 @@ export const en = {
     advantages: [
       {
         title: "No capital expenditure",
-        body: "A sensor buoy costs thousands and covers one point. A photograph costs nothing and covers anywhere someone can stand.",
+        body: "A photo costs nothing.",
       },
       {
         title: "Deployable today",
-        body: "No procurement, no installation, no calibration schedule, no batteries to replace in February.",
+        body: "Nothing to install.",
       },
       {
         title: "Scales with people, not budget",
-        body: "Coverage grows every time somebody joins. Marginal cost per additional monitoring site is effectively zero.",
+        body: "More contributors, more coverage.",
       },
       {
         title: "Auditable by design",
-        body: "Every score decomposes into the indicators that produced it, with the model, confidence and timestamp recorded.",
+        body: "You can see what went into every score.",
       },
     ],
   },
 
   faq: {
     eyebrow: "FAQ",
-    title: "The questions that actually matter",
-    description: "Straight answers on accuracy, methodology and limits.",
+    title: "Frequently asked questions",
+    description: "The essentials, briefly.",
     items: [
       {
         q: "How accurate is a score derived from one photograph?",
-        a: "It is a visual assessment, and we are explicit about that. AquaVision measures what is visible — clarity, plastics, foam, oil film, algal biomass, unnatural colour — and reports a confidence that drops for poor light, motion blur, heavy compression or a distant crop. It cannot detect dissolved chemistry, heavy metals or bacteria, and the report says so. Its value is coverage and trend: a site photographed monthly by five people yields a signal no single lab sample can.",
+        a: "Only what is visible in the photo is assessed. Chemistry and bacteria can't be detected from an image.",
       },
       {
         q: "Why recompute the score instead of trusting the model's number?",
-        a: "Because a single opaque number is not auditable. The model rates each indicator separately with an evidence note; a weighted matrix then composes the overall severity, biased toward the worst signal so one serious finding in an otherwise clean frame is not averaged away. If the model's own overall guess diverges from its indicator matrix, that divergence is subtracted from the confidence rather than quietly discarded.",
+        a: "So the score can be checked: you can see which signals it was built from.",
       },
       {
         q: "How does trend detection avoid crying wolf over seasonal change?",
-        a: "Two guards. First, the fit is confidence-weighted least squares, so a blurry 41%-confidence photo cannot swing the verdict as hard as a crisp 92% one. Second, there is an explicit ±6-point noise floor: movement smaller than that is reported as stable, because water photographs genuinely vary with light, season and framing. A direction is only declared when the window-mean comparison and the regression slope agree in sign.",
+        a: "Small fluctuations (up to ±6 points) are treated as normal.",
       },
       {
         q: "Do I need to install anything or buy hardware?",
-        a: "No. The entire platform is digital — a camera and a browser. There are no buoys, probes, dataloggers or gateways, nothing to calibrate and nothing to maintain in the field.",
+        a: "No — just a phone and a browser.",
       },
       {
         q: "Who owns the data I contribute?",
-        a: "Your uploads stay attributed to you and you can delete a report at any time. Approved public assessments are readable by everyone, because environmental condition data is a public good — that openness is what makes the map useful to the people who can act on it.",
+        a: "You do. You can delete a report at any time.",
       },
       {
         q: "Can this integrate with our existing monitoring programme?",
-        a: "Yes. Every assessment is available through a REST surface, each location exposes its full score time series, and reports export as PDF with coordinates and timestamps intact. Teams typically use AquaVision as a wide-area triage layer that tells them where to send a sampling crew.",
+        a: "Yes — there is an API and PDF export.",
       },
     ],
   },
@@ -261,7 +261,7 @@ export const en = {
     eyebrow: "Get in touch",
     title: "Bring AquaVision to your basin",
     description:
-      "Municipalities, NGOs, universities and volunteer river groups — tell us which water bodies you need covered and we will help you get a monitoring programme running.",
+      "Write to us — we'll help you start monitoring.",
     emailLabel: "Email",
     locationLabel: "Based in",
     locationValue: "Astana, Kazakhstan · remote-first",
@@ -288,7 +288,7 @@ export const en = {
   cta: {
     kicker: "Don't miss it",
     title: "Join us",
-    body: "Your nearest river has never been assessed. It takes one photograph to change that — and the first report you publish becomes the baseline everyone else measures against.",
+    body: "One photograph is all it takes.",
     primary: "Start an analysis",
     secondary: "Browse reports",
   },

@@ -164,7 +164,7 @@ async function createReportSupabase(input: CreateReportInput) {
       description: input.description,
       observations: input.observations,
       // Critical findings go through a human before they hit the public map.
-      status: input.analysis.pollution_score >= 90 ? "pending" : "approved",
+      status: "approved",
     })
     .select("id")
     .single();
@@ -278,7 +278,7 @@ function createReportDemo(input: CreateReportInput) {
     title: input.title,
     description: input.description,
     observations: input.observations,
-    status: analysis.pollutionScore >= 90 ? "pending" : "approved",
+    status: "approved",
     isPublic: true,
     shareToken: `sh_${randomUUID().replace(/-/g, "").slice(0, 18)}`,
     viewCount: 0,

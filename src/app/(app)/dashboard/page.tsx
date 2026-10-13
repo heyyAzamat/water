@@ -17,7 +17,6 @@ import type { Achievement } from "@/types";
 import { getCurrentUser } from "@/lib/auth";
 import {
   buildAchievements,
-  leaderboardEntries,
   listUserReports,
   platformStats,
   userStats,
@@ -30,7 +29,6 @@ import { fmt, intlLocale } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@/components/ui/misc";
 import {
   EmptyState,
   QualityBadge,
@@ -69,11 +67,10 @@ export default async function DashboardPage() {
 
   const dateLocale = intlLocale(locale);
 
-  const [reports, stats, platform, leaderboard, hotspots] = await Promise.all([
+  const [reports, stats, platform, hotspots] = await Promise.all([
     listUserReports(user.id, 6),
     userStats(user.id),
     platformStats(),
-    leaderboardEntries(5),
     worstLocations(4),
   ]);
 
@@ -265,7 +262,7 @@ export default async function DashboardPage() {
 
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Recent uploads */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-3">
           <CardHeader className="flex-row items-center justify-between">
             <div>
               <CardTitle as="h2">{t.pages.dashboard.recentTitle}</CardTitle>
@@ -296,78 +293,6 @@ export default async function DashboardPage() {
           </div>
         </Card>
 
-        {/* Leaderboard */}
-        <Card>
-          <CardHeader className="flex-row items-center justify-between">
-            <div>
-              <CardTitle as="h2">{t.pages.dashboard.leaderboardTitle}</CardTitle>
-              <CardDescription>
-                {t.pages.dashboard.leaderboardDescription}
-              </CardDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/leaderboard">
-                {t.pages.dashboard.leaderboardAll}
-              </Link>
-            </Button>
-          </CardHeader>
-          <div className="px-5 pb-5 sm:px-6">
-            <ol className="flex flex-col gap-2.5">
-              {leaderboard.map((entry) => {
-                const isMe = entry.user.id === user.id;
-                return (
-                  <li
-                    key={entry.user.id}
-                    className={cn(
-                      "flex items-center gap-3 rounded-xl border p-2.5 transition-colors",
-                      isMe
-                        ? "border-lume-400/30 bg-lume-400/8"
-                        : "border-white/8 bg-white/[0.025]",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "grid size-6 shrink-0 place-items-center rounded-lg text-[11px] font-bold",
-                        entry.rank === 1
-                          ? "bg-grade-moderate/22 text-grade-moderate"
-                          : entry.rank === 2
-                            ? "bg-white/12 text-ink-200"
-                            : entry.rank === 3
-                              ? "bg-grade-poor/18 text-grade-poor"
-                              : "bg-white/6 text-ink-500",
-                      )}
-                    >
-                      {entry.rank}
-                    </span>
-                    <Avatar
-                      name={entry.user.name}
-                      src={entry.user.avatarUrl}
-                      size={26}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[12.5px] font-medium text-ink-100">
-                        {entry.user.name}
-                        {isMe && (
-                          <span className="ml-1.5 text-[10.5px] text-lume-300">
-                            {t.pages.dashboard.you}
-                          </span>
-                        )}
-                      </span>
-                      <span className="block text-[11px] text-ink-500">
-                        {fmt(t.pages.dashboard.reportsCount, {
-                          count: entry.reports,
-                        })}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-[12.5px] font-semibold tabular-nums text-ink-200">
-                      {entry.points}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-        </Card>
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">

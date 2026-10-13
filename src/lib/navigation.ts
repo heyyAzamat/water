@@ -39,7 +39,6 @@ export const APP_NAV: NavItem[] = [
   { href: "/upload", key: "upload", icon: "ScanLine" },
   { href: "/map", key: "map", icon: "Map" },
   { href: "/reports", key: "reports", icon: "FileText" },
-  { href: "/leaderboard", key: "leaderboard", icon: "Trophy" },
   {
     href: "/notifications",
     key: "notifications",
@@ -48,14 +47,7 @@ export const APP_NAV: NavItem[] = [
   },
 ];
 
-export const ADMIN_NAV: NavItem[] = [
-  {
-    href: "/admin",
-    key: "moderation",
-    icon: "ShieldCheck",
-    minRole: "moderator",
-  },
-];
+export const ADMIN_NAV: NavItem[] = [];
 
 export const ACCOUNT_NAV: NavItem[] = [
   { href: "/profile", key: "profile", icon: "UserRound" },

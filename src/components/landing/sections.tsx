@@ -822,7 +822,6 @@ export function SiteFooter() {
         { label: t.footer.links.liveMap, href: "/map" },
         { label: t.footer.links.reports, href: "/reports" },
         { label: t.footer.links.newAnalysis, href: "/upload" },
-        { label: t.footer.links.leaderboard, href: "/leaderboard" },
       ],
     },
     {

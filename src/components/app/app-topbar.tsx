@@ -10,7 +10,6 @@ import {
   Menu,
   Search,
   Settings,
-  ShieldCheck,
   Sparkles,
   UserRound,
   X,
@@ -313,15 +312,6 @@ export function AppTopbar({
                   {t.topbar.notificationSettings}
                 </Link>
               </DropdownMenuItem>
-
-              {(user.role === "admin" || user.role === "moderator") && (
-                <DropdownMenuItem asChild>
-                  <Link href="/admin">
-                    <ShieldCheck />
-                    {t.topbar.moderationPanel}
-                  </Link>
-                </DropdownMenuItem>
-              )}
 
               {!user.isGuest && (
                 <>

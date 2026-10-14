@@ -264,7 +264,7 @@ export const en = {
       "Write to us — we'll help you start monitoring.",
     emailLabel: "Email",
     locationLabel: "Based in",
-    locationValue: "Astana, Kazakhstan · remote-first",
+    locationValue: "Aksu, Pavlodar Region, Kazakhstan",
     onboardingLabel: "Programme onboarding",
     onboardingValue: "Typically under two weeks",
     nameLabel: "Name",

@@ -254,7 +254,7 @@ export const kk: Dictionary = {
       "Бізге жазыңыз — бақылауды бастауға көмектесеміз.",
     emailLabel: "Пошта",
     locationLabel: "Орналасқан жері",
-    locationValue: "Астана, Қазақстан · қашықтағы команда",
+    locationValue: "Ақсу, Павлодар обл., Қазақстан",
     onboardingLabel: "Бағдарламаны қосу",
     onboardingValue: "Әдетте екі аптадан аз",
     nameLabel: "Аты-жөні",

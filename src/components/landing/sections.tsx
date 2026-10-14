@@ -590,8 +590,8 @@ export function Contact() {
                   {
                     icon: Mail,
                     label: t.contact.emailLabel,
-                    value: "team@aquavision.ai",
-                    href: "mailto:team@aquavision.ai",
+                    value: "aksu_school7@mail.ru",
+                    href: "mailto:aksu_school7@mail.ru",
                   },
                   {
                     icon: MapPin,

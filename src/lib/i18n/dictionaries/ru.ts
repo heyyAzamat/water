@@ -254,7 +254,7 @@ export const ru: Dictionary = {
       "Напишите нам — поможем начать мониторинг.",
     emailLabel: "Почта",
     locationLabel: "Мы находимся",
-    locationValue: "Астана, Казахстан · удалённая команда",
+    locationValue: "Аксу, Павлодарская обл., Казахстан",
     onboardingLabel: "Запуск программы",
     onboardingValue: "Обычно меньше двух недель",
     nameLabel: "Имя",

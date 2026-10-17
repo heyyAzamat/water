@@ -864,7 +864,7 @@ export const en = {
       publish: "Publish report",
       startOver: "Start over",
       publishBlocked:
-        "A title of at least three characters and a location with coordinates are required before publishing.",
+        "Pick a water body from the list or drop a pin on the map, and add a title (at least 3 characters).",
       geoUnavailable: "Geolocation unavailable in this browser.",
       geoCaptured: "Coordinates captured from your device.",
       geoFailed: "Could not read your position",

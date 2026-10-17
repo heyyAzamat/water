@@ -95,13 +95,19 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
   const [observations, setObservations] = React.useState<CommunityObservation[]>([]);
 
   const selectedLocation = locations.find((l) => l.id === locationId) ?? null;
-  const resolvedName = selectedLocation?.name ?? newLocationName.trim();
 
   const hasCoords =
     Number.isFinite(Number(coords.lat)) &&
     Number.isFinite(Number(coords.lng)) &&
     coords.lat !== "" &&
     coords.lng !== "";
+
+  // A dropped pin is enough to publish: an unnamed point is named after its
+  // coordinates rather than blocking the button on an empty text field.
+  const resolvedName =
+    selectedLocation?.name ??
+    (newLocationName.trim() ||
+      (hasCoords ? formatCoords(Number(coords.lat), Number(coords.lng)) : ""));
 
   /* ------------------------------ map pin ------------------------------ */
   // The pin follows whichever source of truth is active: a chosen known water
@@ -217,8 +223,20 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
   }
 
   /* ------------------------------- publish ------------------------------- */
+  const placeRef = React.useRef<HTMLDivElement>(null);
+
   async function publish() {
     if (!image || !envelope) return;
+    if (!canPublish) {
+      // Say what is missing instead of leaving a dead button.
+      toast.error(t.ui.upload.publishFailed, {
+        description: t.ui.upload.publishBlocked,
+      });
+      if (!selectedLocation && !hasCoords) {
+        placeRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      return;
+    }
     setStage("publishing");
 
     try {
@@ -294,7 +312,7 @@ export function UploadFlow({ locations }: { locations: WaterLocation[] }) {
           </div>
         </Card>
 
-        <Card>
+        <Card ref={placeRef}>
           <CardHeader>
             <CardTitle as="h2">{t.ui.upload.step2Title}</CardTitle>
             <CardDescription>
@@ -849,7 +867,6 @@ function ResultPanel({
               className="flex-1"
               onClick={onPublish}
               loading={publishing}
-              disabled={!canPublish}
             >
               <FileText aria-hidden />
               {t.ui.upload.publish}

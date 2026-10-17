@@ -8,6 +8,7 @@ import type {
   WaterLocation,
 } from "@/types";
 import { slugify } from "@/lib/utils";
+import { syncFromBlob } from "./blob-store";
 
 /**
  * The in-memory store used when no Supabase project is configured.
@@ -213,6 +214,13 @@ export function demoData(): DemoDataset {
   const holder = globalThis as unknown as DatasetHolder;
   if (!holder[DATASET_KEY]) holder[DATASET_KEY] = build();
   return holder[DATASET_KEY];
+}
+
+/** The dataset, refreshed from durable storage (Vercel Blob) when enabled. */
+export async function loadDemo(): Promise<DemoDataset> {
+  const data = demoData();
+  await syncFromBlob(data);
+  return data;
 }
 
 export function addDemoReport(report: Report) {

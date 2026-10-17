@@ -26,7 +26,7 @@ import {
   mapProfile,
   mapReportDetail,
 } from "./mappers";
-import { demoData } from "./demo-store";
+import { loadDemo } from "./demo-store";
 
 /**
  * The single data-access surface for the whole app.
@@ -86,7 +86,7 @@ export async function listReports(
     };
   }
 
-  const filtered = filterDemoReports(filters);
+  const filtered = await filterDemoReports(filters);
   const sorted = sortDemoReports(filtered, filters.sort);
   const start = (page - 1) * pageSize;
 
@@ -113,7 +113,7 @@ export async function getReport(id: string): Promise<Report | null> {
     return data ? mapReportDetail(data) : null;
   }
 
-  return demoData().reports.find((r) => r.id === id) ?? null;
+  return (await loadDemo()).reports.find((r) => r.id === id) ?? null;
 }
 
 export async function getReportByShareToken(
@@ -132,7 +132,7 @@ export async function getReportByShareToken(
     return data ? mapReportDetail(data) : null;
   }
 
-  return demoData().reports.find((r) => r.shareToken === token) ?? null;
+  return (await loadDemo()).reports.find((r) => r.shareToken === token) ?? null;
 }
 
 /** Reports inside a map viewport. Capped so a world-zoom pan stays fast. */
@@ -159,7 +159,7 @@ export async function reportsInBounds(bounds: {
     return (data ?? []).map(mapReportDetail);
   }
 
-  return demoData()
+  return (await loadDemo())
     .reports.filter(
       (r) =>
         r.status === "approved" &&
@@ -212,7 +212,7 @@ export async function listLocations(): Promise<WaterLocation[]> {
     return (data ?? []).map(mapLocation);
   }
 
-  return [...demoData().locations].sort((a, b) => a.name.localeCompare(b.name));
+  return [...(await loadDemo()).locations].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function searchLocations(
@@ -272,7 +272,7 @@ export async function reportsForLocation(locationId: string): Promise<Report[]> 
     return (data ?? []).map(mapReportDetail);
   }
 
-  return demoData()
+  return (await loadDemo())
     .reports.filter((r) => r.location?.id === locationId && r.status === "approved")
     .sort(
       (a, b) =>
@@ -347,7 +347,7 @@ export async function platformStats(): Promise<PlatformStats> {
     };
   }
 
-  const { reports, locations, authors } = demoData();
+  const { reports, locations, authors } = (await loadDemo());
   const approved = reports.filter((r) => r.status === "approved");
   const breakdown = emptyBreakdown();
   for (const report of approved) breakdown[report.analysis.waterQuality] += 1;
@@ -442,7 +442,7 @@ export async function leaderboardEntries(
     });
   }
 
-  const { authors, reports } = demoData();
+  const { authors, reports } = (await loadDemo());
 
   const rows = authors
     .map((author) => {
@@ -516,7 +516,7 @@ export async function listComments(reportId: string): Promise<Comment[]> {
     return (data ?? []).map(mapComment);
   }
 
-  return demoData()
+  return (await loadDemo())
     .comments.filter((c) => c.id.startsWith(`cmt-${reportId.slice(4)}`))
     .sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -541,7 +541,7 @@ export async function listNotifications(
     return (data ?? []).map(mapNotification);
   }
 
-  return demoData().notifications.slice(0, limit);
+  return (await loadDemo()).notifications.slice(0, limit);
 }
 
 /* ------------------------------------------------------------------ *
@@ -602,7 +602,7 @@ export async function listProfiles(limit = 60): Promise<Author[]> {
     return (data ?? []).map(mapProfile);
   }
 
-  return [...demoData().authors].sort((a, b) => b.points - a.points).slice(0, limit);
+  return [...(await loadDemo()).authors].sort((a, b) => b.points - a.points).slice(0, limit);
 }
 
 /* ------------------------------------------------------------------ *
@@ -652,11 +652,11 @@ function applySupabaseFilters<T extends SupabaseQuery>(
   return q;
 }
 
-function filterDemoReports(filters: ReportFilters): Report[] {
+async function filterDemoReports(filters: ReportFilters): Promise<Report[]> {
   const status = filters.status ?? "approved";
   const needle = filters.q?.trim().toLowerCase();
 
-  return demoData().reports.filter((report) => {
+  return (await loadDemo()).reports.filter((report) => {
     if (status !== "all" && report.status !== status) return false;
     if (filters.userId && report.author.id !== filters.userId) return false;
     if (filters.locationId && report.location?.id !== filters.locationId) return false;

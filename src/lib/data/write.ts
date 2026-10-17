@@ -20,9 +20,17 @@ import {
   addDemoComment,
   addDemoReport,
   demoData,
+  loadDemo,
   removeDemoReport,
 } from "./demo-store";
 import { sampleWaterImage } from "./sample-image";
+import {
+  blobEnabled,
+  removeStoredReport,
+  saveComment,
+  savePhoto,
+  saveReport,
+} from "./blob-store";
 
 /**
  * Write path.
@@ -217,7 +225,7 @@ async function resolveLocationId(input: CreateReportInput) {
  * Demo path — mutate the in-memory dataset
  * ------------------------------------------------------------------ */
 
-function createReportDemo(input: CreateReportInput) {
+async function createReportDemo(input: CreateReportInput) {
   const data = demoData();
   const id = `rep-live-${randomUUID().slice(0, 8)}`;
   const now = new Date().toISOString();
@@ -268,10 +276,16 @@ function createReportDemo(input: CreateReportInput) {
 
   // No object storage in demo mode: embed the real upload as a data URL so the
   // report the user just created shows their actual photograph.
+  // With Blob storage the photo gets a real public URL; otherwise it is
+  // embedded as a data URL in the in-memory record.
   const imageUrl =
-    input.imageBuffer.length > 0 && input.imageBuffer.length < 3_500_000
-      ? `data:${input.mimeType};base64,${input.imageBuffer.toString("base64")}`
-      : sampleWaterImage(id, analysis.pollutionScore, analysis.pollutionTags);
+    input.imageBuffer.length === 0
+      ? sampleWaterImage(id, analysis.pollutionScore, analysis.pollutionTags)
+      : blobEnabled
+        ? await savePhoto(id, input.imageBuffer, input.mimeType)
+        : input.imageBuffer.length < 3_500_000
+          ? `data:${input.mimeType};base64,${input.imageBuffer.toString("base64")}`
+          : sampleWaterImage(id, analysis.pollutionScore, analysis.pollutionTags);
 
   const report: Report = {
     id,
@@ -296,6 +310,7 @@ function createReportDemo(input: CreateReportInput) {
   };
 
   addDemoReport(report);
+  await saveReport(report);
   return { id };
 }
 
@@ -340,6 +355,7 @@ export async function addComment(input: {
   };
 
   addDemoComment(comment, input.reportId);
+  await saveComment(input.reportId, comment);
   return comment;
 }
 
@@ -370,10 +386,11 @@ export async function setReportStatus(
     return data ? mapReportDetail(data) : null;
   }
 
-  const report = demoData().reports.find((r) => r.id === reportId);
+  const report = (await loadDemo()).reports.find((r) => r.id === reportId);
   if (!report) return null;
   report.status = status;
   report.updatedAt = new Date().toISOString();
+  await saveReport(report);
   return report;
 }
 
@@ -407,7 +424,10 @@ export async function deleteReport(reportId: string): Promise<boolean> {
     return true;
   }
 
-  return removeDemoReport(reportId);
+  await loadDemo();
+  const removed = removeDemoReport(reportId);
+  await removeStoredReport(reportId);
+  return removed;
 }
 
 export async function markNotificationsRead(userId: string, ids?: string[]) {

@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { gradeForScore } from "@/lib/ai/scoring";
+import { useT } from "@/lib/i18n/provider";
 
 /**
  * Animated circular pollution-score gauge.
@@ -28,6 +29,7 @@ export function ScoreRing({
   className?: string;
   delay?: number;
 }) {
+  const t = useT();
   const grade = gradeForScore(score);
   const radius = (size - thickness) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -128,7 +130,7 @@ export function ScoreRing({
               className="mt-1.5 font-medium uppercase tracking-[0.14em] text-ink-400"
               style={{ fontSize: Math.max(9, size * 0.062) }}
             >
-              {grade.quality}
+              {t.grades[grade.quality].label}
             </span>
           </div>
         </div>

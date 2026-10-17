@@ -517,6 +517,7 @@ export const en = {
   ui: {
     closeDialog: "Close dialog",
     preview: {
+      analysing: "Analysing",
       explanationTitle: "AI explanation",
       scenesLabel: "Preview scenes",
       showScene: "Show {place}",
@@ -525,6 +526,7 @@ export const en = {
       stored: "Stored, mapped & trended",
       scenes: [
         {
+          place: "Yamuna — Kalindi Kunj",
           region: "Delhi, India",
           objects: [
             "Persistent white foam",
@@ -535,12 +537,14 @@ export const en = {
             "Dense surfactant foam covers the majority of the frame and persists well away from any weir, ruling out simple aeration.",
         },
         {
+          place: "Lake Erie — Maumee Bay",
           region: "Ohio, United States",
           objects: ["Green algal mats", "Dense surface vegetation"],
           explanation:
             "Green channel leads red and blue by 19% across a contiguous surface region, consistent with cyanobacteria biomass rather than reflected foliage.",
         },
         {
+          place: "Big Almaty Lake",
           region: "Almaty, Kazakhstan",
           objects: ["Clear open water", "Visible substrate"],
           explanation:
@@ -594,6 +598,12 @@ export const en = {
         "Concrete next actions for a local authority or volunteer group.",
       trendTitle: "Trend analysis",
       trendBody: "{count} observations at this location.",
+      trendSummary: {
+        worsening: "Severity has risen by {delta} points over {days} days, now at {score}/100.",
+        improving: "Severity has fallen by {delta} points over {days} days, now at {score}/100.",
+        stable: "Severity is holding steady over {days} days, at {score}/100.",
+        unknown: "Not enough observations yet to show a trend.",
+      },
       trendFirst: "First",
       trendLatest: "Latest",
       trendProjected: "Projected",
@@ -712,6 +722,9 @@ export const en = {
     },
 
     mapExplorer: {
+      legendTitle: "Severity",
+      legendLow: "0 clean",
+      legendHigh: "100 critical",
       minSeverity: "Minimum severity",
       shownOf: "{shown} of {total} reports",
       clearCount: "Clear {count}",
@@ -954,6 +967,15 @@ export const en = {
       reportsCount: "{count} reports",
       achievementsTitle: "Achievements",
       achievementsDescription: "{unlocked} of {total} unlocked.",
+      achievementDefs: {
+        "first-drop": { name: "First Drop", description: "Publish your first water assessment." },
+        "field-analyst": { name: "Field Analyst", description: "Publish 10 verified assessments." },
+        "basin-guardian": { name: "Basin Guardian", description: "Publish 50 verified assessments." },
+        "cartographer": { name: "Cartographer", description: "Document 5 distinct water bodies." },
+        "first-responder": { name: "First Responder", description: "Detect 3 critical pollution events." },
+        "streak-keeper": { name: "Streak Keeper", description: "Contribute on 7 consecutive days." },
+        "reputation": { name: "Trusted Observer", description: "Earn 500 contribution points." },
+      },
       hotspotsTitle: "Network hotspots",
       hotspotsDescription: "Highest-severity locations right now.",
       distributionTitle: "Network grade distribution",

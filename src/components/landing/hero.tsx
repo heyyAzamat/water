@@ -10,7 +10,11 @@ import { useT } from "@/lib/i18n/provider";
 import { fmt } from "@/lib/i18n/format";
 import { Button } from "@/components/ui/button";
 import { AnimatedCounter, Reveal } from "@/components/shared/primitives";
-import { AbyssBackdrop, EditionMark, FadeRule } from "@/components/shared/abyss";
+import {
+  AbyssBackdrop,
+  EditionMark,
+  FadeRule,
+} from "@/components/shared/abyss";
 import { AnalysisPreview } from "./analysis-preview";
 
 /**
@@ -119,30 +123,39 @@ export function Hero({ stats }: { stats: PlatformStats }) {
           </Reveal>
         </div>
 
-        {/* Live counters pinned to the bottom of the opening screen */}
-        <Reveal delay={0.58}>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3.5 backdrop-blur-xl sm:px-5 sm:py-4">
-            <dl className="grid grid-cols-4 gap-x-2 gap-y-4 sm:gap-x-6">
-              {[
-                { label: t.hero.stats.assessments, value: stats.reports },
-                { label: t.hero.stats.waterBodies, value: stats.locations },
-                { label: t.hero.stats.contributors, value: stats.contributors },
-                { label: t.hero.stats.countries, value: stats.countries },
-              ].map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center">
-                  <dd className="text-[19px] font-semibold tracking-[-0.03em] text-ink-50 sm:text-[28px]">
-                    <AnimatedCounter value={stat.value} />
-                  </dd>
-                  <dt className="mt-1 text-center text-[8.5px] font-medium uppercase leading-tight tracking-[0.1em] text-ink-500 sm:text-[10px] sm:tracking-[0.18em]">
-                    {stat.label}
-                  </dt>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </Reveal>
+        {/* Live counters pinned to the bottom of the opening screen; hidden
+            until there is at least one published assessment to count. */}
+        {stats.reports > 0 && (
+          <Reveal delay={0.58}>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3.5 backdrop-blur-xl sm:px-5 sm:py-4">
+              <dl className="grid grid-cols-4 gap-x-2 gap-y-4 sm:gap-x-6">
+                {[
+                  { label: t.hero.stats.assessments, value: stats.reports },
+                  { label: t.hero.stats.waterBodies, value: stats.locations },
+                  {
+                    label: t.hero.stats.contributors,
+                    value: stats.contributors,
+                  },
+                  { label: t.hero.stats.countries, value: stats.countries },
+                ].map((stat) => (
+                  <div key={stat.label} className="flex flex-col items-center">
+                    <dd className="text-[19px] font-semibold tracking-[-0.03em] text-ink-50 sm:text-[28px]">
+                      <AnimatedCounter value={stat.value} />
+                    </dd>
+                    <dt className="mt-1 text-center text-[8.5px] font-medium uppercase leading-tight tracking-[0.1em] text-ink-500 sm:text-[10px] sm:tracking-[0.18em]">
+                      {stat.label}
+                    </dt>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </Reveal>
+        )}
 
-        <Reveal delay={0.66} className="mt-5 hidden justify-center sm:mt-6 sm:flex">
+        <Reveal
+          delay={0.66}
+          className="mt-5 hidden justify-center sm:mt-6 sm:flex"
+        >
           <a
             href="#lead"
             aria-label={t.common.scrollDown}
@@ -174,15 +187,17 @@ export function Hero({ stats }: { stats: PlatformStats }) {
           <AnalysisPreview />
         </motion.div>
 
-        <Reveal delay={0.2} className="mt-8">
-          <p className="text-center text-[12.5px] text-ink-500">
-            {fmt(t.hero.ticker, {
-              images: compactNumber(stats.analysedImages),
-              sites: stats.locations,
-              score: stats.averageScore,
-            })}
-          </p>
-        </Reveal>
+        {stats.reports > 0 && (
+          <Reveal delay={0.2} className="mt-8">
+            <p className="text-center text-[12.5px] text-ink-500">
+              {fmt(t.hero.ticker, {
+                images: compactNumber(stats.analysedImages),
+                sites: stats.locations,
+                score: stats.averageScore,
+              })}
+            </p>
+          </Reveal>
+        )}
       </div>
     </section>
   );

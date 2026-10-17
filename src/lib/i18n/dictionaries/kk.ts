@@ -511,6 +511,7 @@ export const kk: Dictionary = {
   ui: {
     closeDialog: "Терезені жабу",
     preview: {
+      analysing: "Талдау",
       explanationTitle: "ЖИ түсіндірмесі",
       scenesLabel: "Алдын ала қарау көріністері",
       showScene: "Көрсету: {place}",
@@ -519,6 +520,7 @@ export const kk: Dictionary = {
       stored: "Сақталды, картада және трендте",
       scenes: [
         {
+          place: "Ямуна — Калинди Кундж",
           region: "Дели, Үндістан",
           objects: [
             "Тұрақты ақ көбік",
@@ -529,12 +531,14 @@ export const kk: Dictionary = {
             "Жуғыш заттан пайда болған қою көбік кадрдың басым бөлігін жауып тұр және бөгеттен алыс жерде де сақталады — қарапайым аэрация болу мүмкіндігін жоққа шығарады.",
         },
         {
+          place: "Эри көлі — Моми шығанағы",
           region: "Огайо, АҚШ",
           objects: ["Жасыл балдыр қабаттары", "Қалың су беті өсімдігі"],
           explanation:
             "Тұтас бет аймағында жасыл арна қызыл мен көктен 19% озып тұр — бұл жапырақ шағылысуы емес, цианобактерия биомассасына сәйкес келеді.",
         },
         {
+          place: "Үлкен Алматы көлі",
           region: "Алматы, Қазақстан",
           objects: ["Таза ашық су", "Көрінетін түп"],
           explanation:
@@ -588,6 +592,12 @@ export const kk: Dictionary = {
         "Жергілікті билік немесе ерікті топ үшін нақты қадамдар.",
       trendTitle: "Тренд талдауы",
       trendBody: "Осы нысандағы байқау саны: {count}.",
+      trendSummary: {
+        worsening: "Ластану {days} күнде {delta} ұпайға өсті, қазір {score}/100.",
+        improving: "Ластану {days} күнде {delta} ұпайға төмендеді, қазір {score}/100.",
+        stable: "Ластану деңгейі {days} күн бойы тұрақты: {score}/100.",
+        unknown: "Динамиканы көрсетуге байқаулар әзірге жеткіліксіз.",
+      },
       trendFirst: "Алғашқы",
       trendLatest: "Соңғы",
       trendProjected: "Болжам",
@@ -706,6 +716,9 @@ export const kk: Dictionary = {
     },
 
     mapExplorer: {
+      legendTitle: "Ауырлық",
+      legendLow: "0 — таза",
+      legendHigh: "100 — сыни",
       minSeverity: "Ең төмен ауырлық",
       shownOf: "{total} есептің {shown}-і",
       clearCount: "Тазалау {count}",
@@ -948,6 +961,15 @@ export const kk: Dictionary = {
       reportsCount: "есеп: {count}",
       achievementsTitle: "Жетістіктер",
       achievementsDescription: "{total} ішінен {unlocked} ашылды.",
+      achievementDefs: {
+        "first-drop": { name: "Алғашқы тамшы", description: "Алғашқы су бағаңызды жариялаңыз." },
+        "field-analyst": { name: "Далалық талдаушы", description: "10 баға жариялаңыз." },
+        "basin-guardian": { name: "Бассейн сақшысы", description: "50 баға жариялаңыз." },
+        "cartographer": { name: "Картограф", description: "5 түрлі су айдынын сипаттаңыз." },
+        "first-responder": { name: "Алғашқы әрекет", description: "3 сыни ластану жағдайын анықтаңыз." },
+        "streak-keeper": { name: "Үзіліссіз", description: "7 күн қатарынан үлес қосыңыз." },
+        "reputation": { name: "Сенімді бақылаушы", description: "500 үлес ұпайын жинаңыз." },
+      },
       hotspotsTitle: "Желідегі ыстық нүктелер",
       hotspotsDescription: "Дәл қазір ауырлығы ең жоғары нысандар.",
       distributionTitle: "Желі бойынша дәреже үлестірімі",

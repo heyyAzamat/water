@@ -511,6 +511,7 @@ export const ru: Dictionary = {
   ui: {
     closeDialog: "Закрыть окно",
     preview: {
+      analysing: "Анализ",
       explanationTitle: "Объяснение ИИ",
       scenesLabel: "Сцены превью",
       showScene: "Показать: {place}",
@@ -519,6 +520,7 @@ export const ru: Dictionary = {
       stored: "Сохранено, на карте и в тренде",
       scenes: [
         {
+          place: "Ямуна — Калинди Кундж",
           region: "Дели, Индия",
           objects: [
             "Устойчивая белая пена",
@@ -529,12 +531,14 @@ export const ru: Dictionary = {
             "Плотная пена от ПАВ покрывает большую часть кадра и держится далеко от плотины, что исключает обычную аэрацию.",
         },
         {
+          place: "Озеро Эри — залив Моми",
           region: "Огайо, США",
           objects: ["Зелёные маты водорослей", "Густая надводная растительность"],
           explanation:
             "Зелёный канал опережает красный и синий на 19% на сплошном участке поверхности — это соответствует биомассе цианобактерий, а не отражению листвы.",
         },
         {
+          place: "Большое Алматинское озеро",
           region: "Алматы, Казахстан",
           objects: ["Чистая открытая вода", "Видимое дно"],
           explanation:
@@ -588,6 +592,12 @@ export const ru: Dictionary = {
         "Конкретные шаги для местных властей или волонтёрской группы.",
       trendTitle: "Анализ тренда",
       trendBody: "Наблюдений в этой точке: {count}.",
+      trendSummary: {
+        worsening: "Загрязнение выросло на {delta} п. за {days} дн., сейчас {score}/100.",
+        improving: "Загрязнение снизилось на {delta} п. за {days} дн., сейчас {score}/100.",
+        stable: "Уровень загрязнения стабилен за {days} дн.: {score}/100.",
+        unknown: "Пока недостаточно наблюдений, чтобы показать динамику.",
+      },
       trendFirst: "Первая",
       trendLatest: "Последняя",
       trendProjected: "Прогноз",
@@ -706,6 +716,9 @@ export const ru: Dictionary = {
     },
 
     mapExplorer: {
+      legendTitle: "Тяжесть",
+      legendLow: "0 — чисто",
+      legendHigh: "100 — критично",
       minSeverity: "Минимальная тяжесть",
       shownOf: "{shown} из {total} отчётов",
       clearCount: "Сбросить {count}",
@@ -947,6 +960,15 @@ export const ru: Dictionary = {
       reportsCount: "отчётов: {count}",
       achievementsTitle: "Достижения",
       achievementsDescription: "Открыто {unlocked} из {total}.",
+      achievementDefs: {
+        "first-drop": { name: "Первая капля", description: "Опубликуйте первую оценку воды." },
+        "field-analyst": { name: "Полевой аналитик", description: "Опубликуйте 10 оценок." },
+        "basin-guardian": { name: "Хранитель бассейна", description: "Опубликуйте 50 оценок." },
+        "cartographer": { name: "Картограф", description: "Опишите 5 разных водоёмов." },
+        "first-responder": { name: "Первый отклик", description: "Обнаружьте 3 случая критического загрязнения." },
+        "streak-keeper": { name: "Без пропусков", description: "Вносите вклад 7 дней подряд." },
+        "reputation": { name: "Надёжный наблюдатель", description: "Наберите 500 баллов вклада." },
+      },
       hotspotsTitle: "Горячие точки сети",
       hotspotsDescription: "Точки с наибольшей тяжестью прямо сейчас.",
       distributionTitle: "Распределение классов по сети",

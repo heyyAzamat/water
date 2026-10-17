@@ -154,7 +154,7 @@ export function CommentThread({
                   </span>
                   {comment.author.role !== "user" && (
                     <Badge variant="brand" size="sm">
-                      {comment.author.role}
+                      {t.roles[comment.author.role]}
                     </Badge>
                   )}
                   <span className="text-[11px] text-ink-600">

@@ -54,6 +54,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t.meta.description,
     },
     robots: { index: true, follow: true },
+    appleWebApp: {
+      capable: true,
+      title: "AquaVision",
+      statusBarStyle: "black-translucent",
+    },
   };
 }
 

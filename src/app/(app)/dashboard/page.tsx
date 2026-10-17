@@ -315,7 +315,16 @@ export default async function DashboardPage() {
           </CardHeader>
           <div className="grid grid-cols-1 gap-3 px-5 pb-5 sm:grid-cols-2 sm:px-6">
             {achievements.map((achievement) => (
-              <AchievementTile key={achievement.id} achievement={achievement} />
+              <AchievementTile
+                key={achievement.id}
+                achievement={{
+                  ...achievement,
+                  ...(t.pages.dashboard.achievementDefs as Record<
+                    string,
+                    { name: string; description: string }
+                  >)[achievement.id],
+                }}
+              />
             ))}
           </div>
         </Card>

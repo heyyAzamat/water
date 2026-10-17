@@ -448,7 +448,7 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
         {/* Legend */}
         <div className="pointer-events-none absolute bottom-6 left-3 z-10 rounded-xl border border-white/10 bg-ink-950/75 p-3 backdrop-blur-2xl lg:left-4">
           <p className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink-500">
-            Severity
+            {t.ui.mapExplorer.legendTitle}
           </p>
           <div className="mt-2 flex items-center gap-2">
             <div
@@ -461,8 +461,8 @@ export function MapExplorer({ reports }: { reports: Report[] }) {
             />
           </div>
           <div className="mt-1.5 flex justify-between text-[10px] text-ink-600">
-            <span>0 clean</span>
-            <span>100 critical</span>
+            <span>{t.ui.mapExplorer.legendLow}</span>
+            <span>{t.ui.mapExplorer.legendHigh}</span>
           </div>
         </div>
 

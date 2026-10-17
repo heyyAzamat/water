@@ -100,7 +100,7 @@ export function AnalysisPreview() {
         </div>
         <span className="hidden items-center gap-1.5 rounded-full border border-aqua-400/25 bg-aqua-400/10 px-2 py-0.5 text-[10.5px] font-medium text-aqua-200 sm:inline-flex">
           <span className="size-1.5 animate-pulse rounded-full bg-aqua-400" aria-hidden />
-          Analysing
+          {t.ui.preview.analysing}
         </span>
       </div>
 
@@ -111,7 +111,7 @@ export function AnalysisPreview() {
             <motion.img
               key={scene.place}
               src={image}
-              alt={`Sample water surface analysis at ${scene.place}`}
+              alt={copy.place}
               className="absolute inset-0 size-full object-cover"
               initial={{ opacity: 0, scale: 1.06 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -165,7 +165,7 @@ export function AnalysisPreview() {
             <div className="flex items-center gap-2 text-[13px]">
               <MapPin className="size-3.5 shrink-0 text-aqua-300" aria-hidden />
               <span className="truncate font-medium text-ink-100">
-                {scene.place}
+                {copy.place}
               </span>
               <span className="hidden shrink-0 text-ink-500 sm:inline">
                 · {copy.region}
@@ -256,7 +256,7 @@ export function AnalysisPreview() {
                   key={s.place}
                   role="tab"
                   aria-selected={i === index}
-                  aria-label={fmt(t.ui.preview.showScene, { place: s.place })}
+                  aria-label={fmt(t.ui.preview.showScene, { place: t.ui.preview.scenes[i].place })}
                   onClick={() => setIndex(i)}
                   className={cn(
                     "h-1.5 rounded-full transition-all duration-300",

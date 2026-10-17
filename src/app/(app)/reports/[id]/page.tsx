@@ -262,7 +262,7 @@ export default async function ReportPage({
                 </div>
                 {report.author.role !== "user" && (
                   <Badge variant="brand" size="sm">
-                    {report.author.role}
+                    {t.roles[report.author.role]}
                   </Badge>
                 )}
               </div>
@@ -413,7 +413,11 @@ export default async function ReportPage({
 
                 <div className="px-5 pb-5 sm:px-6">
                   <p className="text-[13px] leading-relaxed text-ink-400">
-                    {trend.summary}
+                    {fmt(t.ui.report.trendSummary[trend.direction], {
+                    delta: Math.abs(trend.delta),
+                    days: Math.round(trend.spanDays),
+                    score: trend.latestScore,
+                  })}
                   </p>
 
                   {trend.sampleSize >= 2 && (
@@ -437,13 +441,6 @@ export default async function ReportPage({
                     </dl>
                   )}
 
-                  {trend.sampleSize >= 3 && (
-                    <p className="mt-3 font-mono text-[11px] text-ink-600">
-                      slope {trend.slopePerDay > 0 ? "+" : ""}
-                      {trend.slopePerDay}/day · fit r² {trend.reliability} · span{" "}
-                      {trend.spanDays}d
-                    </p>
-                  )}
                 </div>
               </Card>
             )}
@@ -486,7 +483,7 @@ export default async function ReportPage({
                 <li key={entry.id} className="relative min-w-0">
                   <ReportRow report={entry} />
                   <span className="pointer-events-none absolute right-16 top-1/2 -translate-y-1/2 font-mono text-[10.5px] text-ink-600">
-                    {entry.distanceKm.toFixed(1)} km
+                    {entry.distanceKm.toFixed(1)} {locale === "en" ? "km" : "км"}
                   </span>
                 </li>
               ))}

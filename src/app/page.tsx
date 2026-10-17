@@ -35,7 +35,11 @@ export default async function LandingPage() {
 
         <section id="map" className="relative py-24 sm:py-32">
           <div className="mx-auto max-w-6xl px-5">
-            <EditionMark left={t.mapSection.eyebrow} right="03" className="mb-12" />
+            <EditionMark
+              left={t.mapSection.eyebrow}
+              right="03"
+              className="mb-12"
+            />
 
             <div className="flex flex-col items-center text-center">
               <h2 className="text-lume-soft text-balance text-[clamp(2.2rem,6.5vw,4.25rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-ink-50">
@@ -59,7 +63,7 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        <Statistics stats={stats} />
+        {stats.reports > 0 && <Statistics stats={stats} />}
         <Benefits />
         <Faq />
         <Contact />
